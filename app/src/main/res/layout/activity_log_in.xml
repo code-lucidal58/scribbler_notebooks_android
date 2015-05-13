@@ -1,0 +1,117 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.scribblernotebooks.scribblernotebooks.LogIn"
+    android:background="@color/darkBlue">
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/app_name"
+        android:gravity="center"
+        android:textSize="30sp"
+        android:layout_alignParentTop="true"
+        android:textColor="#ff71c7d5"
+        android:id="@+id/appName"
+        android:layout_marginTop="10dp"/>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="-30dp"
+        android:layout_alignParentBottom="true"
+        android:src="@drawable/bluehills"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:id="@+id/sl">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical">
+
+            <!--<ImageView-->
+                <!--android:layout_width="60sp"-->
+                <!--android:layout_height="60sp"-->
+                <!--android:layout_centerHorizontal="true"-->
+                <!--android:src="@drawable/snpng"-->
+                <!--android:id="@+id/logo"/>-->
+
+
+            <EditText
+                android:background="@drawable/edit_text1"
+                android:layout_width="@dimen/popup_width"
+                android:layout_height="@dimen/loginEditTextHeight"
+                android:layout_centerHorizontal="true"
+                android:gravity="center"
+                android:id="@+id/name"
+                android:hint="Name"
+                android:inputType="textPersonName"
+                android:textSize="18sp"/>
+
+            <EditText
+                android:background="@drawable/edit_text1"
+                android:layout_width="@dimen/popup_width"
+                android:layout_height="@dimen/loginEditTextHeight"
+                android:id="@+id/mobileNo"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="2dp"
+                android:maxLength="10"
+                android:hint="Mobile No."
+                android:gravity="center"
+                android:layout_below="@id/name"
+                android:inputType="phone"
+                android:textSize="18sp"/>
+
+            <Button
+                android:background="@drawable/scanner_button"
+                style="@style/font"
+                android:layout_marginTop="10dp"
+                android:layout_width="@dimen/scanner_button_width"
+                android:layout_height="@dimen/loginButtonHeight"
+                android:text="Sign Up"
+                android:textColor="#FFF"
+                android:layout_centerInParent="true"
+                android:layout_below="@+id/mobileNo"
+                android:id="@+id/signUp"/>
+
+            <!--<EditText-->
+                <!--android:background="@drawable/edit_text1"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:id="@+id/otp"-->
+                <!--android:hint="OTP"-->
+                <!--android:layout_below="@id/signUp"-->
+                <!--android:inputType="number"-->
+                <!--android:textSize="20sp"/>-->
+
+            <TextView
+                style="@style/font"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/signUp"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:layout_marginTop="10dp"
+                android:text="OR"
+                android:textColor="#FFF"
+                android:id="@+id/or"/>
+
+            <com.google.android.gms.common.SignInButton
+                android:id="@+id/sign_in_button"
+                android:layout_width="@dimen/scanner_button_width"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/or"
+                android:layout_marginTop="10dp"/>
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+</RelativeLayout>

@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">Scribbler Notebooks</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="title_activity_deal_list">DealList</string>
+
+
+    <string name="title_section1">Section 1</string>
+    <string name="title_section2">Section 2</string>
+    <string name="title_section3">Section 3</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_manual_scribbler_code">ManualScribblerCode</string>
+
+    <string name="action_search">Search</string>
+    <string name="title_activity_log_in">LogIn</string>
+    <string name="title_activity_navigation_drawer">Navigation</string>
+    <string name="title_activity_navigation">Navigation</string>
+
+    <string-array name="navigation_drawer_items_array">
+        <item>My Profile</item>
+        <item>All Deals</item>
+        <item>Featured Deals</item>
+    </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>

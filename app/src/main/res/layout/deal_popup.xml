@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="@dimen/popup_width"
+    android:layout_height="wrap_content"
+    android:layout_centerHorizontal="true"
+    android:background="#ffd6ff32">
+
+    <TextView
+        android:layout_width="@dimen/popup_width"
+        android:layout_height="wrap_content"
+        android:background="@color/themeColor"
+        android:textColor="#FFF"
+        android:text="Title"
+        android:minHeight="50dp"
+        android:padding="10dp"
+        android:textSize="18sp"
+        android:gravity="center"
+        android:id="@+id/title"  />
+
+    <RelativeLayout
+        android:layout_width="@dimen/popup_width"
+        android:layout_height="wrap_content"
+        android:minHeight="200dp"
+        android:id="@+id/ll"
+        android:padding="5dp"
+        android:background="#ffd6ff32">
+
+        <TextView
+            android:layout_width="@dimen/popup_width"
+            android:layout_height="wrap_content"
+            android:textColor="@color/themeColorDark"
+            android:text="Description Here"
+            android:textSize="16sp"
+            android:id="@+id/description"/>
+
+
+
+     </RelativeLayout>
+
+
+    <Button
+        android:layout_width="@dimen/popup_button_width"
+        android:layout_height="wrap_content"
+        android:text="Get your unique code"
+        android:textColor="#FFF"
+        android:id="@+id/codeButton"
+        android:background="@drawable/scanner_button"
+        android:layout_gravity="center_horizontal|bottom"/>
+
+</LinearLayout>
