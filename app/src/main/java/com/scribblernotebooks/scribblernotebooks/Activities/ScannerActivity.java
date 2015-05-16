@@ -1,6 +1,7 @@
 package com.scribblernotebooks.scribblernotebooks.Activities;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
@@ -9,8 +10,8 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.Toast;
 
-import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.R;
 
 import eu.livotov.zxscan.ScannerView;
@@ -64,9 +65,14 @@ public class ScannerActivity extends AppCompatActivity {
             @Override
             public boolean onCodeScanned(String data) {
                 stopScan();
-                vibrator.vibrate(vibratePattern,1);
-                Intent i=new Intent(getApplicationContext(),ManualScribblerCode.class);
-                i.putExtra(Constants.EXTRA_DEAL_CODE,data);
+                Intent i=new Intent(getApplicationContext(),NavigationDrawer.class);
+                try{
+                    i.setData(Uri.parse(data));
+                }
+                catch (Exception e){
+                    Toast.makeText(getApplicationContext(),"Invalid Scribbler QR code",Toast.LENGTH_LONG).show();
+                    finish();
+                }
                 startActivity(i);
                 finish();
                 return false;
@@ -83,7 +89,7 @@ public class ScannerActivity extends AppCompatActivity {
     }
 
     public void switchToManual(View view){
-        startActivity(new Intent(this, ManualScribblerCode.class));
+        startActivity(new Intent(this, NavigationDrawer.class));
         finish();
     }
         

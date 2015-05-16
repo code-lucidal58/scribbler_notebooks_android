@@ -10,11 +10,13 @@
 
 
     <dimen name="scanner_button_width">275dp</dimen>
+    <dimen name="scanner_button_half">135dp</dimen>
     <dimen name="back_to_scan_button">150dp</dimen>
 
     <dimen name="commonViewHeight">50dp</dimen>
     <dimen name="loginEditTextHeight">40dp</dimen>
     <dimen name="loginButtonHeight">35dp</dimen>
+    <dimen name="googlefbbuttonheight">40dp</dimen>
 
     <dimen name="popup_width">300dp</dimen>
     <dimen name="popup_button_width">275dp</dimen>

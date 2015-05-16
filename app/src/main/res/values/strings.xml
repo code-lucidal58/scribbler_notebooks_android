@@ -4,6 +4,9 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
+
+    <string name="fb_app_id">110309545967406</string>
+
 <!-- TODO: Remove or change this placeholder text -->
     <string name="title_activity_deal_list">DealList</string>
 
@@ -20,9 +23,12 @@
     <string name="title_activity_navigation">Navigation</string>
 
     <string-array name="navigation_drawer_items_array">
+        <item>Scan Scribbler Code</item>
+        <item>Enter Scribbler Code</item>
         <item>My Profile</item>
         <item>All Deals</item>
         <item>Featured Deals</item>
+        <item>Sign Out</item>
     </string-array>
 
     <!-- TODO: Remove or change this placeholder text -->

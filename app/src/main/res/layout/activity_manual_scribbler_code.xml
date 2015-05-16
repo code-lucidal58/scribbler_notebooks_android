@@ -1,86 +1,86 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.scribblernotebooks.scribblernotebooks.Activities.ManualScribblerCode"
-    android:background="@color/darkBlue">
+    android:background="@color/darkBlue"
+    tools:context="com.scribblernotebooks.scribblernotebooks.Activities.ManualScribblerCode">
 
     <ImageView
+        android:id="@+id/logo"
         android:layout_width="@dimen/scanner_button_width"
         android:layout_height="wrap_content"
-        android:id="@+id/logo"
         android:layout_above="@+id/ll"
-        android:layout_marginBottom="50dp"
         android:layout_centerHorizontal="true"
-        android:src="@mipmap/ic_launcher"/>
+        android:layout_marginBottom="50dp"
+        android:src="@mipmap/ic_launcher" />
 
     <LinearLayout
+        android:id="@+id/ll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:gravity="center"
-        android:id="@+id/ll"
         android:orientation="vertical">
 
 
         <EditText
+            android:id="@+id/manualScribblerCodeInput"
             android:layout_width="@dimen/scanner_button_width"
             android:layout_height="40dp"
+            android:layout_gravity="center_horizontal"
             android:background="@drawable/edit_text_default"
-            android:maxLines="1"
-            android:hint="Scribbler Code"
             android:gravity="center"
-            android:id="@+id/manualScribblerCodeInput"
-            android:layout_gravity="center_horizontal"/>
+            android:hint="Scribbler Code"
+            android:maxLines="1" />
 
         <Button
+            android:id="@+id/claimDeal"
             android:layout_width="@dimen/scanner_button_width"
             android:layout_height="40dp"
             android:layout_marginTop="5dp"
-            android:textColor="#FFF"
+            android:background="@drawable/scanner_button"
             android:text="Scribble"
-            android:id="@+id/claimDeal"
-            android:background="@drawable/scanner_button"/>
+            android:textColor="#FFF" />
 
-        </LinearLayout>
+    </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/backToScan"
         android:layout_width="@dimen/back_to_scan_button"
         android:layout_height="40dp"
-        android:orientation="horizontal"
+        android:layout_below="@id/ll"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="50dp"
-        android:padding="3dp"
-        android:paddingRight="5dp"
-        android:paddingEnd="5dp"
         android:background="@drawable/scan_enabled"
-        android:layout_below="@id/ll"
-        android:id="@+id/backToScan">
+        android:orientation="horizontal"
+        android:padding="3dp"
+        android:paddingEnd="5dp"
+        android:paddingRight="5dp">
 
         <ImageView
+            android:id="@+id/imageView"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:src="@drawable/qr_icon_small"
-            android:id="@+id/imageView"
-            />
+            android:src="@drawable/qr_icon_small" />
 
         <TextView
+            android:id="@+id/textView"
             android:layout_width="fill_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:textSize="18sp"
+            android:text="Scan Code"
             android:textColor="#000"
-            android:id="@+id/textView"
-            android:textStyle="bold"
-            android:text="Scan Code"/>
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
-        </LinearLayout>
+    </LinearLayout>
 
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:layout_below="@id/backToScan"
         android:layout_marginTop="10dp"
-        android:layout_alignParentBottom="true"
-        android:src="@drawable/bluehills"/>
+        android:src="@drawable/bluehills" />
 </RelativeLayout>
