@@ -3,12 +3,10 @@ package com.scribblernotebooks.scribblernotebooks.Activities;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -19,24 +17,30 @@ import eu.livotov.zxscan.ScannerView;
 
 public class ScannerActivity extends AppCompatActivity {
 
-//    EditText manualCodeInput;
     ScannerView scanner;
-    InputMethodManager inputMethodManager;
-    long[] vibratePattern={50,50,50};
     Button manual;
-    Vibrator vibrator;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scanner);
 
-        scanner=(ScannerView)findViewById(R.id.scanner);
-        inputMethodManager=(InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
-        vibrator=(Vibrator)getSystemService(VIBRATOR_SERVICE);
-        manual=(Button)findViewById(R.id.swtichToManual);
 
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        /**
+         * View Setup
+         */
+        scanner = (ScannerView) findViewById(R.id.scanner);
+        manual = (Button) findViewById(R.id.swtichToManual);
+
+        /**
+         * When user presses manual button the Navigation Drawer activity is opened and Manual Code Input fragment is loaded.
+         * Scanner stopped as it will slow the interface and consume lot of CPU
+         *
+         * onTouch is used instead of onClick as Scanner slows down user interface and makes recognising click slow
+         */
         manual.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -46,31 +50,32 @@ public class ScannerActivity extends AppCompatActivity {
             }
         });
 
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-        startScan();
+        /**
+         * Start Scanner and set the functions to be executed after events have occured
+         */
+        scanner.startScanner();
         scanner.setScannerViewEventListener(new ScannerView.ScannerViewEventListener() {
             @Override
             public void onScannerReady() {
-
             }
-
 
             @Override
             public void onScannerFailure(int cameraError) {
-
             }
 
             @Override
             public boolean onCodeScanned(String data) {
-                stopScan();
-                Intent i=new Intent(getApplicationContext(),NavigationDrawer.class);
-                try{
+                scanner.stopScanner();
+
+                /**
+                 * Pass value of scanned QR code to the Navigation Drawer activity for the popup to be shown
+                 * Check if QR code data is valid i.e if QR code does not contain the url
+                 */
+                Intent i = new Intent(getApplicationContext(), NavigationDrawer.class);
+                try {
                     i.setData(Uri.parse(data));
-                }
-                catch (Exception e){
-                    Toast.makeText(getApplicationContext(),"Invalid Scribbler QR code",Toast.LENGTH_LONG).show();
+                } catch (Exception e) {
+                    Toast.makeText(getApplicationContext(), "Invalid Scribbler QR code", Toast.LENGTH_LONG).show();
                     finish();
                 }
                 startActivity(i);
@@ -80,42 +85,21 @@ public class ScannerActivity extends AppCompatActivity {
         });
     }
 
-    void stopScan() {
-        scanner.stopScanner();
-    }
-
-    void startScan(){
-        scanner.startScanner();
-    }
-
-    public void switchToManual(View view){
+    public void switchToManual(View view) {
         startActivity(new Intent(this, NavigationDrawer.class));
         finish();
     }
-        
-        
 
-        @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        try {
-            stopScan();
-            vibrator.cancel();
-//            scanner.getCamera().stop();
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
+    /**
+     * When activity paused, stop the scanner to prevent memory leaks
+     */
     @Override
     protected void onPause() {
         super.onPause();
-        scanner.stopScanner();
+        try {
+            scanner.stopScanner();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

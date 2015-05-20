@@ -1,8 +1,7 @@
-package com.scribblernotebooks.scribblernotebooks.Activities;
+package com.scribblernotebooks.scribblernotebooks.Fragments;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -20,6 +19,7 @@ import android.widget.TextView;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
+import com.scribblernotebooks.scribblernotebooks.Activities.ScannerActivity;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.DealPopup;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.R;
@@ -35,19 +35,27 @@ public class ManualScribblerCode extends Fragment {
     String url = "";
     Uri uri;
 
+    int notificationCount = 3;
     private Context mContext;
     private static Context sContext;
-
     private GoogleApiClient mGoogleApiClient;
 
-    public static ManualScribblerCode newInstance(Context context,String url) {
+    /**
+     * Statically initiating the Manual Code input fragment for the navigation drawer
+     *
+     * @param context the context of the activity
+     * @param url     the url from the content of qr code
+     * @return the fragment instance
+     */
+    public static ManualScribblerCode newInstance(Context context, String url) {
         ManualScribblerCode fragment = new ManualScribblerCode();
-        sContext=context;
+        sContext = context;
         Bundle args = new Bundle();
         args.putString(Constants.URL_ARGUMENT, url);
         fragment.setArguments(args);
         return fragment;
     }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,8 +63,13 @@ public class ManualScribblerCode extends Fragment {
 
         mContext = getActivity().getApplicationContext();
 
-        this.mContext=sContext;
+        this.mContext = sContext;
 
+        /**
+         * See if the url is empty
+         * If empty that means started from navigation drawer
+         * else started from scanned code
+         */
         try {
             url = getArguments().getString(Constants.URL_ARGUMENT);
             if (!url.isEmpty() && !url.equals("")) {
@@ -75,23 +88,25 @@ public class ManualScribblerCode extends Fragment {
         mGoogleApiClient.connect();
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        //Inflate view
         View v = inflater.inflate(R.layout.activity_manual_scribbler_code, container, false);
 
-
+        //View Setup
         back = (LinearLayout) v.findViewById(R.id.backToScan);
         textView = (TextView) back.findViewById(R.id.textView);
         image = (ImageView) back.findViewById(R.id.imageView);
         claimDeal = (Button) v.findViewById(R.id.claimDeal);
         code = (EditText) v.findViewById(R.id.manualScribblerCodeInput);
 
-        SharedPreferences sharedPreferences = mContext.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
-        String name = sharedPreferences.getString(Constants.PREF_DATA_NAME, "");
-
-
-
+        //Changing background of button programmatically
         View.OnTouchListener backgroundChange = new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -111,7 +126,6 @@ public class ManualScribblerCode extends Fragment {
                         setDrawable(back, getResources().getDrawable(R.drawable.scan_enabled));
                         break;
                 }
-
                 return true;
             }
         };
@@ -123,15 +137,20 @@ public class ManualScribblerCode extends Fragment {
         claimDeal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //Show popup containing deal details
                 url = code.getText().toString();
                 getDealDetailsAndShow(url);
             }
         });
-
-//
         return v;
     }
 
+    /**
+     * Code for setting background of button taking into account the deprecation of default methods
+     *
+     * @param v        the view whose background is to be changed
+     * @param drawable the background to be setup
+     */
     public void setDrawable(View v, Drawable drawable) {
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN) {
             v.setBackgroundDrawable(drawable);
@@ -140,6 +159,11 @@ public class ManualScribblerCode extends Fragment {
         }
     }
 
+    /**
+     * Show the popup containing the deal details
+     *
+     * @param url the url of the request
+     */
     public void getDealDetailsAndShow(String url) {
         DealPopup dealPopup = new DealPopup(mContext);
         dealPopup.setUrl(url);
@@ -147,6 +171,13 @@ public class ManualScribblerCode extends Fragment {
     }
 
 
+    /**
+     * Under development Method
+     * To decode data from the url query
+     *
+     * @param url url to be decoded
+     * @return the decoded strings
+     */
     String getDealDetails(Uri url) {
         String scheme, host, data, query;
         scheme = url.getScheme();
@@ -164,54 +195,8 @@ public class ManualScribblerCode extends Fragment {
                 "\nQuery: " + query +
                 "\n\nDeal Code: " + dealCode +
                 "\nAdvertisers Code: " + advertisersCode;
-
         return s;
 
     }
-
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.menu_manual_scribbler_code, menu);
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.signOut) {
-//
-//            SharedPreferences prefs = getSharedPreferences(Constants.USER_PREF, MODE_PRIVATE);
-//            SharedPreferences.Editor editor = prefs.edit();
-//            editor.putString(Constants.USER_NAME_PREF, Constants.NO_USER_SAVED);
-//            editor.apply();
-//            try {
-//                try {
-//                    if (mGoogleApiClient.isConnected()) {
-//                        Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
-//                        mGoogleApiClient.disconnect();
-//                        mGoogleApiClient.connect();
-//                    }
-//                }
-//                catch (Exception e){
-//                    LoginManager.getInstance().logOut();
-//                }
-//                Toast.makeText(getBaseContext(), "Successfully Logged out", Toast.LENGTH_LONG).show();
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//            startActivity(new Intent(getBaseContext(), LogIn.class));
-//            finish();
-//            return true;
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
-
 
 }

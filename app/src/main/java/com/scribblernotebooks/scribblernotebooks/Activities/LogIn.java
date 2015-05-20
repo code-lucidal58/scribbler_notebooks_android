@@ -35,40 +35,63 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
 
     EditText name, mobile;
-    Button signIn, signOut;
-    String userName, userMobile;
+    Button signIn;
+    String userName = "", userMobile = "";
     SignInButton signInButton;
     LoginButton loginButton;
     CallbackManager callbackManager;
 
-    private static final int REQUEST_CODE_RESOLVE_ERR = 9000;
     private static final int RC_SIGN_IN = 0;
-    private static final String TAG = "MainActivity";
 
     private boolean mIntentInProgress;
     private boolean mSignInClicked;
     private ConnectionResult mConnectionResult;
 
-    private ProgressDialog mConnectionProgressDialog;
     private GoogleApiClient mGoogleApiClient;
-
 
     SharedPreferences userPrefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        /**
+         * Check if user already logged in...
+         */
+        userPrefs = getSharedPreferences(Constants.PREF_NAME, MODE_PRIVATE);
+        try {
+            String userName = userPrefs.getString(Constants.PREF_DATA_NAME, "");
+            if (!userName.isEmpty()) {
+                startActivity(new Intent(this, NavigationDrawer.class));
+                finish();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        /**
+         * Initialize facebook api before setting content. Else facebook button will create Error
+         */
         FacebookSdk.sdkInitialize(getApplicationContext());
+
+
         setContentView(R.layout.activity_log_in);
 
+
+        /**
+         * Facebook Login initialize
+         * @Link https://developers.facebook.com/docs/facebook-login/android/v2.3
+         */
         callbackManager = CallbackManager.Factory.create();
         loginButton = (LoginButton) findViewById(R.id.login_button);
         loginButton.setReadPermissions("user_friends");
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                // App code
-
+                /**
+                 * Current SDK uses GraphAPI to retrieve data from facebook
+                 */
                 GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
                     @Override
                     public void onCompleted(JSONObject jsonObject, GraphResponse graphResponse) {
@@ -84,15 +107,19 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
 
             @Override
             public void onCancel() {
-                // App code
+                Toast.makeText(getApplicationContext(), "Login Failed... Please try again later", Toast.LENGTH_LONG).show();
             }
 
             @Override
             public void onError(FacebookException exception) {
-                // App code
+                Toast.makeText(getApplicationContext(), "Login Failed... Please try again later", Toast.LENGTH_LONG).show();
             }
         });
 
+
+        /**
+         * Setting UP GoogleAPI Client for sign in through google
+         */
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -100,36 +127,29 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                 .addScope(Plus.SCOPE_PLUS_LOGIN).build();
 
 
-        userPrefs = getSharedPreferences(Constants.PREF_NAME, MODE_PRIVATE);
-        try {
-            String userName = userPrefs.getString(Constants.PREF_DATA_NAME, "");
-            if (!userName.isEmpty()) {
-                startActivity(new Intent(this, NavigationDrawer.class));
-                finish();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        //View Setup
         name = (EditText) findViewById(R.id.name);
         mobile = (EditText) findViewById(R.id.mobileNo);
         signIn = (Button) findViewById(R.id.signUp);
         signInButton = (SignInButton) findViewById(R.id.sign_in_button);
         signInButton.setOnClickListener(this);
+        signInButton.setSize(SignInButton.SIZE_WIDE);
 
+        //ProgressDialog to be shown when sign in process is running
+        ProgressDialog mConnectionProgressDialog;
         mConnectionProgressDialog = new ProgressDialog(this);
         mConnectionProgressDialog.setMessage("Signing in...");
 
-        signInButton.setSize(SignInButton.SIZE_WIDE);
-
-        int width=signInButton.getWidth();
-        int height=signInButton.getHeight();
+        int width = signInButton.getWidth();
+        int height = signInButton.getHeight();
         loginButton.setHeight(height);
         loginButton.setWidth(width);
 
-        userName = "";
-        userMobile = "";
 
+        /**
+         * Manual Sign in. Neither google nor facebook used for login.
+         * Check if any field is empty
+         */
         signIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -146,12 +166,12 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     }
 
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-    }
-
+    /**
+     * Function Executed when user SignIns from Either google or facebook.
+     * @param requestCode code of intent which requested the result
+     * @param responseCode result code saying if result is OK
+     * @param intent the calling intent
+     */
     @Override
     protected void onActivityResult(int requestCode, int responseCode,
                                     Intent intent) {
@@ -173,17 +193,18 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
 
     }
 
+    /**
+     *GoogleAPI callbacks. Called after signin
+     */
     @Override
     public void onConnected(Bundle arg0) {
         mSignInClicked = false;
         getProfileInformation();
     }
-
     @Override
     public void onConnectionSuspended(int i) {
         mGoogleApiClient.connect();
     }
-
     @Override
     public void onConnectionFailed(ConnectionResult result) {
         if (!result.hasResolution()) {
@@ -201,20 +222,19 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         }
     }
 
+
+    /**
+     * Connect Google Client on startup of activity
+     */
     @Override
     protected void onStart() {
         super.onStart();
         mGoogleApiClient.connect();
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
+    /** Handling clicks on buttons  */
     @Override
     public void onClick(View v) {
-
         switch (v.getId()) {
             case R.id.sign_in_button:
                 if (!mGoogleApiClient.isConnecting()) {
@@ -225,6 +245,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         }
     }
 
+    /** Google Provided Method */
     private void resolveSignInError() {
         try {
             if (mConnectionResult.hasResolution()) {
@@ -260,17 +281,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         }
     }
 
-    /**
-     * trial signOut*
-     */
-    public void signOut() {
-        if (mGoogleApiClient.isConnected()) {
-            Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
-            mGoogleApiClient.disconnect();
-            mGoogleApiClient.connect();
-        }
-    }
-
+    /** Saving User Details to check next time if already logged in */
     private void saveUserDetails(String name) {
         SharedPreferences.Editor editor = userPrefs.edit();
         editor.putString(Constants.PREF_DATA_NAME, name);

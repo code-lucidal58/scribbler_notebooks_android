@@ -2,18 +2,19 @@ package com.scribblernotebooks.scribblernotebooks.Fragments;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.scribblernotebooks.scribblernotebooks.Adapters.RecyclerCustomAdapter;
+import com.scribblernotebooks.scribblernotebooks.HelperClasses.Deal;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.ParseJson;
-import com.scribblernotebooks.scribblernotebooks.Activities.RecyclerCustomAdapter;
 import com.scribblernotebooks.scribblernotebooks.R;
 
 import org.apache.http.client.HttpClient;
@@ -24,24 +25,12 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
-
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link DealsFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class DealsFragment extends android.support.v4.app.Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "url";
 
     RecyclerView recyclerView;
-    ArrayList<HashMap<String, String>> dealsList = new ArrayList<HashMap<String, String>>();
+    ArrayList<Deal> dealsList = new ArrayList<>();
     RecyclerCustomAdapter adapter;
     Context context;
 
@@ -52,12 +41,10 @@ public class DealsFragment extends android.support.v4.app.Fragment {
     private OnFragmentInteractionListener mListener;
 
     /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-
-     * @return A new instance of fragment DealsFragment.
+     * Setting statically the new fragment
+     * @param url the url to be sent to server for getting deals
+     * @return the Deal list fragment
      */
-    // TODO: Rename and change types and number of parameters
     public static DealsFragment newInstance(String url) {
         DealsFragment fragment = new DealsFragment();
         Bundle args = new Bundle();
@@ -66,6 +53,7 @@ public class DealsFragment extends android.support.v4.app.Fragment {
         return fragment;
     }
 
+    /** Auto Generated */
     public DealsFragment() {
         // Required empty public constructor
     }
@@ -81,30 +69,49 @@ public class DealsFragment extends android.support.v4.app.Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View v= inflater.inflate(R.layout.fragment_deals, container, false);
-        context=getActivity().getBaseContext();
+        //Inflating Views
+        View v = inflater.inflate(R.layout.fragment_deals, container, false);
 
-        recyclerView=(RecyclerView)v.findViewById(R.id.recyclerView);
+        context = getActivity().getBaseContext();
 
+        recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
+
+        //Get response from server
         new LongOperation().execute(url);
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        //recyclerView setup
+        recyclerView.setLayoutManager(new GridLayoutManager(context, getResources().getInteger(R.integer.dealListColoumnCount)));
+
         return v;
     }
 
-    public class LongOperation extends AsyncTask<String,Void,String> {
+
+    /**
+     * To change to number of columns in the deal list. 1 when portrait and 2 when landscape
+     * @param newConfig android config
+     */
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        recyclerView.setLayoutManager(new GridLayoutManager(context, getResources().getInteger(R.integer.dealListColoumnCount)));
+}
+
+
+
+    /**
+     * Async task to get the data from the server and process it
+     */
+    public class LongOperation extends AsyncTask<String, Void, String> {
 
         @Override
         protected String doInBackground(String... urls) {
-            String response="";
-            try{
-                HttpClient client=new DefaultHttpClient();
-                HttpGet httpGet=new HttpGet(urls[0]);
-                ResponseHandler<String> responseHandler=new BasicResponseHandler();
-                response=client.execute(httpGet,responseHandler);
-            } catch (IOException e)
-            {
+            String response = "";
+            try {
+                HttpClient client = new DefaultHttpClient();
+                HttpGet httpGet = new HttpGet(urls[0]);
+                ResponseHandler<String> responseHandler = new BasicResponseHandler();
+                response = client.execute(httpGet, responseHandler);
+            } catch (IOException e) {
                 e.printStackTrace();
             }
             return response;
@@ -113,11 +120,20 @@ public class DealsFragment extends android.support.v4.app.Fragment {
         @Override
         protected void onPostExecute(String s) {
             dealsList.clear();
-            dealsList= ParseJson.getParsedData(s);
-            adapter=new RecyclerCustomAdapter(dealsList,context);
+            dealsList = ParseJson.getParsedData(s);
+            adapter = new RecyclerCustomAdapter(dealsList, context);
             recyclerView.setAdapter(adapter);
         }
     }
+
+
+
+
+    /**
+     * Auto-generated methods
+     * @param uri
+     */
+
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
@@ -143,16 +159,6 @@ public class DealsFragment extends android.support.v4.app.Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);

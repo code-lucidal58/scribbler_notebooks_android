@@ -13,6 +13,7 @@ import com.scribblernotebooks.scribblernotebooks.R;
 
 /**
  * Created by Jibin_ism on 12-May-15.
+ * This is the popup which is shown when the user enters the the scribbler code or scans the code
  */
 public class DealPopup extends Dialog implements View.OnClickListener {
 
@@ -21,6 +22,9 @@ public class DealPopup extends Dialog implements View.OnClickListener {
     private String url;
     Context context;
 
+    /**
+     * Default Constructors
+     */
     public DealPopup(Context context) {
         super(context);
         this.context=context;
@@ -36,19 +40,32 @@ public class DealPopup extends Dialog implements View.OnClickListener {
         this.context=context;
     }
 
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //Removing title bar
         requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        //Setting View
         setContentView(R.layout.deal_popup);
+
+        //View Setup
         title=(TextView)findViewById(R.id.title);
         codeButton=(Button)findViewById(R.id.codeButton);
-        codeButton.setOnClickListener(this);
         description=(TextView)findViewById(R.id.description);
+
+        codeButton.setOnClickListener(this);
         description.setText(url+"\n\nClick here to get your scribble code which enables you to claim this deal at the retailer");
 
     }
 
+    /**
+     * Setting URL for request
+     * @param url
+     */
     public void setUrl(String url){
         this.url=url;
     }
@@ -65,6 +82,10 @@ public class DealPopup extends Dialog implements View.OnClickListener {
         }
     }
 
+    /**
+     * Code for getting the scribbler code from the server
+     * @param url the url to which request is to be sent
+     */
     public void getCodeAndDisplay(String url){
         Toast.makeText(context,"Deal Claimed",Toast.LENGTH_LONG).show();
     }
