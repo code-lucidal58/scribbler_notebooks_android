@@ -16,6 +16,7 @@ import com.scribblernotebooks.scribblernotebooks.CustomViews.NotificationDrawer;
 import com.scribblernotebooks.scribblernotebooks.Fragments.DealsFragment;
 import com.scribblernotebooks.scribblernotebooks.Fragments.ManualScribblerCode;
 import com.scribblernotebooks.scribblernotebooks.Fragments.ProfileFragment;
+import com.scribblernotebooks.scribblernotebooks.HelperClasses.SearchQuery;
 import com.scribblernotebooks.scribblernotebooks.R;
 
 import java.util.Timer;
@@ -23,7 +24,7 @@ import java.util.TimerTask;
 
 
 public class NavigationDrawer extends AppCompatActivity implements ProfileFragment.OnFragmentInteractionListener,
-        DealsFragment.OnFragmentInteractionListener,ManualScribblerCode.OnFragmentInteractionListener {
+        DealsFragment.OnFragmentInteractionListener,ManualScribblerCode.OnFragmentInteractionListener, SearchQuery.OnFragmentInteractionListener {
 
     public DrawerLayout mDrawerLayout;
     public static GoogleApiClient mGoogleApiClient;

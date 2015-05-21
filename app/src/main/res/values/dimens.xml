@@ -45,6 +45,8 @@
 
 
     <dimen name="searchBarTextSize">13sp</dimen>
+    <dimen name="searchBarEditTextFontSize">15sp</dimen>
     <dimen name="searchBarIconSize">35dp</dimen>
+
 
 </resources>

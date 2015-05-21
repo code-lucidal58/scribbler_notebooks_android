@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.scribblernotebooks.scribblernotebooks.R;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -65,22 +67,21 @@ public class SearchQuery extends android.support.v4.app.Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-//        final View view= inflater.inflate(R.layout.fragment_search_query, container, false);
-//        //Initializing with ids
-//        cancel=(ImageView)view.findViewById(R.id.cancel);
-//        query=(EditText)view.findViewById(R.id.query);
-//
-//        /**
-//         * OnClickListener to cancel the query entry
-//         */
-//        cancel.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                getFragmentManager().findFragmentById(R.layout.)
-//
-//            }
-//        });
-        return null;
+        final View view= inflater.inflate(R.layout.fragment_search_query, container, false);
+        //Initializing with ids
+        cancel=(ImageView)view.findViewById(R.id.cancel);
+        query=(EditText)view.findViewById(R.id.query);
+
+        /**
+         * OnClickListener to cancel the query entry
+         */
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().getSupportFragmentManager().popBackStack();
+            }
+        });
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -121,5 +122,6 @@ public class SearchQuery extends android.support.v4.app.Fragment {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
     }
+
 
 }

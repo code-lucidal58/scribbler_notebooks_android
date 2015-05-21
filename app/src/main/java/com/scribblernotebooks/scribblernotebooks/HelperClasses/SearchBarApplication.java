@@ -30,6 +30,7 @@ public class SearchBarApplication implements SearchQuery.OnFragmentInteractionLi
     public SearchBarApplication() {
         super();
     }
+
     public SearchBarApplication(View v,ViewGroup container,Context c,FragmentManager f) {
         view=v;
         viewGroup=container;
@@ -75,10 +76,10 @@ public class SearchBarApplication implements SearchQuery.OnFragmentInteractionLi
 
     public void InflateFragment(){
         Fragment fragment=new SearchQuery();
-        fragmentTransaction=fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.deals_frame, fragment);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
+            fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.content_frame, fragment);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
     }
 
     @Override

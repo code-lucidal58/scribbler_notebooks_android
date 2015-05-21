@@ -1,0 +1,80 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ff3e8791"
+    tools:context="com.scribblernotebooks.scribblernotebooks.SearchQuery">
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/search"
+        android:background="#ff3e8791"
+        android:padding="0dp"
+        android:orientation="horizontal"
+        android:weightSum="5"
+        android:id="@+id/during_searchbar">
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:layout_weight="1">
+
+            <com.scribblernotebooks.scribblernotebooks.CustomViews.RoundedImageView
+                android:layout_width="@dimen/searchBarIconSize"
+                android:layout_height="@dimen/searchBarIconSize"
+                android:src="@drawable/like"
+                android:layout_centerHorizontal="true"
+                android:id="@+id/option"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:minWidth="40dp"
+                android:gravity="center_horizontal"
+                android:layout_height="wrap_content"
+                android:text="Category"
+                android:textColor="#FFF"
+                android:textSize="@dimen/searchBarTextSize"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/option"/>
+
+        </RelativeLayout>
+
+        <EditText
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:layout_weight="3"
+            android:gravity="center_vertical"
+            android:layout_gravity="center"
+            android:enabled="true"
+            android:clickable="true"
+            android:textColor="@color/loginEditText2TextColor"
+            android:textColorHint="@color/loginEditTextHintColor"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:hint="Search Category"
+            android:paddingLeft="15dp"
+            android:textSize="@dimen/searchBarEditTextFontSize"
+            android:background="@drawable/edit_text2"
+            android:inputType="textAutoComplete"
+            android:id="@+id/query"/>
+
+        <ImageView
+            android:layout_width="0dp"
+            android:padding="10dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_action_remove"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:id="@+id/cancel"/>
+
+    </LinearLayout>
+
+    <!--<android.support.v7.widget.RecyclerView-->
+        <!--android:id="@+id/recyclerView"                      -->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:clipToPadding="false" />-->
+
+
+</FrameLayout>
