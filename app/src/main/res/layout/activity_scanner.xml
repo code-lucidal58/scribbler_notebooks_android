@@ -1,46 +1,57 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Activities.ScannerActivity">
 
 
-
     <eu.livotov.zxscan.ScannerView
+        android:id="@+id/scanner"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/scanner" />
+        android:layout_height="match_parent" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/scanner_frame"/>
+        android:background="@drawable/scanner_frame" />
 
 
-    <Button
-        android:layout_width="@dimen/scanner_button_width"
+    <LinearLayout
+        android:layout_width="wrap_content"
         android:layout_height="40dp"
-        android:id="@+id/swtichToManual"
-        android:text="Enter Scribbler Code"
-        android:background="@drawable/scanner_button"
+        android:layout_gravity="center_horizontal|bottom"
         android:layout_marginBottom="40dp"
-        android:layout_gravity="center_horizontal|bottom"/>
+        android:orientation="horizontal">
 
-    <!--<Button-->
-        <!--android:layout_width="@dimen/scanner_button_width"-->
-        <!--android:layout_height="40dp"-->
-        <!--android:id="@+id/swtichToManual"-->
-        <!--android:text="Enter Scribbler Code"-->
-        <!--android:background="@drawable/scanner_button"-->
-        <!--android:layout_marginBottom="40dp"-->
-        <!--android:layout_gravity="center_horizontal|bottom"/>-->
+        <Button
+            android:id="@+id/back"
+            android:layout_width="@dimen/scanner_back_button"
+            android:layout_height="40dp"
+            android:layout_gravity="center_horizontal|bottom"
+            android:background="@drawable/edit_text2"
+            android:text="Back" />
+
+
+        <Button
+            android:id="@+id/swtichToManual"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/scanner_button"
+            android:minWidth="@dimen/scannerToManual_button_width"
+            android:text="Enter Scribbler Code" />
+
+
+    </LinearLayout>
 
 
     <ImageView
+        android:id="@+id/logo"
         android:layout_width="match_parent"
         android:layout_height="90dp"
-        android:layout_marginTop="4dp"
         android:layout_marginLeft="4dp"
-        android:id="@+id/logo"
-        android:src="@drawable/scribbler_head"/>
+        android:layout_marginTop="4dp"
+        android:src="@drawable/scribbler_head" />
 
 </FrameLayout>

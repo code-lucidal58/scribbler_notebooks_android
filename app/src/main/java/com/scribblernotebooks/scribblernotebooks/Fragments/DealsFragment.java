@@ -1,20 +1,33 @@
 package com.scribblernotebooks.scribblernotebooks.Fragments;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.content.res.TypedArray;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
+import com.scribblernotebooks.scribblernotebooks.Adapters.HidingScrollListener;
 import com.scribblernotebooks.scribblernotebooks.Adapters.RecyclerCustomAdapter;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Deal;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.ParseJson;
+import com.scribblernotebooks.scribblernotebooks.HelperClasses.SearchBarApplication;
 import com.scribblernotebooks.scribblernotebooks.R;
 
 import org.apache.http.client.HttpClient;
@@ -29,29 +42,44 @@ import java.util.ArrayList;
 public class DealsFragment extends android.support.v4.app.Fragment {
     private static final String ARG_PARAM1 = "url";
 
+
+    private static final String URL = "url";
+    private static final String TITLE= "title";
+
     RecyclerView recyclerView;
     ArrayList<Deal> dealsList = new ArrayList<>();
     RecyclerCustomAdapter adapter;
     Context context;
+    ProgressDialog progressDialog;
+    Toolbar appbar;
+    View searchbar;
+    LinearLayout toolbarContainer;
+    int mToolbarHeight;
+    ImageView nav;
+    DrawerLayout mDrawerLayout;
+    RelativeLayout mDrawer;
 
     // TODO: Rename and change types of parameters
 
-    private String url;
+    private String url,title;
 
     private OnFragmentInteractionListener mListener;
+
 
     /**
      * Setting statically the new fragment
      * @param url the url to be sent to server for getting deals
      * @return the Deal list fragment
      */
-    public static DealsFragment newInstance(String url) {
+    public static DealsFragment newInstance(String url,String title) {
         DealsFragment fragment = new DealsFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, url);
+        args.putString(URL, url);
+        args.putString(TITLE, title);
         fragment.setArguments(args);
         return fragment;
     }
+
 
     /** Auto Generated */
     public DealsFragment() {
@@ -62,7 +90,8 @@ public class DealsFragment extends android.support.v4.app.Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            url = getArguments().getString(ARG_PARAM1);
+            url = getArguments().getString(URL);
+            title= getArguments().getString(TITLE);
         }
     }
 
@@ -72,10 +101,75 @@ public class DealsFragment extends android.support.v4.app.Fragment {
         //Inflating Views
         View v = inflater.inflate(R.layout.fragment_deals, container, false);
 
-        context = getActivity().getBaseContext();
+        context = getActivity();
 
+        progressDialog=new ProgressDialog(context);
+        progressDialog.setMessage("Loading Deals...");
+        progressDialog.setCancelable(false);
+
+
+        //Setting toolbars
+        toolbarContainer=(LinearLayout)v.findViewById(R.id.toolbar_container);
+        appbar=(Toolbar)v.findViewById(R.id.app_bar);
+        searchbar=v.findViewById(R.id.search_bar);
+        SearchBarApplication searchBarApplication=new SearchBarApplication(searchbar,container,context,getFragmentManager());
+        searchBarApplication.ImplementFunctions();
+        nav=(ImageView)appbar.findViewById(R.id.nav);
+
+
+        mDrawerLayout = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
+        mDrawer = (RelativeLayout) getActivity().findViewById(R.id.left_drawer_relative);
+
+        /**
+         * Drawer Indicator
+         */
+        ActionBarDrawerToggle actionBarDrawerToggle=new ActionBarDrawerToggle(getActivity(),mDrawerLayout,appbar,R.string.open,R.string.close){
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+            }
+        };
+        actionBarDrawerToggle.setDrawerIndicatorEnabled(true);
+        mDrawerLayout.setDrawerListener(actionBarDrawerToggle);
+
+        nav.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDrawerLayout.openDrawer(mDrawer);
+
+            }
+        });
+        ((AppCompatActivity)getActivity()).setSupportActionBar(appbar);
+        getActivity().setTitle(title);
+        mToolbarHeight = getToolbarHeight(getActivity());
+
+        //Setting Deals List
+        int paddingTop = getToolbarHeight(context) + getTabsHeight(context);
         recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
+        recyclerView.setPadding(recyclerView.getPaddingLeft(), paddingTop, recyclerView.getPaddingRight(), recyclerView.getPaddingBottom());
+        recyclerView.setOnScrollListener(new HidingScrollListener(context) {
 
+            @Override
+            public void onMoved(int distance) {
+                toolbarContainer.setTranslationY(-distance);
+            }
+
+            @Override
+            public void onShow() {
+                toolbarContainer.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).start();
+            }
+
+            @Override
+            public void onHide() {
+                toolbarContainer.animate().translationY(-mToolbarHeight).setInterpolator(new AccelerateInterpolator(2)).start();
+            }
+
+        });
         //Get response from server
         new LongOperation().execute(url);
 
@@ -84,6 +178,25 @@ public class DealsFragment extends android.support.v4.app.Fragment {
 
         return v;
     }
+
+    /**
+     * Returning toolbar height for implementing animation
+     * @param context activity context
+     * @return toolbarheight
+     */
+    public static int getToolbarHeight(Context context) {
+        final TypedArray styledAttributes = context.getTheme().obtainStyledAttributes(
+                new int[]{R.attr.actionBarSize});
+        int toolbarHeight = (int) styledAttributes.getDimension(0, 0);
+        styledAttributes.recycle();
+        return toolbarHeight;
+    }
+
+    public static int getTabsHeight(Context context) {
+        return (int) context.getResources().getDimension(R.dimen.search);
+    }
+
+
 
 
     /**
@@ -133,8 +246,6 @@ public class DealsFragment extends android.support.v4.app.Fragment {
      * Auto-generated methods
      * @param uri
      */
-
-
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {

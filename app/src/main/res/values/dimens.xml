@@ -8,13 +8,16 @@
     <dimen name="details_cardViewElevation">3dp</dimen>
     <dimen name="details_cardCorner">3dp</dimen>
 
-
     <dimen name="scanner_button_width">275dp</dimen>
+    <dimen name="scannerToManual_button_width">165dp</dimen>
+    <dimen name="scanner_back_button">100dp</dimen>
     <dimen name="scanner_button_half">135dp</dimen>
     <dimen name="back_to_scan_button">150dp</dimen>
+    <dimen name="login_editText_width">225dp</dimen>
+    <dimen name="loginEditTextFontSize">16sp</dimen>
 
-    <dimen name="commonViewHeight">50dp</dimen>
-    <dimen name="loginEditTextHeight">40dp</dimen>
+    <dimen name="commonViewHeight">35dp</dimen>
+    <dimen name="loginEditTextHeight">35dp</dimen>
     <dimen name="loginButtonHeight">35dp</dimen>
     <dimen name="googlefbbuttonheight">40dp</dimen>
 
@@ -27,5 +30,21 @@
     <!-- Per the design guidelines, navigation drawers should be between 240dp and 320dp:
          https://developer.android.com/design/patterns/navigation-drawer.html -->
     <dimen name="navigation_drawer_width">240dp</dimen>
+
+    <dimen name="navigation_drawer_font_size">18sp</dimen>
+    <dimen name="navigation_drawer_item_height">48dp</dimen>
+    <dimen name="search">60dp</dimen>
+
+
+
+    <dimen name="manualCodeSunSize">60dp</dimen>
+    <dimen name="manualCodeCloud1W">70dp</dimen>
+    <dimen name="manualCodeCloud1H">50dp</dimen>
+    <dimen name="manualCodeCloud2W">50dp</dimen>
+    <dimen name="manualCodeCloud2H">30dp</dimen>
+
+
+    <dimen name="searchBarTextSize">13sp</dimen>
+    <dimen name="searchBarIconSize">35dp</dimen>
 
 </resources>

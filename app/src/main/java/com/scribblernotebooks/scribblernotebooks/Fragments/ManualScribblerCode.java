@@ -1,5 +1,6 @@
 package com.scribblernotebooks.scribblernotebooks.Fragments;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -7,6 +8,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -34,11 +36,19 @@ public class ManualScribblerCode extends Fragment {
     EditText code;
     String url = "";
     Uri uri;
+    LinearLayout ll;
+    int screenWidth;
+    int screenHeight;
+
+
+    ImageView sun, cloud1, cloud2;
 
     int notificationCount = 3;
     private Context mContext;
     private static Context sContext;
     private GoogleApiClient mGoogleApiClient;
+
+    private OnFragmentInteractionListener mListener;
 
     /**
      * Statically initiating the Manual Code input fragment for the navigation drawer
@@ -87,7 +97,6 @@ public class ManualScribblerCode extends Fragment {
                 .build();
         mGoogleApiClient.connect();
     }
-
     @Override
     public void onPause() {
         super.onPause();
@@ -97,7 +106,7 @@ public class ManualScribblerCode extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //Inflate view
-        View v = inflater.inflate(R.layout.activity_manual_scribbler_code, container, false);
+        View v = inflater.inflate(R.layout.fragment_manual_scribbler_code, container, false);
 
         //View Setup
         back = (LinearLayout) v.findViewById(R.id.backToScan);
@@ -105,8 +114,24 @@ public class ManualScribblerCode extends Fragment {
         image = (ImageView) back.findViewById(R.id.imageView);
         claimDeal = (Button) v.findViewById(R.id.claimDeal);
         code = (EditText) v.findViewById(R.id.manualScribblerCodeInput);
+        ll = (LinearLayout) v.findViewById(R.id.ll);
 
-        //Changing background of button programmatically
+        sun = (ImageView) v.findViewById(R.id.sun);
+        cloud1 = (ImageView) v.findViewById(R.id.cloud1);
+        cloud2 = (ImageView) v.findViewById(R.id.cloud2);
+
+        /**
+         * Setting Cloud motion animation
+         */
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        screenWidth = displayMetrics.widthPixels;
+        screenHeight = displayMetrics.heightPixels;
+        Constants.setMovingAnimation(cloud1, Constants.getRandomInt(5000, 15000), screenWidth, (float) (Math.random() * (screenHeight / 2)) + 20, true, screenHeight);
+        Constants.setMovingAnimation(cloud2, Constants.getRandomInt(7000, 20000), screenWidth, (float) (Math.random() * (screenHeight / 2)) + 20, true, screenHeight);
+
+
+        /**Changing background of scan button programatically*/
         View.OnTouchListener backgroundChange = new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -139,7 +164,9 @@ public class ManualScribblerCode extends Fragment {
             public void onClick(View v) {
                 //Show popup containing deal details
                 url = code.getText().toString();
-                getDealDetailsAndShow(url);
+                if (!url.isEmpty()) {
+                    getDealDetailsAndShow(url);
+                }
             }
         });
         return v;
@@ -199,4 +226,36 @@ public class ManualScribblerCode extends Fragment {
 
     }
 
+
+    /**
+     * Auto-generated methods
+     */
+    // TODO: Rename method, update argument and hook method into UI event
+    public void onButtonPressed(Uri uri) {
+        if (mListener != null) {
+            mListener.onFragmentInteraction(uri);
+        }
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mListener = (OnFragmentInteractionListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    public interface OnFragmentInteractionListener {
+        // TODO: Update argument type and name
+        public void onFragmentInteraction(Uri uri);
+    }
 }

@@ -1,5 +1,6 @@
 package com.scribblernotebooks.scribblernotebooks.Activities;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -22,7 +23,7 @@ import java.util.TimerTask;
 
 
 public class NavigationDrawer extends AppCompatActivity implements ProfileFragment.OnFragmentInteractionListener,
-        DealsFragment.OnFragmentInteractionListener {
+        DealsFragment.OnFragmentInteractionListener,ManualScribblerCode.OnFragmentInteractionListener {
 
     public DrawerLayout mDrawerLayout;
     public static GoogleApiClient mGoogleApiClient;
@@ -30,11 +31,14 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
     View decorView;
     String url = "";
     Fragment fragment;
+    static Context sContext;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        sContext=getApplicationContext();
 
         /** Save the whole view in a variable to pass into different modules of the app */
         mainView = View.inflate(getApplicationContext(), R.layout.activity_navigation_drawer, null);
@@ -122,13 +126,18 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
         }
     }
 
-
+    /**
+     * Setup Notification Drawer. Defined in another class
+     */
     void setupNotificationDrawer() {
         new NotificationDrawer(mainView, this);
     }
 
-
+    /**
+     * Setup Navigation Drawer. Defined in another class
+     */
     void setupNavigationDrawer() {
         new LeftNavigationDrawer(this, mainView, this);
     }
+
 }

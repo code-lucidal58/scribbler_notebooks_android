@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/search"
+    android:background="#ff3e8791"
+    android:padding="0dp"
+    android:id="@+id/searchbar"
+    android:orientation="horizontal"
+    android:weightSum="4">
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:layout_weight="1">
+
+        <com.scribblernotebooks.scribblernotebooks.CustomViews.RoundedImageView
+            android:layout_width="@dimen/searchBarIconSize"
+            android:layout_height="@dimen/searchBarIconSize"
+            android:src="@drawable/like"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/category"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:gravity="center_horizontal"
+            android:layout_height="wrap_content"
+            android:text="Category"
+            android:textColor="#fff"
+            android:textSize="@dimen/searchBarTextSize"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/category"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:layout_weight="1">
+
+        <com.scribblernotebooks.scribblernotebooks.CustomViews.RoundedImageView
+            android:layout_width="@dimen/searchBarIconSize"
+            android:layout_height="@dimen/searchBarIconSize"
+            android:src="@drawable/like"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/scan"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:textSize="@dimen/searchBarTextSize"
+            android:gravity="center_horizontal"
+            android:layout_height="wrap_content"
+            android:text="Scan"
+            android:textColor="#fff"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/scan"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:layout_weight="1">
+
+        <com.scribblernotebooks.scribblernotebooks.CustomViews.RoundedImageView
+            android:layout_width="@dimen/searchBarIconSize"
+            android:layout_height="@dimen/searchBarIconSize"
+            android:src="@drawable/like"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/search"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:gravity="center_horizontal"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/searchBarTextSize"
+            android:text="Search"
+            android:textColor="#fff"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/search"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:layout_weight="1">
+
+        <com.scribblernotebooks.scribblernotebooks.CustomViews.RoundedImageView
+            android:layout_width="@dimen/searchBarIconSize"
+            android:layout_height="@dimen/searchBarIconSize"
+            android:src="@drawable/like"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/sort"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:gravity="center_horizontal"
+            android:layout_height="wrap_content"
+            android:text="Sort"
+            android:textColor="#fff"
+            android:textSize="@dimen/searchBarTextSize"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/sort"/>
+
+    </RelativeLayout>
+
+
+</LinearLayout>

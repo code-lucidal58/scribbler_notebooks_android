@@ -5,34 +5,42 @@
     android:background="@color/darkBlue"
     tools:context="com.scribblernotebooks.scribblernotebooks.Fragments.ManualScribblerCode">
 
-    <!--<com.scribblernotebooks.scribblernotebooks.CustomViews.CircleNotificationIndicator-->
-        <!--android:layout_width="50dp"-->
-        <!--android:layout_height="50dp"-->
-        <!--android:layout_marginRight="10dp"-->
-        <!--android:layout_marginEnd="10dp"-->
-        <!--android:layout_marginTop="10dp"-->
-        <!--android:id="@+id/notificationIndicator"-->
-        <!--android:layout_alignParentTop="true"-->
-        <!--android:layout_alignParentEnd="true"-->
-        <!--android:layout_alignParentRight="true"/>-->
 
-   <RelativeLayout
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginTop="10dp"
-        android:id="@+id/notificationIndicator"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"/>
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_alignParentBottom="true"
+        android:src="@drawable/bluehills" />
+
+    <ImageView
+        android:layout_width="@dimen/manualCodeCloud1W"
+        android:layout_height="@dimen/manualCodeCloud1H"
+        android:layout_marginTop="70dp"
+        android:id="@+id/cloud1"
+        android:src="@drawable/clouds"/>
+
+    <ImageView
+        android:layout_width="@dimen/manualCodeSunSize"
+        android:layout_height="@dimen/manualCodeSunSize"
+        android:id="@+id/sun"
+        android:padding="0dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_alignBottom="@+id/logo"
+        android:src="@drawable/sun"/>
+
+    <ImageView
+        android:layout_width="@dimen/manualCodeCloud2W"
+        android:layout_height="@dimen/manualCodeCloud2H"
+        android:id="@+id/cloud2"
+        android:src="@drawable/clouds"/>
 
 
 
 
     <ImageView
         android:id="@+id/logo"
-        android:layout_width="@dimen/scanner_button_width"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_above="@+id/ll"
         android:layout_centerHorizontal="true"
@@ -47,16 +55,19 @@
         android:gravity="center"
         android:orientation="vertical">
 
-
         <EditText
             android:id="@+id/manualScribblerCodeInput"
             android:layout_width="@dimen/scanner_button_width"
             android:layout_height="40dp"
             android:layout_gravity="center_horizontal"
-            android:background="@drawable/edit_text_default"
+            android:background="@drawable/edit_text2_default"
             android:gravity="center"
+            android:textColor="@color/loginEditText2TextColor"
             android:hint="Scribbler Code"
-            android:maxLines="1" />
+            android:maxLines="1"
+            android:enabled="true"
+            android:focusable="true"
+            android:focusableInTouchMode="true" />
 
         <Button
             android:id="@+id/claimDeal"
@@ -101,12 +112,4 @@
 
     </LinearLayout>
 
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_below="@id/backToScan"
-        android:layout_marginTop="10dp"
-        android:src="@drawable/bluehills" />
 </RelativeLayout>

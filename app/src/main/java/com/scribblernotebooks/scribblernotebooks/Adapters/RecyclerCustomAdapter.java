@@ -11,8 +11,13 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Deal;
-import com.scribblernotebooks.scribblernotebooks.HelperClasses.ImageLoader;
 import com.scribblernotebooks.scribblernotebooks.R;
 
 import java.util.ArrayList;
@@ -23,13 +28,26 @@ import java.util.ArrayList;
 public class RecyclerCustomAdapter extends RecyclerView.Adapter<RecyclerCustomAdapter.ViewHolder> {
 
     ArrayList<Deal> dealsList;
-    public ImageLoader imageLoader;
     Context context;
+    public DisplayImageOptions displayImageOptions;
+    public ImageLoadingListener imageLoadingListener;
+    public ImageLoaderConfiguration imageLoaderConfiguration;
 
     public RecyclerCustomAdapter(ArrayList<Deal> dealsList, Context context) {
         this.dealsList = dealsList;
         this.context = context;
-        imageLoader = new ImageLoader(context);
+
+        imageLoaderConfiguration=new ImageLoaderConfiguration.Builder(this.context).build();
+        ImageLoader.getInstance().init(imageLoaderConfiguration);
+        imageLoadingListener=new SimpleImageLoadingListener();
+        displayImageOptions=new DisplayImageOptions.Builder()
+                .showImageOnLoading(R.mipmap.ic_launcher)
+                .showImageForEmptyUri(R.mipmap.ic_launcher)
+                .showImageOnFail(R.mipmap.ic_launcher)
+                .cacheOnDisk(true)
+                .cacheInMemory(true)
+                .considerExifParams(true)
+                .displayer(new RoundedBitmapDisplayer(20)).build();
     }
 
     /**
@@ -43,7 +61,6 @@ public class RecyclerCustomAdapter extends RecyclerView.Adapter<RecyclerCustomAd
         public ImageView imgViewIcon;
         public CheckBox favoriteIcon;
         public ImageButton shareButton;
-        public Deal deal;
 
         public ViewHolder(View itemLayoutView) {
             super(itemLayoutView);
@@ -66,13 +83,13 @@ public class RecyclerCustomAdapter extends RecyclerView.Adapter<RecyclerCustomAd
                     .inflate(R.layout.deals, viewGroup, false);
 
             // create ViewHolder
+
             return new ViewHolder(itemLayoutView);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
         final Deal deal=dealsList.get(position);
-
 
         /** Retrieving deal info  */
         String id=deal.getId();
@@ -85,9 +102,9 @@ public class RecyclerCustomAdapter extends RecyclerView.Adapter<RecyclerCustomAd
         viewHolder.txtViewTitle.setText(title);
         viewHolder.txtViewCategory.setText(category);
         viewHolder.txtViewDealDetails.setText(details);
-        imageLoader.DisplayImage(deal.getImageUrl(), R.mipmap.ic_launcher, viewHolder.imgViewIcon);
         viewHolder.favoriteIcon.setChecked(isfavorited);
 
+        ImageLoader.getInstance().displayImage(deal.getImageUrl(),viewHolder.imgViewIcon,displayImageOptions,imageLoadingListener);
 
         /** Saving favorite option to the deal **/
         viewHolder.favoriteIcon.setOnClickListener(new View.OnClickListener() {
@@ -108,8 +125,10 @@ public class RecyclerCustomAdapter extends RecyclerView.Adapter<RecyclerCustomAd
                 sharingIntent.setType("text/plain");
                 sharingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "Scribbler Deal");
-                sharingIntent.putExtra(Intent.EXTRA_TEXT,"Hi there, I just checkout this Scribbler Deal ");
-                context.startActivity(Intent.createChooser(sharingIntent,"Share Via"));
+                sharingIntent.putExtra(Intent.EXTRA_TEXT,"Hi there, Just checkout this Scribbler Deal ");
+                Intent starter=Intent.createChooser(sharingIntent,"Share Via");
+                starter.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.getApplicationContext().startActivity(starter);
             }
         });
 

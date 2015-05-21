@@ -18,7 +18,7 @@ import eu.livotov.zxscan.ScannerView;
 public class ScannerActivity extends AppCompatActivity {
 
     ScannerView scanner;
-    Button manual;
+    Button manual,back;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +34,8 @@ public class ScannerActivity extends AppCompatActivity {
          */
         scanner = (ScannerView) findViewById(R.id.scanner);
         manual = (Button) findViewById(R.id.swtichToManual);
+        back=(Button)findViewById(R.id.back);
+
 
         /**
          * When user presses manual button the Navigation Drawer activity is opened and Manual Code Input fragment is loaded.
@@ -79,6 +81,14 @@ public class ScannerActivity extends AppCompatActivity {
                     finish();
                 }
                 startActivity(i);
+                finish();
+                return false;
+            }
+        });
+
+        back.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
                 finish();
                 return false;
             }

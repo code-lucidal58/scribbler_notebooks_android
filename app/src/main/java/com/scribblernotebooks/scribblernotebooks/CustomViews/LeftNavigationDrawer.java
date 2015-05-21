@@ -14,15 +14,20 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.scribblernotebooks.scribblernotebooks.Activities.LogIn;
-import com.scribblernotebooks.scribblernotebooks.Fragments.ManualScribblerCode;
 import com.scribblernotebooks.scribblernotebooks.Activities.NavigationDrawer;
 import com.scribblernotebooks.scribblernotebooks.Activities.ScannerActivity;
 import com.scribblernotebooks.scribblernotebooks.Adapters.NavigationListAdapter;
 import com.scribblernotebooks.scribblernotebooks.Fragments.DealsFragment;
+import com.scribblernotebooks.scribblernotebooks.Fragments.ManualScribblerCode;
 import com.scribblernotebooks.scribblernotebooks.Fragments.ProfileFragment;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
-import com.scribblernotebooks.scribblernotebooks.HelperClasses.ImageLoader;
 import com.scribblernotebooks.scribblernotebooks.R;
 
 /**
@@ -33,7 +38,6 @@ public class LeftNavigationDrawer {
     Context mContext;
 
     String userName, userPhotoUrl;
-    ImageLoader imageLoader;
 
     ListView mDrawerList;
     TextView uName;
@@ -45,39 +49,67 @@ public class LeftNavigationDrawer {
 
     String[] mNavigationDrawerItemTitles;
     NavigationDrawer navigationDrawerActivity;
+    public DisplayImageOptions displayImageOptions;
+    public ImageLoadingListener imageLoadingListener;
+    public ImageLoaderConfiguration imageLoaderConfiguration;
 
+    /**
+     * Default constructor
+     * @param navigationDrawerActivity the calling activity
+     * @param activityView the root view
+     * @param context context of application
+     */
     public LeftNavigationDrawer(NavigationDrawer navigationDrawerActivity,View activityView, Context context) {
         super();
         this.navigationDrawerActivity=navigationDrawerActivity;
         this.mainView = activityView;
         this.mContext = context;
+
+        /**Configurations for image caching library */
+        imageLoaderConfiguration=new ImageLoaderConfiguration.Builder(this.mContext).build();
+        ImageLoader.getInstance().init(imageLoaderConfiguration);
+        imageLoadingListener=new SimpleImageLoadingListener();
+        displayImageOptions=new DisplayImageOptions.Builder()
+                .showImageOnLoading(R.mipmap.ic_launcher)
+                .showImageForEmptyUri(R.mipmap.ic_launcher)
+                .showImageOnFail(R.mipmap.ic_launcher)
+                .cacheOnDisk(true)
+                .cacheInMemory(true)
+                .considerExifParams(true)
+                .displayer(new RoundedBitmapDisplayer(20)).build();
+
+
         instantiate();
     }
 
+    /**
+     * Initiating the views and data
+     */
     protected void instantiate() {
         mDrawerList = (ListView) mainView.findViewById(R.id.left_drawer);
         mDrawer = (RelativeLayout) mainView.findViewById(R.id.left_drawer_relative);
         uName = (TextView) mainView.findViewById(R.id.userName);
         uPhoto = (ImageView) mainView.findViewById(R.id.userPhoto);
 
-        imageLoader = new ImageLoader(mContext);
 
-
+        /**Getting user details from shared preferences*/
         sharedPreferences = mContext.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
         userName = sharedPreferences.getString(Constants.PREF_DATA_NAME, "UserName");
         userPhotoUrl = sharedPreferences.getString(Constants.PREF_DATA_PHOTO, "");
 
         uName.setText(userName);
-        imageLoader.DisplayImage(userPhotoUrl, R.mipmap.ic_launcher, uPhoto);
+
+        /**Loading and caching image from url*/
+        ImageLoader.getInstance().displayImage(userPhotoUrl,uPhoto,displayImageOptions,imageLoadingListener);
 
 
+        /**Setting navigation Drawer**/
         mNavigationDrawerItemTitles = mContext.getResources().getStringArray(R.array.navigation_drawer_items_array);
-
-
         navigationListAdapter = new NavigationListAdapter(mContext, mNavigationDrawerItemTitles);
         mDrawerList.setAdapter(navigationListAdapter);
 
 
+        /**Handling clicks on navigation drawer**/
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -98,10 +130,10 @@ public class LeftNavigationDrawer {
                         fragment = new ProfileFragment();
                         break;
                     case 3:
-                        fragment = DealsFragment.newInstance(Constants.serverURL);
+                        fragment = DealsFragment.newInstance(Constants.serverURL,mNavigationDrawerItemTitles[3]);
                         break;
                     case 4:
-                        fragment = DealsFragment.newInstance(Constants.serverURL + "featuredDeals");
+                        fragment = DealsFragment.newInstance(Constants.serverURL + "featuredDeals",mNavigationDrawerItemTitles[4]);
                         break;
                     case 5:
                         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -110,7 +142,6 @@ public class LeftNavigationDrawer {
                         navigationDrawerActivity.signOut();
                         Toast.makeText(mContext, "Successfully Logged out", Toast.LENGTH_LONG).show();
                         mContext.startActivity(new Intent(mContext, LogIn.class));
-
                         break;
                     default:
                         break;
