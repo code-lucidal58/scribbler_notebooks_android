@@ -1,13 +1,17 @@
 package com.scribblernotebooks.scribblernotebooks.Adapters;
 
 import android.content.Context;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.scribblernotebooks.scribblernotebooks.R;
+
+import java.util.ArrayList;
 
 /**
  * Created by Aanisha on 12-May-15.
@@ -15,17 +19,17 @@ import com.scribblernotebooks.scribblernotebooks.R;
 public class NavigationListAdapter extends BaseAdapter {
 
 
-    private String[] data;
+    private ArrayList<Pair<Integer,String>> data;
     private static LayoutInflater inflater = null;
 
-    public NavigationListAdapter(Context context, String[] d) {
+    public NavigationListAdapter(Context context, ArrayList<Pair<Integer,String>> d) {
         data = d;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
     public int getCount() {
-        return data.length;
+        return data.size();
     }
 
     @Override
@@ -45,13 +49,12 @@ public class NavigationListAdapter extends BaseAdapter {
         if (convertView == null)
             vi = inflater.inflate(R.layout.navigation_listview_item, parent, false);
 
+        Pair<Integer, String> d=data.get(position);
         TextView navigationItem = (TextView) vi.findViewById(R.id.navigationItem);
+        ImageView itemIcon=(ImageView)vi.findViewById(R.id.itemIcon);
 
-        String item;
-        item = data[position];
-
-        // Setting all values in listview
-        navigationItem.setText(item);
+        navigationItem.setText(d.second);
+        itemIcon.setImageResource(d.first);
 
         return vi;
     }

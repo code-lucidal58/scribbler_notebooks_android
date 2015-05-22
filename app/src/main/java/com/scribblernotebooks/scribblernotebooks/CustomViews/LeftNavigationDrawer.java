@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
@@ -26,9 +27,10 @@ import com.scribblernotebooks.scribblernotebooks.Activities.ScannerActivity;
 import com.scribblernotebooks.scribblernotebooks.Adapters.NavigationListAdapter;
 import com.scribblernotebooks.scribblernotebooks.Fragments.DealsFragment;
 import com.scribblernotebooks.scribblernotebooks.Fragments.ManualScribblerCode;
-import com.scribblernotebooks.scribblernotebooks.Fragments.ProfileFragment;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.R;
+
+import java.util.ArrayList;
 
 /**
  * Created by Jibin_ism on 18-May-15.
@@ -47,7 +49,7 @@ public class LeftNavigationDrawer {
     SharedPreferences sharedPreferences;
     Fragment fragment;
 
-    String[] mNavigationDrawerItemTitles;
+    ArrayList<Pair<Integer,String>> mNavigationDrawerItems;
     NavigationDrawer navigationDrawerActivity;
     public DisplayImageOptions displayImageOptions;
     public ImageLoadingListener imageLoadingListener;
@@ -104,8 +106,8 @@ public class LeftNavigationDrawer {
 
 
         /**Setting navigation Drawer**/
-        mNavigationDrawerItemTitles = mContext.getResources().getStringArray(R.array.navigation_drawer_items_array);
-        navigationListAdapter = new NavigationListAdapter(mContext, mNavigationDrawerItemTitles);
+        mNavigationDrawerItems=Constants.getNavigationDrawerItems();
+        navigationListAdapter = new NavigationListAdapter(mContext, mNavigationDrawerItems);
         mDrawerList.setAdapter(navigationListAdapter);
 
 
@@ -117,7 +119,7 @@ public class LeftNavigationDrawer {
             }
 
             private void selectItem(int position) {
-
+                String title=mNavigationDrawerItems.get(position).second;
                 switch (position) {
                     case 0:
                         mContext.startActivity(new Intent(mContext, ScannerActivity.class));
@@ -127,15 +129,12 @@ public class LeftNavigationDrawer {
 
                         break;
                     case 2:
-                        fragment = new ProfileFragment();
+                        fragment = DealsFragment.newInstance(Constants.serverURL,title);
                         break;
                     case 3:
-                        fragment = DealsFragment.newInstance(Constants.serverURL,mNavigationDrawerItemTitles[3]);
+                        fragment = DealsFragment.newInstance(Constants.serverURL + "featuredDeals",title);
                         break;
                     case 4:
-                        fragment = DealsFragment.newInstance(Constants.serverURL + "featuredDeals",mNavigationDrawerItemTitles[4]);
-                        break;
-                    case 5:
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.clear();
                         editor.apply();
@@ -154,7 +153,7 @@ public class LeftNavigationDrawer {
                     mDrawerList.setItemChecked(position, true);
                     mDrawerList.setSelection(position);
                     try {
-                        navigationDrawerActivity.getSupportActionBar().setTitle(mNavigationDrawerItemTitles[position]);
+                        navigationDrawerActivity.getSupportActionBar().setTitle(mNavigationDrawerItems.get(position).second);
                     } catch (Exception e) {
                         Log.e("Navigation Drawer", "No Action Bar");
                     }

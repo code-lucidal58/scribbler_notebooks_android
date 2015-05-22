@@ -14,4 +14,7 @@
 
     <color name="loginEditText2Background">#fff</color>
     <color name="loginEditText2TextColor">#ff2c2c2c</color>
+
+    <color name="navigation_drawer_list_text_color">#ff3c3c3c</color>
+    <color name="navigation_drawer_background">#ffe3e3e3</color>
 </resources>

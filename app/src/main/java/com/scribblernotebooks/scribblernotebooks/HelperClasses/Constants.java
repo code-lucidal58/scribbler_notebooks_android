@@ -1,10 +1,14 @@
 package com.scribblernotebooks.scribblernotebooks.HelperClasses;
 
+import android.util.Pair;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 
+import com.scribblernotebooks.scribblernotebooks.R;
+
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -38,6 +42,18 @@ public class Constants {
     public static final String PREF_BOOL_SIGN = "SignStatus";
 
     public static final String URL_ARGUMENT = "urlArg";
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     /**
@@ -91,6 +107,19 @@ public class Constants {
         return (float) result;
     }
 
+
+    /**
+     * Navigation Drawer Items
+     */
+    public static ArrayList<Pair<Integer,String>> getNavigationDrawerItems(){
+        ArrayList<Pair<Integer,String>> item=new ArrayList<>();
+        item.add(Pair.create(R.drawable.qr_icon_small,"Scan QR Code"));
+        item.add(Pair.create(R.drawable.ic_launcher,"Enter Scribbler Code"));
+        item.add(Pair.create(R.drawable.ic_action_heart_blue,"All Deals"));
+        item.add(Pair.create(R.drawable.ic_action_heart_gray,"Featured Deals"));
+        item.add(Pair.create(R.drawable.ic_action_share,"Sign Out"));
+        return item;
+    }
 
 }
 

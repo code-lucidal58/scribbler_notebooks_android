@@ -29,7 +29,7 @@
 
     <!-- Per the design guidelines, navigation drawers should be between 240dp and 320dp:
          https://developer.android.com/design/patterns/navigation-drawer.html -->
-    <dimen name="navigation_drawer_width">240dp</dimen>
+    <dimen name="navigation_drawer_width">280dp</dimen>
 
     <dimen name="navigation_drawer_font_size">18sp</dimen>
     <dimen name="navigation_drawer_item_height">48dp</dimen>
@@ -47,6 +47,12 @@
     <dimen name="searchBarTextSize">13sp</dimen>
     <dimen name="searchBarEditTextFontSize">15sp</dimen>
     <dimen name="searchBarIconSize">35dp</dimen>
+    <dimen name="navigation_drawer_icon_size">30dp</dimen>
+    <dimen name="navigation_drawer_item_textSize">16sp</dimen>
+    <dimen name="navigation_drawer_cover_pic_height">210dp</dimen>
+    <dimen name="userNameTextSize">17sp</dimen>
+    <dimen name="userEmailTextSize">15sp</dimen>
+    <dimen name="userPicSize">70dp</dimen>
 
 
 </resources>

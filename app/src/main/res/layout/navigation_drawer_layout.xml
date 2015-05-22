@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:id="@+id/left_drawer_relative"
+    android:layout_width="@dimen/navigation_drawer_width"
+    android:layout_height="match_parent"
+    android:layout_gravity="start"
+    android:background="@color/navigation_drawer_background"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/navigation_drawer_cover_pic_height"
+        android:id="@+id/userHolder">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            android:src="@drawable/navigation_drawer_cover_pic"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|start"
+            android:layout_marginStart="25dp"
+            android:layout_marginBottom="15dp"
+            android:layout_marginLeft="25dp">
+
+            <com.scribblernotebooks.scribblernotebooks.CustomViews.RoundedImageView
+                android:id="@+id/userPhoto"
+                android:layout_width="@dimen/userPicSize"
+                android:layout_height="@dimen/userPicSize"
+                android:layout_marginBottom="10dp"
+                android:src="@drawable/ic_launcher" />
+
+            <TextView
+                android:id="@+id/userName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/userPhoto"
+                android:gravity="center_vertical"
+                android:textSize="@dimen/userNameTextSize"
+                android:textStyle="bold"
+                android:text="User Name"
+                android:textColor="@android:color/white" />
+
+            <TextView
+                android:id="@+id/userEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/userName"
+                android:gravity="center_vertical"
+                android:textSize="@dimen/userEmailTextSize"
+                android:text="user@domain.com"
+                android:textColor="@android:color/white" />
+
+        </RelativeLayout>
+
+    </FrameLayout>
+
+
+    <ListView
+        android:id="@+id/left_drawer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/userHolder"
+        android:choiceMode="singleChoice"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="0dp" />
+
+</RelativeLayout>

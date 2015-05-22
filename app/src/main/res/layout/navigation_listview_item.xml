@@ -1,18 +1,25 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?android:attr/activatedBackgroundIndicator"
-    android:minHeight="?android:attr/listPreferredItemHeightSmall"
-    android:padding="10dp" >
+    android:orientation="horizontal"
+    android:padding="10dp">
+
+    <ImageView
+        android:layout_width="@dimen/navigation_drawer_icon_size"
+        android:layout_height="@dimen/navigation_drawer_icon_size"
+        android:id="@+id/itemIcon"
+        android:src="@drawable/ic_launcher" />
 
     <TextView
         android:id="@+id/navigationItem"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_centerVertical="true"
-        android:paddingRight="10dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="10dp"
         android:text="Folder name here."
         android:textAppearance="?android:attr/textAppearanceListItemSmall"
-        android:textColor="#ffffff" />
+        android:textColor="@color/navigation_drawer_list_text_color"
+        android:textSize="@dimen/navigation_drawer_item_textSize" />
 
-</RelativeLayout>
+</LinearLayout>
