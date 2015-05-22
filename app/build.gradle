@@ -28,11 +28,12 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:22.1.1'
-    compile project(':zxscanlib')
     compile 'com.android.support:recyclerview-v7:22.1.1'
     compile 'com.android.support:cardview-v7:22.1.1'
     compile 'com.google.android.gms:play-services:7.3.0'
     compile 'com.facebook.android:facebook-android-sdk:4.0.0'
     compile 'com.balysv:material-ripple:1.0.2'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.3'
+    compile 'com.journeyapps:zxing-android-embedded:3.0.0@aar'
+    compile 'com.google.zxing:core:3.2.0'
 }

@@ -4,21 +4,44 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.Toast;
 
+import com.google.zxing.ResultPoint;
+import com.journeyapps.barcodescanner.BarcodeCallback;
+import com.journeyapps.barcodescanner.BarcodeResult;
+import com.journeyapps.barcodescanner.CompoundBarcodeView;
 import com.scribblernotebooks.scribblernotebooks.R;
 
-import eu.livotov.zxscan.ScannerView;
+import java.util.List;
 
 
 public class ScannerActivity extends AppCompatActivity {
 
-    ScannerView scanner;
     Button manual,back;
+    CompoundBarcodeView compoundBarcodeView;
+
+    /**
+     *Callback for the scanner
+     * */
+    private BarcodeCallback barcodeCallback=new BarcodeCallback() {
+        @Override
+        public void barcodeResult(BarcodeResult barcodeResult) {
+            compoundBarcodeView.pause();
+            Intent i=new Intent(getApplicationContext(),NavigationDrawer.class);
+            i.setData(Uri.parse(barcodeResult.getText()));
+            startActivity(i);
+            finish();
+        }
+
+        @Override
+        public void possibleResultPoints(List<ResultPoint> list) {
+
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,10 +55,12 @@ public class ScannerActivity extends AppCompatActivity {
         /**
          * View Setup
          */
-        scanner = (ScannerView) findViewById(R.id.scanner);
+        compoundBarcodeView=(CompoundBarcodeView)findViewById(R.id.scanner);
         manual = (Button) findViewById(R.id.swtichToManual);
         back=(Button)findViewById(R.id.back);
 
+
+        compoundBarcodeView.decodeContinuous(barcodeCallback);
 
         /**
          * When user presses manual button the Navigation Drawer activity is opened and Manual Code Input fragment is loaded.
@@ -46,51 +71,16 @@ public class ScannerActivity extends AppCompatActivity {
         manual.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                scanner.stopScanner();
                 switchToManual(v);
                 return true;
             }
         });
 
-        /**
-         * Start Scanner and set the functions to be executed after events have occured
-         */
-        scanner.startScanner();
-        scanner.setScannerViewEventListener(new ScannerView.ScannerViewEventListener() {
-            @Override
-            public void onScannerReady() {
-            }
+        /***/
 
+        back.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onScannerFailure(int cameraError) {
-            }
-
-            @Override
-            public boolean onCodeScanned(String data) {
-                scanner.stopScanner();
-
-                /**
-                 * Pass value of scanned QR code to the Navigation Drawer activity for the popup to be shown
-                 * Check if QR code data is valid i.e if QR code does not contain the url
-                 */
-                Intent i = new Intent(getApplicationContext(), NavigationDrawer.class);
-                try {
-                    i.setData(Uri.parse(data));
-                } catch (Exception e) {
-                    Toast.makeText(getApplicationContext(), "Invalid Scribbler QR code", Toast.LENGTH_LONG).show();
-                    finish();
-                }
-                startActivity(i);
-                finish();
-                return false;
-            }
-        });
-
-        back.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                finish();
-                return false;
+            public void onClick(View v) {
             }
         });
     }
@@ -106,10 +96,17 @@ public class ScannerActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        try {
-            scanner.stopScanner();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        compoundBarcodeView.pause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        compoundBarcodeView.resume();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        return compoundBarcodeView.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event);
     }
 }

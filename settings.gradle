@@ -1,1 +1,1 @@
-include ':app', ':zxscanlib', ':CAMView'
+include ':app'

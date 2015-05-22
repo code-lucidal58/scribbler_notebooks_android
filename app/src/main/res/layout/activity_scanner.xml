@@ -4,11 +4,15 @@
     android:layout_height="match_parent"
     tools:context=".Activities.ScannerActivity">
 
-
-    <eu.livotov.zxscan.ScannerView
-        android:id="@+id/scanner"
+    <com.journeyapps.barcodescanner.CompoundBarcodeView
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:id="@+id/scanner" />
+
+    <!--<ImageView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:id="@+id/scannerPreview"/>-->
 
     <View
         android:layout_width="match_parent"

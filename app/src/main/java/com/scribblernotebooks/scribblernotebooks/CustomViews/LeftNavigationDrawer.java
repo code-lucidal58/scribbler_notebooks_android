@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.util.Pair;
 import android.view.View;
@@ -92,6 +93,7 @@ public class LeftNavigationDrawer {
         mDrawer = (RelativeLayout) mainView.findViewById(R.id.left_drawer_relative);
         uName = (TextView) mainView.findViewById(R.id.userName);
         uPhoto = (ImageView) mainView.findViewById(R.id.userPhoto);
+        final DrawerLayout mDrawerLayout = (DrawerLayout) mainView.findViewById(R.id.drawer_layout);
 
 
         /**Getting user details from shared preferences*/
@@ -123,6 +125,7 @@ public class LeftNavigationDrawer {
                 switch (position) {
                     case 0:
                         mContext.startActivity(new Intent(mContext, ScannerActivity.class));
+                        mDrawerLayout.closeDrawers();
                         break;
                     case 1:
                         fragment = ManualScribblerCode.newInstance(mContext, "");

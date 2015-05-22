@@ -1,6 +1,7 @@
 package com.scribblernotebooks.scribblernotebooks.Activities;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,6 +12,7 @@ import android.view.View;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
+import com.scribblernotebooks.scribblernotebooks.CustomViews.DealPopup;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.LeftNavigationDrawer;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.NotificationDrawer;
 import com.scribblernotebooks.scribblernotebooks.Fragments.DealsFragment;
@@ -82,6 +84,14 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
         /**Get Data from the external Barcode scanner or internal Barcode Scanner */
         try {
             url = getIntent().getData().toString();
+            if(url.contains(getApplication().getPackageName())){
+                getDealDetailsAndShow(url);
+            }
+            else{
+                Intent i=new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                finish();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -141,4 +151,9 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
         new LeftNavigationDrawer(this, mainView, this);
     }
 
+    public void getDealDetailsAndShow(String url) {
+        DealPopup dealPopup = new DealPopup(this);
+        dealPopup.setUrl(url);
+        dealPopup.show();
+    }
 }
