@@ -253,7 +253,6 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     protected void onActivityResult(int requestCode, int responseCode,
                                     Intent intent) {
         super.onActivityResult(requestCode, responseCode, intent);
-        callbackManager.onActivityResult(requestCode, responseCode, intent);
 
         if (requestCode == RC_SIGN_IN) {
             if (responseCode != RESULT_OK) {
@@ -267,6 +266,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
             }
         }
 
+        callbackManager.onActivityResult(requestCode, responseCode, intent);
 
     }
 

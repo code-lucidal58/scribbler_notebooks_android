@@ -5,7 +5,6 @@
     android:background="@color/darkBlue"
     tools:context="com.scribblernotebooks.scribblernotebooks.Fragments.ManualScribblerCode">
 
-
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="80dp"
@@ -111,5 +110,16 @@
             android:textStyle="bold" />
 
     </LinearLayout>
+
+
+    <ImageView
+        android:layout_width="@dimen/notificationIconSize"
+        android:layout_height="@dimen/notificationIconSize"
+        android:id="@+id/notificationIcon"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_margin="10dp"
+        />
 
 </RelativeLayout>

@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.DrawerLayout;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -17,11 +18,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
 import com.scribblernotebooks.scribblernotebooks.Activities.ScannerActivity;
+import com.scribblernotebooks.scribblernotebooks.CustomViews.CyclicTransitionDrawable;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.DealPopup;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.R;
@@ -37,12 +40,14 @@ public class ManualScribblerCode extends Fragment {
     String url = "";
     Uri uri;
     LinearLayout ll;
+    ImageView notificationIcon;
     int screenWidth;
     int screenHeight;
 
 
     ImageView sun, cloud1, cloud2;
 
+    int NOTIFICATION_ICON_TRANSITION_DURATION=10000;
     int notificationCount = 3;
     private Context mContext;
     private static Context sContext;
@@ -119,6 +124,37 @@ public class ManualScribblerCode extends Fragment {
         sun = (ImageView) v.findViewById(R.id.sun);
         cloud1 = (ImageView) v.findViewById(R.id.cloud1);
         cloud2 = (ImageView) v.findViewById(R.id.cloud2);
+        notificationIcon=(ImageView)v.findViewById(R.id.notificationIcon);
+
+        final DrawerLayout mDrawerLayout = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
+        final RelativeLayout mDrawer = (RelativeLayout) getActivity().findViewById(R.id.notification_drawer);
+        /**
+         * Opening Notification drawer on notification icon click
+         */
+        notificationIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDrawerLayout.openDrawer(mDrawer);
+            }
+        });
+
+        /**
+         * Setting up notification icon animation
+         */
+        CyclicTransitionDrawable cyclicTransitionDrawable=new CyclicTransitionDrawable(new Drawable[]{
+           getResources().getDrawable(R.drawable.n1),
+           getResources().getDrawable(R.drawable.n2),
+           getResources().getDrawable(R.drawable.n3),
+           getResources().getDrawable(R.drawable.n4),
+           getResources().getDrawable(R.drawable.n5),
+           getResources().getDrawable(R.drawable.n6),
+           getResources().getDrawable(R.drawable.n7),
+           getResources().getDrawable(R.drawable.n8),
+        });
+        notificationIcon.setImageDrawable(cyclicTransitionDrawable);
+        cyclicTransitionDrawable.startTransition(NOTIFICATION_ICON_TRANSITION_DURATION,0);
+
+
 
         /**
          * Setting Cloud motion animation

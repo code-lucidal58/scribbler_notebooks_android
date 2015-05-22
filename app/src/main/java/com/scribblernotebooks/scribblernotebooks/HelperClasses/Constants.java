@@ -16,16 +16,6 @@ import java.util.Random;
  */
 public class Constants {
 
-
-    public static final String ARGUMENTS_URL = "argumentsUrl";
-    public static final String ARGUMENTS_LISTTYPE = "argumentsListType";
-    public static final String LISTTYPE_ALL = "ListType_all";
-    public static final String LISTTYPE_NEW = "ListType_new";
-    public static final String LISTTYPE_TRENDING = "ListType_trending";
-
-
-    public static final String EXTRA_DEAL_CODE = "dealCode";
-    String URLFinal = "";
     public static final String serverURL = "http://jazzyarchitects.orgfree.com/intern58195/sn7315/request.php?table=";
     public static final String TAG_DEAL_NAME = "dealName";
     public static final String TAG_IMAGE_URL = "imgurl";
