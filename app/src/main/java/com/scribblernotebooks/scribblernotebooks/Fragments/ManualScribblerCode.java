@@ -47,7 +47,7 @@ public class ManualScribblerCode extends Fragment {
 
     ImageView sun, cloud1, cloud2;
 
-    int NOTIFICATION_ICON_TRANSITION_DURATION=10000;
+    int NOTIFICATION_ICON_TRANSITION_DURATION=1000;
     int notificationCount = 3;
     private Context mContext;
     private static Context sContext;
