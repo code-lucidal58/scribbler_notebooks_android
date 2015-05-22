@@ -3,6 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.scribblernotebooks.scribblernotebooks.Fragments.ManualScribblerCode">
 
-    <item android:id="@+id/signOut" android:title="Sign Out"
-        android:orderInCategory="100" app:showAsAction="never" />
+    <item
+        android:id="@+id/signOut"
+        android:orderInCategory="100"
+        android:title="Sign Out"
+        app:showAsAction="never" />
 </menu>

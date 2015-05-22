@@ -111,11 +111,9 @@ public class SearchQueryFragment extends android.support.v4.app.Fragment {
         /**
          * Change in query detected, and suggestions displayed accordingly
          */
-
         query.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override

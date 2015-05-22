@@ -3,15 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".DealsList">
 
-    <!-- Search / will display always -->
-    <item
-        android:id="@+id/action_search"
-        android:icon="@drawable/ic_action_search"
-        android:title="@string/action_search"
-        app:showAsAction="collapseActionView|ifRoom"
-        android:actionViewClass="android.widget.SearchView"
-        />
-
     <item android:id="@+id/action_settings"
         android:title="@string/action_settings"
         android:orderInCategory="100"

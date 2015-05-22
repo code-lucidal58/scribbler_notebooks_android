@@ -247,14 +247,10 @@ public class DealsFragment extends android.support.v4.app.Fragment {
         }
     }
 
-
-
-
     /**
      * Auto-generated methods
      * @param uri
      */
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
