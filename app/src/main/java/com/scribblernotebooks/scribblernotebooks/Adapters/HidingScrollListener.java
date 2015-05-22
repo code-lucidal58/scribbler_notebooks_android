@@ -25,7 +25,7 @@ public abstract class HidingScrollListener extends RecyclerView.OnScrollListener
         mToolbarHeight = getToolbarHeight(context);
     }
 
-    //Function called after scrolling deals Recycler view
+    //Function called after scrolling listview_item_deals Recycler view
     @Override
     public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
         super.onScrollStateChanged(recyclerView, newState);
@@ -52,7 +52,7 @@ public abstract class HidingScrollListener extends RecyclerView.OnScrollListener
 
     }
 
-    //Function called while scrolling the deals Recycler View
+    //Function called while scrolling the listview_item_deals Recycler View
     @Override
     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
         super.onScrolled(recyclerView, dx, dy);

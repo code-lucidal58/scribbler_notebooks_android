@@ -8,10 +8,12 @@ import android.content.res.TypedArray;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -24,7 +26,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.scribblernotebooks.scribblernotebooks.Adapters.HidingScrollListener;
-import com.scribblernotebooks.scribblernotebooks.Adapters.RecyclerCustomAdapter;
+import com.scribblernotebooks.scribblernotebooks.Adapters.RecyclerDealsAdapter;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Deal;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.ParseJson;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.SearchBarApplication;
@@ -48,7 +50,7 @@ public class DealsFragment extends android.support.v4.app.Fragment {
 
     RecyclerView recyclerView;
     ArrayList<Deal> dealsList = new ArrayList<>();
-    RecyclerCustomAdapter adapter;
+    RecyclerDealsAdapter adapter;
     Context context;
     ProgressDialog progressDialog;
     Toolbar appbar;
@@ -68,7 +70,7 @@ public class DealsFragment extends android.support.v4.app.Fragment {
 
     /**
      * Setting statically the new fragment
-     * @param url the url to be sent to server for getting deals
+     * @param url the url to be sent to server for getting listview_item_deals
      * @return the Deal list fragment
      */
     public static DealsFragment newInstance(String url,String title) {
@@ -98,32 +100,36 @@ public class DealsFragment extends android.support.v4.app.Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        //Inflating Views
-        View v = inflater.inflate(R.layout.fragment_deals, container, false);
+        // Inflate the layout for this fragment
+        View v= inflater.inflate(R.layout.fragment_deals, container, false);
+        context=getActivity();
 
-        context = getActivity();
-
+        //Progress Dialog Setup
         progressDialog=new ProgressDialog(context);
         progressDialog.setMessage("Loading Deals...");
         progressDialog.setCancelable(false);
-
 
         //Setting toolbars
         toolbarContainer=(LinearLayout)v.findViewById(R.id.toolbar_container);
         appbar=(Toolbar)v.findViewById(R.id.app_bar);
         searchbar=v.findViewById(R.id.search_bar);
-        SearchBarApplication searchBarApplication=new SearchBarApplication(searchbar,container,context,getFragmentManager());
-        searchBarApplication.ImplementFunctions();
-        nav=(ImageView)appbar.findViewById(R.id.nav);
-
-
-        mDrawerLayout = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
-        mDrawer = (RelativeLayout) getActivity().findViewById(R.id.left_drawer_relative);
+        ((AppCompatActivity)getActivity()).setSupportActionBar(appbar);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeButtonEnabled(true);
+        getActivity().setTitle(title);
 
         /**
-         * Drawer Indicator
+         * Calling functions for execution of the 4 functionalities of search bar
          */
-        ActionBarDrawerToggle actionBarDrawerToggle=new ActionBarDrawerToggle(getActivity(),mDrawerLayout,appbar,R.string.open,R.string.close){
+        FragmentManager fragmentManager=getActivity().getSupportFragmentManager();
+        SearchBarApplication searchBarApplication=new SearchBarApplication(searchbar,container,context,fragmentManager);
+        searchBarApplication.ImplementFunctions();
+
+        /**
+         * Navigation Drawer Hamburger Icon Setup
+         */
+        mDrawerLayout = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
+        mDrawer = (RelativeLayout) getActivity().findViewById(R.id.left_drawer_relative);
+        final ActionBarDrawerToggle actionBarDrawerToggle=new ActionBarDrawerToggle(getActivity(),mDrawerLayout,appbar,R.string.open,R.string.close){
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
@@ -136,22 +142,22 @@ public class DealsFragment extends android.support.v4.app.Fragment {
         };
         actionBarDrawerToggle.setDrawerIndicatorEnabled(true);
         mDrawerLayout.setDrawerListener(actionBarDrawerToggle);
-
-        nav.setOnClickListener(new View.OnClickListener() {
+        mDrawerLayout.post(new Runnable() {
             @Override
-            public void onClick(View v) {
-                mDrawerLayout.openDrawer(mDrawer);
-
+            public void run() {
+                actionBarDrawerToggle.syncState();
             }
         });
-        ((AppCompatActivity)getActivity()).setSupportActionBar(appbar);
-        getActivity().setTitle(title);
-        mToolbarHeight = getToolbarHeight(getActivity());
 
-        //Setting Deals List
+        /**
+         * Setting Deals List along with scrolling effects of toolbars
+         */
+        mToolbarHeight = getToolbarHeight(getActivity());
+        recyclerView=(RecyclerView)v.findViewById(R.id.recyclerView);
         int paddingTop = getToolbarHeight(context) + getTabsHeight(context);
-        recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
         recyclerView.setPadding(recyclerView.getPaddingLeft(), paddingTop, recyclerView.getPaddingRight(), recyclerView.getPaddingBottom());
+        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+
         recyclerView.setOnScrollListener(new HidingScrollListener(context) {
 
             @Override
@@ -170,6 +176,7 @@ public class DealsFragment extends android.support.v4.app.Fragment {
             }
 
         });
+
         //Get response from server
         new LongOperation().execute(url);
 
@@ -232,9 +239,10 @@ public class DealsFragment extends android.support.v4.app.Fragment {
 
         @Override
         protected void onPostExecute(String s) {
+            progressDialog.dismiss();
             dealsList.clear();
             dealsList = ParseJson.getParsedData(s);
-            adapter = new RecyclerCustomAdapter(dealsList, context);
+            adapter = new RecyclerDealsAdapter(dealsList, context);
             recyclerView.setAdapter(adapter);
         }
     }

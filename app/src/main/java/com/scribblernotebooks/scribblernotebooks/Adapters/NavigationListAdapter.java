@@ -47,7 +47,7 @@ public class NavigationListAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         View vi = convertView;
         if (convertView == null)
-            vi = inflater.inflate(R.layout.navigation_listview_item, parent, false);
+            vi = inflater.inflate(R.layout.listview_item_leftdrawer, parent, false);
 
         Pair<Integer, String> d=data.get(position);
         TextView navigationItem = (TextView) vi.findViewById(R.id.navigationItem);

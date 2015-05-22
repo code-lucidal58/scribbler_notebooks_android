@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.scribblernotebooks.scribblernotebooks.Fragments.SearchQueryFragment;
 import com.scribblernotebooks.scribblernotebooks.R;
 
 /**
@@ -19,7 +20,7 @@ import com.scribblernotebooks.scribblernotebooks.R;
  * On selecting an item, a new layout in inflated where the user can input query and suggestions
  * are generated.
  */
-public class SearchBarApplication implements SearchQuery.OnFragmentInteractionListener {
+public class SearchBarApplication implements SearchQueryFragment.OnFragmentInteractionListener {
     View view;
     ViewGroup viewGroup;
     Context context;
@@ -29,9 +30,10 @@ public class SearchBarApplication implements SearchQuery.OnFragmentInteractionLi
 
     public SearchBarApplication() {
         super();
+        //Empty Constructor required
     }
 
-    public SearchBarApplication(View v,ViewGroup container,Context c,FragmentManager f) {
+    public SearchBarApplication(View v, ViewGroup container, Context c, FragmentManager f) {
         view=v;
         viewGroup=container;
         context=c;
@@ -47,35 +49,37 @@ public class SearchBarApplication implements SearchQuery.OnFragmentInteractionLi
         category.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(view.getContext(),"Category Selected",Toast.LENGTH_SHORT).show();
-                InflateFragment();
+                Toast.makeText(view.getContext(), "Category Selected", Toast.LENGTH_SHORT).show();
+                InflateFragment(R.drawable.like,"Category");
             }
         });
 
         scan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(view.getContext(),"Scan Selected",Toast.LENGTH_SHORT).show();
+                Toast.makeText(view.getContext(), "Scan Selected", Toast.LENGTH_SHORT).show();
             }
         });
 
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(view.getContext(),"Search Selected",Toast.LENGTH_SHORT).show();
+                Toast.makeText(view.getContext(), "Search Selected", Toast.LENGTH_SHORT).show();
+                InflateFragment(R.drawable.like, "Search");
             }
         });
 
         sort.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(view.getContext(),"Sort Selected",Toast.LENGTH_SHORT).show();
+                Toast.makeText(view.getContext(), "Sort Selected", Toast.LENGTH_SHORT).show();
+                InflateFragment(R.drawable.like, "Sort");
             }
         });
     }
 
-    public void InflateFragment(){
-        Fragment fragment=new SearchQuery();
+    public void InflateFragment(int id,String name){
+        Fragment fragment= SearchQueryFragment.newInstance(id, name);
             fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.content_frame, fragment);
             fragmentTransaction.addToBackStack(null);

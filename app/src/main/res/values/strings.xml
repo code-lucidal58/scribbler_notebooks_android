@@ -38,4 +38,32 @@
     <string name="open">Open</string>
     <string name="close">Close</string>
 
+    <string-array name="category_list">
+        <item>Electronics</item>
+        <item>Home Appliance</item>
+        <item>Household</item>
+        <item>Kids</item>
+        <item>Recharge</item>
+        <item>Travel</item>
+    </string-array>
+
+    <string-array name="sort_list">
+        <item>Alphabet</item>
+        <item>City</item>
+        <item>Ends on</item>
+        <item>Latest</item>
+        <item>Location</item>
+    </string-array>
+
+    <string-array name="search_list">
+        <item>DigiFlop</item>
+        <item>Disney</item>
+        <item>Dominos</item>
+        <item>Freecharge</item>
+        <item>Gillete</item>
+        <item>OlaCabs</item>
+        <item>Paytm</item>
+        <item>ShopClues</item>
+        <item>Uber</item>
+    </string-array>
 </resources>

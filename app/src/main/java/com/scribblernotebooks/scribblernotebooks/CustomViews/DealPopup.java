@@ -50,7 +50,7 @@ public class DealPopup extends Dialog implements View.OnClickListener {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         //Setting View
-        setContentView(R.layout.deal_popup);
+        setContentView(R.layout.popup_deal);
 
         //View Setup
         title=(TextView)findViewById(R.id.title);

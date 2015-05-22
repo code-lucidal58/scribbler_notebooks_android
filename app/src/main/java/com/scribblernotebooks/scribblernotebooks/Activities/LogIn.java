@@ -1,10 +1,12 @@
 package com.scribblernotebooks.scribblernotebooks.Activities;
 
+import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.graphics.drawable.ScaleDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
@@ -58,6 +60,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     private GoogleApiClient mGoogleApiClient;
 
     SharedPreferences userPrefs;
+    ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,7 +129,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
 
 
         /**
-         * Setting UP GoogleAPI Client for sign in through google
+         * Setting up GoogleAPI Client for sign in through google
          */
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -142,6 +145,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         signInButton = (SignInButton) findViewById(R.id.sign_in_button);
         signInButton.setOnClickListener(this);
         signInButton.setSize(SignInButton.SIZE_WIDE);
+        progressDialog=new ProgressDialog(this);
 
         sun = (ImageView) findViewById(R.id.sun);
         cloud1 = (ImageView) findViewById(R.id.cloud1);
@@ -164,6 +168,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         userIcon.setLevel(10000);
         name.setCompoundDrawables(null, null, userIcon, null);
         name.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
                 try {
@@ -188,6 +193,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         emailIcon.setLevel(10000);
         mobile.setCompoundDrawables(null, null, userIcon, null);
         mobile.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
                 try {
@@ -209,12 +215,6 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         screenHeight = displayMetrics.heightPixels;
         Constants.setMovingAnimation(cloud1, Constants.getRandomInt(5000, 15000), screenWidth, (float) (Math.random() * (screenHeight / 2)), true, screenHeight);
         Constants.setMovingAnimation(cloud2, Constants.getRandomInt(7000, 20000), screenWidth, (float) (Math.random() * (screenHeight / 2)), true, screenHeight);
-
-
-        //ProgressDialog to be shown when sign in process is running
-        ProgressDialog mConnectionProgressDialog;
-        mConnectionProgressDialog = new ProgressDialog(this);
-        mConnectionProgressDialog.setMessage("Signing in...");
 
         int width = signInButton.getWidth();
         int height = signInButton.getHeight();
@@ -253,7 +253,6 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     protected void onActivityResult(int requestCode, int responseCode,
                                     Intent intent) {
         super.onActivityResult(requestCode, responseCode, intent);
-        callbackManager.onActivityResult(requestCode, responseCode, intent);
 
         if (requestCode == RC_SIGN_IN) {
             if (responseCode != RESULT_OK) {
@@ -263,10 +262,13 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
             mIntentInProgress = false;
 
             if (!mGoogleApiClient.isConnecting()) {
+                progressDialog.setMessage("Connecting...");
+                progressDialog.show();
                 mGoogleApiClient.connect();
             }
         }
 
+        callbackManager.onActivityResult(requestCode, responseCode, intent);
 
     }
 
@@ -289,6 +291,8 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         if (!result.hasResolution()) {
             GooglePlayServicesUtil.getErrorDialog(result.getErrorCode(), this,
                     0).show();
+            progressDialog.hide();
+            Toast.makeText(this, "Could not connect", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -318,6 +322,8 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         switch (v.getId()) {
             case R.id.sign_in_button:
                 if (!mGoogleApiClient.isConnecting()) {
+                    progressDialog.setMessage("Connecting...");
+                    progressDialog.show();
                     mSignInClicked = true;
                     resolveSignInError();
                 }
@@ -358,6 +364,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                 Toast.makeText(getApplicationContext(),
                         "Person information is null", Toast.LENGTH_LONG).show();
             }
+            progressDialog.dismiss();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -374,6 +381,12 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         finish();
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        onDestroy();
+        finish();
+    }
 
 }
 

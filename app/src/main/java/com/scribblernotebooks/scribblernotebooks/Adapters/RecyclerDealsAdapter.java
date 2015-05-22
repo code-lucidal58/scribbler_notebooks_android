@@ -25,7 +25,7 @@ import java.util.ArrayList;
 /**
  * Created by Aanisha on 07-May-15.
  */
-public class RecyclerCustomAdapter extends RecyclerView.Adapter<RecyclerCustomAdapter.ViewHolder> {
+public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdapter.ViewHolder> {
 
     ArrayList<Deal> dealsList;
     Context context;
@@ -33,7 +33,7 @@ public class RecyclerCustomAdapter extends RecyclerView.Adapter<RecyclerCustomAd
     public ImageLoadingListener imageLoadingListener;
     public ImageLoaderConfiguration imageLoaderConfiguration;
 
-    public RecyclerCustomAdapter(ArrayList<Deal> dealsList, Context context) {
+    public RecyclerDealsAdapter(ArrayList<Deal> dealsList, Context context) {
         this.dealsList = dealsList;
         this.context = context;
 
@@ -80,7 +80,7 @@ public class RecyclerCustomAdapter extends RecyclerView.Adapter<RecyclerCustomAd
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         //create new view
             View itemLayoutView = LayoutInflater.from(viewGroup.getContext())
-                    .inflate(R.layout.deals, viewGroup, false);
+                    .inflate(R.layout.listview_item_deals, viewGroup, false);
 
             // create ViewHolder
 

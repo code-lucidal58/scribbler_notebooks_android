@@ -5,76 +5,78 @@
     android:background="#ff3e8791"
     tools:context="com.scribblernotebooks.scribblernotebooks.SearchQuery">
 
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/during_searchbar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/search"
         android:background="#ff3e8791"
-        android:padding="0dp"
         android:orientation="horizontal"
-        android:weightSum="5"
-        android:id="@+id/during_searchbar">
+        android:padding="0dp"
+        android:weightSum="5">
 
         <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:gravity="center"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:gravity="center">
 
             <com.scribblernotebooks.scribblernotebooks.CustomViews.RoundedImageView
+                android:id="@+id/option"
                 android:layout_width="@dimen/searchBarIconSize"
                 android:layout_height="@dimen/searchBarIconSize"
-                android:src="@drawable/like"
                 android:layout_centerHorizontal="true"
-                android:id="@+id/option"/>
+                android:src="@drawable/like" />
+
             <TextView
+                android:id="@+id/option_name"
                 android:layout_width="match_parent"
-                android:minWidth="40dp"
-                android:gravity="center_horizontal"
                 android:layout_height="wrap_content"
+                android:layout_below="@id/option"
+                android:layout_centerHorizontal="true"
+                android:gravity="center_horizontal"
+                android:minWidth="40dp"
                 android:text="Category"
                 android:textColor="#FFF"
-                android:textSize="@dimen/searchBarTextSize"
-                android:layout_centerHorizontal="true"
-                android:layout_below="@id/option"/>
+                android:textSize="@dimen/searchBarTextSize" />
 
         </RelativeLayout>
 
         <EditText
+            android:id="@+id/query"
             android:layout_width="0dp"
             android:layout_height="35dp"
-            android:layout_weight="3"
-            android:gravity="center_vertical"
             android:layout_gravity="center"
-            android:enabled="true"
+            android:layout_weight="3"
+            android:background="@drawable/edit_text2"
             android:clickable="true"
-            android:textColor="@color/loginEditText2TextColor"
-            android:textColorHint="@color/loginEditTextHintColor"
+            android:enabled="true"
             android:focusable="true"
             android:focusableInTouchMode="true"
+            android:gravity="center_vertical"
             android:hint="Search Category"
-            android:paddingLeft="15dp"
-            android:textSize="@dimen/searchBarEditTextFontSize"
-            android:background="@drawable/edit_text2"
             android:inputType="textAutoComplete"
-            android:id="@+id/query"/>
+            android:paddingLeft="15dp"
+            android:textColor="@color/loginEditText2TextColor"
+            android:textColorHint="@color/loginEditTextHintColor"
+            android:textSize="@dimen/searchBarEditTextFontSize" />
 
         <ImageView
+            android:id="@+id/cancel"
             android:layout_width="0dp"
-            android:padding="10dp"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_action_remove"
             android:layout_gravity="center"
             android:layout_weight="1"
-            android:id="@+id/cancel"/>
+            android:padding="10dp"
+            android:src="@drawable/ic_action_remove" />
 
     </LinearLayout>
 
-    <!--<android.support.v7.widget.RecyclerView-->
-        <!--android:id="@+id/recyclerView"                      -->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:clipToPadding="false" />-->
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/during_searchbar"
+        android:clipToPadding="false" />
 
 
 </FrameLayout>
