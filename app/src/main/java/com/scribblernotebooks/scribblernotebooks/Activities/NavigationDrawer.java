@@ -128,13 +128,12 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
             mGoogleApiClient.disconnect();
             mGoogleApiClient.connect();
         }
-
-
         try {
             LoginManager.getInstance().logOut();
         } catch (Exception e) {
             e.printStackTrace();
         }
+        
         finish();
     }
 
