@@ -2,6 +2,7 @@ package com.scribblernotebooks.scribblernotebooks.Activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -18,7 +19,12 @@ import com.scribblernotebooks.scribblernotebooks.CustomViews.NotificationDrawer;
 import com.scribblernotebooks.scribblernotebooks.Fragments.DealsFragment;
 import com.scribblernotebooks.scribblernotebooks.Fragments.ManualScribblerCode;
 import com.scribblernotebooks.scribblernotebooks.Fragments.ProfileFragment;
+<<<<<<< .merge_file_a05416
 import com.scribblernotebooks.scribblernotebooks.Fragments.SearchQueryFragment;
+=======
+import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
+import com.scribblernotebooks.scribblernotebooks.HelperClasses.SearchQuery;
+>>>>>>> .merge_file_a07728
 import com.scribblernotebooks.scribblernotebooks.R;
 
 import java.util.Timer;
@@ -129,13 +135,23 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
             mGoogleApiClient.connect();
         }
 
-
         try {
             LoginManager.getInstance().logOut();
         } catch (Exception e) {
             e.printStackTrace();
         }
+<<<<<<< .merge_file_a05416
         finish();
+=======
+        SharedPreferences userPrefs;
+        userPrefs = getSharedPreferences(Constants.PREF_NAME, MODE_PRIVATE);
+        SharedPreferences.Editor editor=userPrefs.edit();
+        editor.clear();
+        editor.commit();
+
+        finish();
+
+>>>>>>> .merge_file_a07728
     }
 
     /**
