@@ -104,13 +104,13 @@ public class LeftNavigationDrawer {
         userDetailsHolder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mDrawerLayout.closeDrawers();
                 Fragment fragment= ProfileFragment.newInstance("Profile");
                 FragmentManager fragmentManager = navigationDrawerActivity.getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.content_frame, fragment);
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
-                mDrawerLayout.closeDrawers();
             }
         });
 
