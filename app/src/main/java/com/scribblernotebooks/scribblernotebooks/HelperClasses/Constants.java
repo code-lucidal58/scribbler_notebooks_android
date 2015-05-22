@@ -70,11 +70,11 @@ public class Constants {
             @Override
             public void onAnimationEnd(Animation animation) {
                 if (changeSize) {
-                    float scale = getRandomFloat(0.8, 2);
+                    float scale = getRandomFloat(0.8, 1.5);
                     image.setScaleX(scale);
                     image.setScaleY(scale);
                 }
-                setMovingAnimation(image, duration, initialX, getRandomFloat(screenHeight / 10, 8 * screenHeight / 10), changeSize, screenHeight);
+                setMovingAnimation(image, duration, initialX, getRandomFloat(screenHeight / 10, 6 * screenHeight / 10), changeSize, screenHeight);
             }
 
             @Override
