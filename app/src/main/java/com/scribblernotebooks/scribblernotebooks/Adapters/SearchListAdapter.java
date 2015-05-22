@@ -55,7 +55,7 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
         ArrayList<String> result=new ArrayList<>();
         for(int i=0;i<suggestionList.size();i++)
         {
-            if(suggestionList.get(i).toLowerCase().contains(s.toString().toLowerCase()))
+            if(suggestionList.get(i).contains(s))
             {
                 result.add(suggestionList.get(i));
             }

@@ -107,12 +107,6 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
     }
 
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        finish();
-    }
-
-    @Override
     protected void onStart() {
         super.onStart();
         mGoogleApiClient.connect();
@@ -156,5 +150,14 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
         DealPopup dealPopup = new DealPopup(this);
         dealPopup.setUrl(url);
         dealPopup.show();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
+            this.finish();
+        } else {
+            getSupportFragmentManager().popBackStack();
+        }
     }
 }
