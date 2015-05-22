@@ -5,11 +5,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -28,6 +30,7 @@ import com.scribblernotebooks.scribblernotebooks.Activities.ScannerActivity;
 import com.scribblernotebooks.scribblernotebooks.Adapters.NavigationListAdapter;
 import com.scribblernotebooks.scribblernotebooks.Fragments.DealsFragment;
 import com.scribblernotebooks.scribblernotebooks.Fragments.ManualScribblerCode;
+import com.scribblernotebooks.scribblernotebooks.Fragments.ProfileFragment;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.R;
 
@@ -49,6 +52,7 @@ public class LeftNavigationDrawer {
     NavigationListAdapter navigationListAdapter;
     SharedPreferences sharedPreferences;
     Fragment fragment;
+    FrameLayout userDetailsHolder;
 
     ArrayList<Pair<Integer,String>> mNavigationDrawerItems;
     NavigationDrawer navigationDrawerActivity;
@@ -91,7 +95,24 @@ public class LeftNavigationDrawer {
         mDrawer = (RelativeLayout) mainView.findViewById(R.id.left_drawer_relative);
         uName = (TextView) mainView.findViewById(R.id.userName);
         uPhoto = (ImageView) mainView.findViewById(R.id.userPhoto);
+        userDetailsHolder=(FrameLayout)mainView.findViewById(R.id.userHolder);
         final DrawerLayout mDrawerLayout = (DrawerLayout) mainView.findViewById(R.id.drawer_layout);
+
+        /**
+         * Open Profile management when user clicks section of navigation drawer
+         */
+        userDetailsHolder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Fragment fragment= ProfileFragment.newInstance("Profile");
+                FragmentManager fragmentManager = navigationDrawerActivity.getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.content_frame, fragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+                mDrawerLayout.closeDrawers();
+            }
+        });
 
 
         /**Getting user details from shared preferences*/
@@ -151,8 +172,10 @@ public class LeftNavigationDrawer {
                     FragmentManager fragmentManager = navigationDrawerActivity.getSupportFragmentManager();
                     fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
 
-                    mDrawerList.setItemChecked(position, true);
-                    mDrawerList.setSelection(position);
+                    if(position!=0) {
+                        mDrawerList.setItemChecked(position, true);
+                        mDrawerList.setSelection(position);
+                    }
                     try {
                         navigationDrawerActivity.getSupportActionBar().setTitle(mNavigationDrawerItems.get(position).second);
                     } catch (Exception e) {

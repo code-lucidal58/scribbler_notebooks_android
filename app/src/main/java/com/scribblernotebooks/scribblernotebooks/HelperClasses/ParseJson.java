@@ -18,7 +18,7 @@ public class ParseJson {
 
         try{
             JSONObject jsonObject = new JSONObject(url);
-            JSONArray jsonArray = jsonObject.optJSONArray("listview_item_deals");
+            JSONArray jsonArray = jsonObject.optJSONArray("deals");
             int lengthJsonArr= jsonArray.length();
 
             for(int i=0;i<lengthJsonArr;i++)

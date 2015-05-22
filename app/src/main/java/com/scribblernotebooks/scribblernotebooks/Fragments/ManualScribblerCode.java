@@ -14,6 +14,8 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -152,7 +154,27 @@ public class ManualScribblerCode extends Fragment {
            getResources().getDrawable(R.drawable.n8),
         });
         notificationIcon.setImageDrawable(cyclicTransitionDrawable);
-        cyclicTransitionDrawable.startTransition(NOTIFICATION_ICON_TRANSITION_DURATION,0);
+        cyclicTransitionDrawable.startTransition(NOTIFICATION_ICON_TRANSITION_DURATION, 0);
+        final Animation dance= AnimationUtils.loadAnimation(mContext,R.anim.dancing_notification_icon);
+        dance.setFillEnabled(true);
+        dance.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                notificationIcon.startAnimation(dance);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        notificationIcon.startAnimation(dance);
+
 
 
 

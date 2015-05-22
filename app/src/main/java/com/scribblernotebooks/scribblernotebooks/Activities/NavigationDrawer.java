@@ -109,7 +109,11 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        finish();
+        if(getSupportFragmentManager().getBackStackEntryCount()>0){
+            getSupportFragmentManager().popBackStack();
+        }
+        else
+            finish();
     }
 
     @Override
