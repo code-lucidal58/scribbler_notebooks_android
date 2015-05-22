@@ -80,8 +80,6 @@ public class LeftNavigationDrawer {
                 .cacheInMemory(true)
                 .considerExifParams(true)
                 .displayer(new RoundedBitmapDisplayer(20)).build();
-
-
         instantiate();
     }
 

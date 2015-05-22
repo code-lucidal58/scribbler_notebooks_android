@@ -23,15 +23,20 @@ public class Constants {
     public static final String TAG_LONG_DESCRIPTION = "ldescription";
     public static final String TAG_ID = "id";
     public static final String TAG_CATEGORY = "category";
-    public static final String TAG_NEW = "newHot";
-
-
-    public static final String PREF_NAME = "LogInOut";
-    public static final String PREF_DATA_NAME = "Name";
-    public static final String PREF_DATA_PHOTO = "ImageUrl";
-    public static final String PREF_BOOL_SIGN = "SignStatus";
 
     public static final String URL_ARGUMENT = "urlArg";
+
+    public static final String PREF_NAME="LogInOut";
+    public static final String PREF_DATA_NAME="Name";
+    public static final String PREF_DATA_PHOTO="ImageUrl";
+    public static final String PREF_DATA_EMAIL="EmailId";
+
+    public static final String PROFILE_FIELD_CLAIM="Claimed Deals";
+    public static final String PROFILE_FIELD_LIKE="Liked Deals";
+    public static final String PROFILE_FIELD_SHARE="Shared Deals";
+    public static final String PROFILE_FIELD_FOLLOWER="Followers";
+    public static final String PROFILE_FIELD_FOLLOWING="Following";
+    public static final String PROFILE_FIELD_INVITE="Invite Friends";
 
 
 

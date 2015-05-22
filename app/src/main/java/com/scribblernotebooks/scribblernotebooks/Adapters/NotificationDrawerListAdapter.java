@@ -44,7 +44,7 @@ public class NotificationDrawerListAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         View vi=convertView;
         if(convertView==null)
-            vi = inflater.inflate(R.layout.notification_layout, parent,false);
+            vi = inflater.inflate(R.layout.listview_item_rightdrawer, parent,false);
 
         notificationImage=(ImageView)vi.findViewById(R.id.notificationIcon);
         notificationText=(TextView)vi.findViewById(R.id.notificationText);
