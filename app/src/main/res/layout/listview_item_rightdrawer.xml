@@ -4,8 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="65dp"
     android:padding="5dp"
-    android:layout_weight="10"
-    android:background="#aa000000">
+    android:layout_weight="10">
 
     <ImageView
         android:layout_width="0dp"
@@ -20,8 +19,8 @@
         android:paddingLeft="5dp"
         android:layout_height="match_parent"
         android:gravity="center_vertical"
-        android:textSize="14sp"
-        android:textColor="#EEE"
+        android:textSize="15sp"
+        android:textColor="@color/primary_text_default_material_light"
         android:id="@+id/notificationText"
         android:text="Notification Text"/>
 

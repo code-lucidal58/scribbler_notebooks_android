@@ -25,6 +25,9 @@ public class CircleNotificationIndicatorView extends SurfaceView implements Surf
     ColorChangeThread colorChangeThread;
     private SurfaceHolder surfaceHolder;
 
+    /**
+     * Default Constructors
+     */
     public CircleNotificationIndicatorView(Context context) {
         super(context);
         paint = new Paint();
@@ -43,6 +46,7 @@ public class CircleNotificationIndicatorView extends SurfaceView implements Surf
         paint = new Paint();
         init();
     }
+
 
     public void init() {
         x = getWidth();

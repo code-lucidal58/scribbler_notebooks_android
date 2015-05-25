@@ -2,7 +2,9 @@ package com.scribblernotebooks.scribblernotebooks.HelperClasses;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.text.TextUtils;
 import android.util.Pair;
+import android.util.Patterns;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.TranslateAnimation;
@@ -40,6 +42,15 @@ public class Constants {
     public static final String PROFILE_FIELD_FOLLOWER="Followers";
     public static final String PROFILE_FIELD_FOLLOWING="Following";
     public static final String PROFILE_FIELD_INVITE="Invite Friends";
+
+
+    /**
+     * Verify Email
+     */
+    public static boolean isValidEmailId(CharSequence target){
+        return !TextUtils.isEmpty(target) && Patterns.EMAIL_ADDRESS.matcher(target).matches();
+    }
+
 
 
     /**

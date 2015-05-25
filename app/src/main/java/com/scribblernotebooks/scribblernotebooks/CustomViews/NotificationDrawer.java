@@ -36,10 +36,8 @@ public class NotificationDrawer {
         notificationsListView = (ListView) mainView.findViewById(R.id.right_drawer);
 
         //Get notifications code
-        String[] notificationList = new String[3];
-        notificationList[0] = "Notification 1";
-        notificationList[1] = "Notification 2";
-        notificationList[2] = "Notification 3";
+        String[] notificationList = new String[1];
+        notificationList[0]=mContext.getResources().getString(R.string.noNotificationText);
 
         //Adapter setup
         drawerListAdapter = new NotificationDrawerListAdapter(mContext, notificationList);

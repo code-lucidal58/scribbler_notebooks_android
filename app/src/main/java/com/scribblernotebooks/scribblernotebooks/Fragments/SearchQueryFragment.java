@@ -47,7 +47,7 @@ public class SearchQueryFragment extends android.support.v4.app.Fragment {
     EditText query;
     TextView optionName;
     RecyclerView recyclerView;
-    SearchListAdapter searchListAdapter;
+    SearchListAdapter searchListAdapter,querySearchListAdapter;
     Context context;
     ArrayList<String> suggestionList;
 
@@ -111,6 +111,7 @@ public class SearchQueryFragment extends android.support.v4.app.Fragment {
         /**
          * Change in query detected, and suggestions displayed accordingly
          */
+        querySearchListAdapter=new SearchListAdapter(suggestionList);
         query.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -118,9 +119,7 @@ public class SearchQueryFragment extends android.support.v4.app.Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                ArrayList<String> result= searchListAdapter.searchResult(s);
-                if(result.isEmpty())
-                    result=suggestionList;
+                ArrayList<String> result= querySearchListAdapter.searchResult(s);
                 searchListAdapter=new SearchListAdapter(result);
                 recyclerView.setAdapter(searchListAdapter);
             }

@@ -2,14 +2,18 @@ package com.scribblernotebooks.scribblernotebooks.Activities;
 
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.graphics.drawable.ScaleDrawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -40,6 +44,8 @@ import org.json.JSONObject;
 public class LogIn extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
 
+    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+    private final static String TAG="LogIn";
     EditText name, mobile;
     Button signIn;
     String userName = "", userEmail = "";
@@ -89,6 +95,9 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
 
         setContentView(R.layout.activity_log_in);
 
+        if(!checkPlayServices()){
+            Toast.makeText(this,"Google play services not installed on your device. Notification won't be shown",Toast.LENGTH_LONG).show();
+        }
 
         /**
          * Facebook Login initialize
@@ -218,7 +227,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         screenWidth = displayMetrics.widthPixels;
         screenHeight = displayMetrics.heightPixels;
         Constants.setMovingAnimation(cloud1, Constants.getRandomInt(5000, 15000), screenWidth, (float) (Math.random() * (screenHeight / 2)), true, screenHeight);
-        Constants.setMovingAnimation(cloud2, Constants.getRandomInt(7000, 20000), screenWidth, (float) (Math.random() * (screenHeight / 2)), true, screenHeight);
+        Constants.setMovingAnimation(cloud2, Constants.getRandomInt(10000, 25000), screenWidth, (float) (Math.random() * (screenHeight / 2)), true, screenHeight);
 
         int width = signInButton.getWidth();
         int height = signInButton.getHeight();
@@ -236,14 +245,20 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                 userName = name.getText().toString();
                 userEmail = mobile.getText().toString();
 
-                if (userName.isEmpty() || userEmail.isEmpty()) {
-                    Toast.makeText(getBaseContext(), "Enter valid inputs", Toast.LENGTH_SHORT).show();
-                } else {
+                if (userName.isEmpty()) {
+                    Toast.makeText(getApplicationContext(),"Oops... Looks like its not a valid Name",Toast.LENGTH_LONG).show();
+                }
+                else if(Constants.isValidEmailId(userEmail) && userEmail.contains("@")){
+                    Toast.makeText(getApplicationContext(),"Oops... Looks like its not a valid Email Id",Toast.LENGTH_LONG).show();
+                }
+                else {
                     saveUserDetails(userName,userEmail,"","");
                 }
             }
         });
     }
+
+
 
 
     /**
@@ -322,15 +337,34 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sign_in_button:
-                if (!mGoogleApiClient.isConnecting()) {
-                    progressDialog.setMessage("Connecting...");
-                    progressDialog.show();
-                    mSignInClicked = true;
-                    resolveSignInError();
+                if(isNetworkAvailable()) {
+                    if (!mGoogleApiClient.isConnecting()) {
+                        progressDialog.setMessage("Connecting...");
+                        progressDialog.show();
+                        mSignInClicked = true;
+                        resolveSignInError();
+                    }
+                }
+                else
+                {
+                    Toast toast=Toast.makeText(this,"Not connected to Internet\nPlease check the connection and try again later",Toast.LENGTH_SHORT);
+                    toast.setGravity(Gravity.CENTER,0,0);
+                    toast.show();
                 }
                 break;
         }
     }
+
+    /**
+     * Check if phone is connected to internet
+     */
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
 
     /**
      * Google Provided Method
@@ -388,10 +422,24 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         finish();
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        finish();
+
+    /**
+     * Function to check if google play services is available on the phone
+     * @return boolean indicating the availability GMS
+     */
+    private boolean checkPlayServices() {
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+                GooglePlayServicesUtil.getErrorDialog(resultCode, this,
+                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            } else {
+                Log.i(TAG, "This device is not supported.");
+                finish();
+            }
+            return false;
+        }
+        return true;
     }
 
 }

@@ -2,88 +2,147 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.scribblernotebooks.scribblernotebooks.ProfileFragment">
+    tools:context="com.scribblernotebooks.scribblernotebooks.ProfileFragment"
+    android:background="@color/darkBlue">
 
     <include
         android:id="@+id/app_bar"
         layout="@layout/app_bar" />
+    <!--<ImageView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:src="@drawable/bluehills"/>-->
 
-    <FrameLayout
-        android:id="@+id/fl"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_below="@+id/app_bar">
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:src="@drawable/navigation_drawer_cover_pic"
-            android:scaleType="fitXY"
-            android:id="@+id/profileCoverPic"/>
-
-
-        <RelativeLayout
-            android:id="@+id/linearLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom">
-
-            <com.scribblernotebooks.scribblernotebooks.CustomViews.RoundedImageView
-                android:layout_width="@dimen/profile_profilepic_size"
-                android:layout_height="@dimen/profile_profilepic_size"
-                android:layout_above="@+id/userName"
-                android:id="@+id/pic"
-                android:layout_marginLeft="10dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginBottom="5dp"
-                android:src="@mipmap/ic_launcher" />
-
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/userName"
-                android:textSize="18sp"
-                android:background="#66ffffff"
-                android:textStyle="bold"
-                android:padding="5dp"
-                android:textColor="@color/default_text_color"
-                android:layout_marginLeft="5dp"
-                android:layout_marginStart="5dp"
-                android:layout_above="@+id/userEmail"
-                android:text="User Name" />
-
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/userEmail"
-                android:textSize="16sp"
-                android:background="#66ffffff"
-                android:padding="5dp"
-                android:textColor="@color/default_text_color"
-                android:layout_marginLeft="5dp"
-                android:layout_marginStart="5dp"
-                android:layout_alignParentBottom="true"
-                android:text="user@domain.com" />
-
-        </RelativeLayout>
-
-    </FrameLayout>
-
-
-    <RelativeLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/fl"
-        android:layout_marginTop="20dp">
+        android:id="@+id/sl"
+        android:layout_below="@+id/app_bar">
 
-        <ListView
-            android:id="@+id/user_list"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:choiceMode="singleChoice"
-            android:dividerHeight="0dp" />
+            android:layout_height="match_parent">
 
-    </RelativeLayout>
+            <FrameLayout
+                android:id="@+id/fl"
+                android:layout_width="match_parent"
+                android:layout_height="200dp">
+
+                <ImageView
+                    android:id="@+id/profileCoverPic"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/navigation_drawer_cover_pic" />
+
+
+                <RelativeLayout
+                    android:id="@+id/linearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_marginBottom="10dp">
+
+                    <com.scribblernotebooks.scribblernotebooks.CustomViews.RoundedImageView
+                        android:id="@+id/pic"
+                        android:layout_width="@dimen/profile_profilepic_size"
+                        android:layout_height="@dimen/profile_profilepic_size"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginStart="10dp"
+                        android:src="@mipmap/ic_launcher" />
+
+                    <!--android:layout_above="@+id/userName"-->
+
+                    <!--<EditText-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:id="@+id/userName"-->
+                    <!--android:textSize="18sp"-->
+                    <!--android:background="#66ffffff"-->
+                    <!--android:textStyle="bold"-->
+                    <!--android:padding="5dp"-->
+                    <!--android:textColor="@color/default_text_color"-->
+                    <!--android:layout_marginLeft="5dp"-->
+                    <!--android:layout_marginStart="5dp"-->
+                    <!--android:layout_above="@+id/userEmail"-->
+                    <!--android:enabled="false"-->
+                    <!--android:text="User Name" />-->
+
+
+                    <!--<EditText-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:id="@+id/userEmail"-->
+                    <!--android:textSize="16sp"-->
+                    <!--android:background="#66ffffff"-->
+                    <!--android:padding="5dp"-->
+                    <!--android:textColor="@color/default_text_color"-->
+                    <!--android:layout_marginLeft="5dp"-->
+                    <!--android:layout_marginStart="5dp"-->
+                    <!--android:layout_alignParentBottom="true"-->
+                    <!--android:enabled="false"-->
+                    <!--android:text="user@domain.com" />-->
+
+                </RelativeLayout>
+
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2"
+                android:padding="5dp"
+                android:orientation="horizontal"
+                android:layout_below="@+id/fl">
+
+
+                <EditText
+                    android:id="@+id/userName"
+                    style="@style/SignInEditText"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="2.5dp"
+                    android:layout_marginRight="2.5dp"
+                    android:hint="Name"
+                    android:textColor="@color/loginEditTextTextColor"
+                    android:textColorHint="@color/hint_foreground_material_light"
+                    android:textSize="16sp" />
+
+
+                <EditText
+                    android:id="@+id/userEmail"
+                    style="@style/SignInEditText"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/userName"
+                    android:hint="Email Id"
+                    android:textColor="@color/loginEditTextTextColor"
+                    android:textColorHint="@color/hint_foreground_material_light"
+                    android:layout_marginLeft="2.5dp"
+                    android:layout_marginStart="2.5dp"
+                    android:textSize="16sp" />
+
+
+            </LinearLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/userEmail"
+                android:layout_marginTop="20dp">
+
+                <ListView
+                    android:id="@+id/user_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:choiceMode="singleChoice"
+                    android:visibility="gone"
+                    android:dividerHeight="0dp" />
+
+            </RelativeLayout>
+        </RelativeLayout>
+    </ScrollView>
 </RelativeLayout>

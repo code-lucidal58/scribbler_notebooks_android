@@ -4,7 +4,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/search"
-    android:background="#ff3e8791"
+    android:background="@color/darkBlue"
     android:paddingTop="3dp"
     android:id="@+id/searchbar"
     android:orientation="horizontal"

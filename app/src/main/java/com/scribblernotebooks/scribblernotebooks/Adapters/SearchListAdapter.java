@@ -53,10 +53,10 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
 
     public ArrayList<String> searchResult(CharSequence s){
         ArrayList<String> result=new ArrayList<>();
-        for(int i=0;i<suggestionList.size();i++)
-        {
-            if(suggestionList.get(i).contains(s))
-            {
+        for(int i=0;i<suggestionList.size();i++) {
+            String str1 = suggestionList.get(i).toLowerCase();
+            String str2 = s.toString().toLowerCase();
+            if (str1.contains(str2)) {
                 result.add(suggestionList.get(i));
             }
         }

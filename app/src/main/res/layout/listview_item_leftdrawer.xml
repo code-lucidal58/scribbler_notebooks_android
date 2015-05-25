@@ -3,7 +3,9 @@
     android:layout_height="wrap_content"
     android:background="?android:attr/activatedBackgroundIndicator"
     android:orientation="horizontal"
-    android:padding="10dp">
+    android:padding="10dp"
+    android:layout_marginLeft="5dp"
+    android:layout_marginStart="5dp">
 
     <ImageView
         android:layout_width="@dimen/navigation_drawer_icon_size"
@@ -16,7 +18,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginStart="20dp"
         android:text="Folder name here."
         android:textAppearance="?android:attr/textAppearanceListItemSmall"
         android:textColor="@color/navigation_drawer_list_text_color"

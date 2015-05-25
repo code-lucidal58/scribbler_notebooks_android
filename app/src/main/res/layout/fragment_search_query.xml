@@ -2,14 +2,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ff3e8791"
+    android:background="@color/darkBlue"
     tools:context="com.scribblernotebooks.scribblernotebooks.SearchQuery">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/during_searchbar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/search"
-        android:background="#ff3e8791"
+        android:background="@color/darkBlue"
         android:orientation="horizontal"
         android:padding="0dp"
         android:weightSum="5">
@@ -25,7 +25,8 @@
                 android:layout_width="@dimen/searchBarIconSize"
                 android:layout_height="@dimen/searchBarIconSize"
                 android:layout_centerHorizontal="true"
-                android:src="@drawable/like" />
+                android:layout_marginTop="10sp"
+                android:src="@drawable/category" />
 
             <TextView
                 android:id="@+id/option_name"
@@ -53,9 +54,9 @@
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:gravity="center_vertical"
-            android:hint="Search Category"
             android:inputType="textAutoComplete"
             android:paddingLeft="15dp"
+            android:hint=""
             android:textColor="@color/loginEditText2TextColor"
             android:textColorHint="@color/loginEditTextHintColor"
             android:textSize="@dimen/searchBarEditTextFontSize" />
@@ -67,7 +68,7 @@
             android:layout_gravity="center"
             android:layout_weight="1"
             android:padding="10dp"
-            android:src="@drawable/ic_action_remove" />
+            android:src="@drawable/ic_action_cancel" />
 
     </LinearLayout>
 

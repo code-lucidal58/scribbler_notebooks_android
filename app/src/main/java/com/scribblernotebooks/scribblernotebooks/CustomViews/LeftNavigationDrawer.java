@@ -57,6 +57,7 @@ public class LeftNavigationDrawer {
     ArrayList<Pair<Integer,String>> mNavigationDrawerItems;
     NavigationDrawer navigationDrawerActivity;
     public DisplayImageOptions displayImageOptions;
+    public DisplayImageOptions displayImageOptionsCover;
     public ImageLoadingListener imageLoadingListener;
     public ImageLoaderConfiguration imageLoaderConfiguration;
 
@@ -85,6 +86,16 @@ public class LeftNavigationDrawer {
                 .cacheInMemory(true)
                 .considerExifParams(true)
                 .displayer(new SimpleBitmapDisplayer()).build();
+        displayImageOptionsCover=new DisplayImageOptions.Builder()
+                .showImageOnLoading(R.drawable.navigation_drawer_cover_pic)
+                .showImageForEmptyUri(R.drawable.navigation_drawer_cover_pic)
+                .showImageOnFail(R.drawable.navigation_drawer_cover_pic)
+                .cacheOnDisk(true)
+                .cacheInMemory(true)
+                .considerExifParams(true)
+                .displayer(new SimpleBitmapDisplayer()).build();
+
+
         instantiate();
     }
 
@@ -132,7 +143,7 @@ public class LeftNavigationDrawer {
         Log.e("PhotoURL Cover",userCoverUrl);
         if(!coverUrl.isEmpty()){
             if(coverUrl.contains("http") || coverUrl.contains("ftp")){
-                ImageLoader.getInstance().displayImage(coverUrl,uCoverPic,displayImageOptions,imageLoadingListener);
+                ImageLoader.getInstance().displayImage(coverUrl,uCoverPic,displayImageOptionsCover,imageLoadingListener);
             }else {
                 uCoverPic.setImageBitmap(Constants.getScaledBitmap(coverUrl, 267, 200));
             }

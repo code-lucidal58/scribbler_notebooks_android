@@ -82,6 +82,7 @@
                 android:paddingTop="2dp"
                 android:paddingBottom="2dp"
                 android:hint="Name"
+                android:nextFocusDown="@+id/mobileNo"
                 android:inputType="textPersonName"
                 android:textSize="@dimen/loginEditTextFontSize"/>
 
@@ -91,6 +92,7 @@
                 android:textColorHint="@color/loginEditTextHintColor"
                 android:layout_height="@dimen/loginEditTextHeight"
                 android:id="@+id/mobileNo"
+                android:nextFocusUp="@+id/name"
                 android:textColor="@color/loginEditTextTextColor"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="3dp"

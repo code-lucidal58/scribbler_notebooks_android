@@ -7,9 +7,14 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.widget.Toast;
 
 import com.facebook.login.LoginManager;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.DealPopup;
@@ -28,6 +33,9 @@ import java.util.TimerTask;
 public class NavigationDrawer extends AppCompatActivity implements ProfileFragment.OnFragmentInteractionListener,
         DealsFragment.OnFragmentInteractionListener,ManualScribblerCode.OnFragmentInteractionListener, SearchQueryFragment.OnFragmentInteractionListener {
 
+
+    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+    private final static String TAG="NavigationActivity";
     public DrawerLayout mDrawerLayout;
     public static GoogleApiClient mGoogleApiClient;
     View mainView;
@@ -43,6 +51,9 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
 
         sContext=getApplicationContext();
 
+        if(!checkPlayServices()){
+            Toast.makeText(this, "Google play services not installed on your device. Notification won't be shown", Toast.LENGTH_LONG).show();
+        }
         /** Save the whole view in a variable to pass into different modules of the app */
         mainView = View.inflate(getApplicationContext(), R.layout.activity_navigation_drawer, null);
         setContentView(mainView);
@@ -65,7 +76,7 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
                             }
                         });
                     }
-                }, 1000);
+                }, 3000);
             }
         });
 
@@ -108,7 +119,10 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
 
     @Override
     public void onBackPressed() {
-        if(getSupportFragmentManager().getBackStackEntryCount()>0){
+        if(mDrawerLayout.isDrawerOpen(Gravity.START|Gravity.END)){
+            mDrawerLayout.closeDrawers();
+        }
+        else if(getSupportFragmentManager().getBackStackEntryCount()>0){
             getSupportFragmentManager().popBackStack();
         }
         else
@@ -162,4 +176,24 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
         dealPopup.setUrl(url);
         dealPopup.show();
     }
+
+    /**
+     * Function to check if google play services is available on the phone
+     * @return boolean indicating the availability GMS
+     */
+    private boolean checkPlayServices() {
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+                GooglePlayServicesUtil.getErrorDialog(resultCode, this,
+                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            } else {
+                Log.i(TAG, "This device is not supported.");
+                finish();
+            }
+            return false;
+        }
+        return true;
+    }
+
 }

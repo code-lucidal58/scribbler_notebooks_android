@@ -5,6 +5,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -21,9 +23,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.scribblernotebooks.scribblernotebooks.Adapters.HidingScrollListener;
 import com.scribblernotebooks.scribblernotebooks.Adapters.RecyclerDealsAdapter;
@@ -60,6 +64,8 @@ public class DealsFragment extends android.support.v4.app.Fragment {
     ImageView nav;
     DrawerLayout mDrawerLayout;
     RelativeLayout mDrawer;
+    TextView noConnectionText;
+    Button noConnectionButton;
 
     // TODO: Rename and change types of parameters
 
@@ -103,6 +109,8 @@ public class DealsFragment extends android.support.v4.app.Fragment {
         // Inflate the layout for this fragment
         View v= inflater.inflate(R.layout.fragment_deals, container, false);
         context=getActivity();
+        noConnectionText=(TextView)v.findViewById(R.id.noConnectionText);
+        noConnectionButton=(Button)v.findViewById(R.id.noConnectionButton);
 
         //Progress Dialog Setup
         progressDialog=new ProgressDialog(context);
@@ -178,7 +186,15 @@ public class DealsFragment extends android.support.v4.app.Fragment {
         });
 
         //Get response from server
-        new LongOperation().execute(url);
+
+        runAsyncTask();
+
+        noConnectionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                runAsyncTask();
+            }
+        });
 
         //recyclerView setup
         recyclerView.setLayoutManager(new GridLayoutManager(context, getResources().getInteger(R.integer.dealListColoumnCount)));
@@ -278,5 +294,30 @@ public class DealsFragment extends android.support.v4.app.Fragment {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
     }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    /**
+     * Run AsyncTask Only after phone is connected to internet
+     */
+    public void runAsyncTask(){
+        if(!isNetworkAvailable())
+        {
+            noConnectionText.setVisibility(View.VISIBLE);
+            noConnectionButton.setVisibility(View.VISIBLE);
+        }
+        else{
+            noConnectionText.setVisibility(View.GONE);
+            noConnectionButton.setVisibility(View.GONE);
+            //Get response from server
+            new LongOperation().execute(url);
+        }
+    }
+
 
 }

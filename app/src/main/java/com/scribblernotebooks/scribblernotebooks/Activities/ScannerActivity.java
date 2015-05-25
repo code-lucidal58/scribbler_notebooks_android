@@ -5,7 +5,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -68,11 +67,10 @@ public class ScannerActivity extends AppCompatActivity {
          *
          * onTouch is used instead of onClick as Scanner slows down user interface and makes recognising click slow
          */
-        manual.setOnTouchListener(new View.OnTouchListener() {
+        manual.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
+            public void onClick(View v) {
                 switchToManual(v);
-                return true;
             }
         });
 
@@ -81,6 +79,8 @@ public class ScannerActivity extends AppCompatActivity {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                compoundBarcodeView.pause();
+                finish();
             }
         });
     }
