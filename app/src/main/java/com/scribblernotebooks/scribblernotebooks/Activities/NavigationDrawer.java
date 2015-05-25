@@ -112,7 +112,9 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
             getSupportFragmentManager().popBackStack();
         }
         else
+        {
             this.finish();
+        }
     }
 
     @Override

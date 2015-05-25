@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <set xmlns:android="http://schemas.android.com/apk/res/android">
-    <rotate android:fromDegrees="0" android:toDegrees="30" android:duration="400" android:pivotY="0" android:pivotX="20" />
-    <rotate android:fromDegrees="0" android:toDegrees="-60" android:duration="800" android:pivotY="0" android:pivotX="20" android:startOffset="500"/>
-    <rotate android:fromDegrees="0" android:toDegrees="30" android:duration="400" android:pivotX="20" android:pivotY="0" android:startOffset="1500" />
+
+    <rotate android:fromDegrees="0" android:toDegrees="30" android:duration="400" android:pivotY="0" android:pivotX="20" android:startOffset="0" />
+    <rotate android:fromDegrees="0" android:toDegrees="-60" android:duration="800" android:pivotY="0" android:pivotX="20" android:startOffset="400"/>
+    <rotate android:fromDegrees="0" android:toDegrees="30" android:duration="400" android:pivotX="20" android:pivotY="0" android:startOffset="1200" />
+
 </set>

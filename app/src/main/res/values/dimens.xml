@@ -54,6 +54,7 @@
     <dimen name="userEmailTextSize">15sp</dimen>
     <dimen name="userPicSize">70dp</dimen>
     <dimen name="notificationIconSize">40dp</dimen>
+    <dimen name="profile_profilepic_size">60dp</dimen>
 
 
 </resources>

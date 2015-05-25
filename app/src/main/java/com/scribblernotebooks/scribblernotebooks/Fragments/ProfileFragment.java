@@ -3,9 +3,12 @@ package com.scribblernotebooks.scribblernotebooks.Fragments;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -21,7 +24,7 @@ import android.widget.TextView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
+import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.scribblernotebooks.scribblernotebooks.Adapters.ProfileListAdapter;
@@ -44,8 +47,8 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String TITLE = "title";
 
-    ImageView imageView;
-    TextView user;
+    ImageView userPic, userCoverPic;
+    TextView user,userEmail;
     Context context;
     ListView listView;
     ProfileListAdapter profileListAdapter;
@@ -55,9 +58,14 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
     String Imageurl;
     DrawerLayout mDrawerLayout;
     RelativeLayout mDrawer;
+    SharedPreferences userPref;
+    SharedPreferences.Editor userPrefEditor;
     public DisplayImageOptions displayImageOptions;
     public ImageLoadingListener imageLoadingListener;
     public ImageLoaderConfiguration imageLoaderConfiguration;
+
+    final int PROFILE_PIC_REQUEST_CODE=1;
+    final int COVER_PIC_REQUEST_CODE=2;
 
     // TODO: Rename and change types of parameters
     private String Title;
@@ -90,20 +98,8 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
         if (getArguments() != null) {
             Title = getArguments().getString(TITLE);
         }
-    }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View v= inflater.inflate(R.layout.fragment_profile, container, false);
         context=getActivity();
-        sharedPreferences=context.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
-        imageView=(ImageView)v.findViewById(R.id.pic);
-        user=(TextView)v.findViewById(R.id.username);
-        listView=(ListView)v.findViewById(R.id.user_list);
-        appbar=(Toolbar)v.findViewById(R.id.app_bar);
-
         /**Configurations for image caching library */
         imageLoaderConfiguration=new ImageLoaderConfiguration.Builder(context).build();
         ImageLoader.getInstance().init(imageLoaderConfiguration);
@@ -115,12 +111,71 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
                 .cacheOnDisk(true)
                 .cacheInMemory(true)
                 .considerExifParams(true)
-                .displayer(new RoundedBitmapDisplayer(20)).build();
+                .displayer(new SimpleBitmapDisplayer()).build();
+
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View v= inflater.inflate(R.layout.fragment_profile, container, false);
+        context=getActivity();
+        sharedPreferences=context.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
+        userPic =(ImageView)v.findViewById(R.id.pic);
+        userEmail=(TextView)v.findViewById(R.id.userEmail);
+        userCoverPic=(ImageView)v.findViewById(R.id.profileCoverPic);
+        user=(TextView)v.findViewById(R.id.userName);
+        listView=(ListView)v.findViewById(R.id.user_list);
+        appbar=(Toolbar)v.findViewById(R.id.app_bar);
+
+        /**Initiating Shared Prefs*/
+        userPref=context.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
+
+        /**Setting images from shared Prefs**/
+        String coverUrl=userPref.getString(Constants.PREF_DATA_COVER_PIC,"");
+        if(!coverUrl.isEmpty()){
+            if(coverUrl.contains("http") || coverUrl.contains("ftp")){
+                ImageLoader.getInstance().displayImage(coverUrl,userCoverPic,displayImageOptions,imageLoadingListener);
+            }else {
+                userCoverPic.setImageBitmap(Constants.getScaledBitmap(coverUrl, 267, 200));
+            }
+        }
+        String profileUrl=userPref.getString(Constants.PREF_DATA_PHOTO,"");
+        if(!profileUrl.isEmpty()){
+            if(profileUrl.contains("http") || profileUrl.contains("ftp")){
+                ImageLoader.getInstance().displayImage(profileUrl,userPic,displayImageOptions,imageLoadingListener);
+            }else {
+                userPic.setImageBitmap(Constants.getScaledBitmap(profileUrl, 60, 60));
+            }
+        }
+
+        /**
+         * Changing image for cover pic
+         */
+        userCoverPic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i=new Intent(Intent.ACTION_GET_CONTENT);
+                i.setType("image/*");
+                startActivityForResult(Intent.createChooser(i, "Select Cover Pic"), COVER_PIC_REQUEST_CODE);
+            }
+        });
+        userPic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i=new Intent(Intent.ACTION_GET_CONTENT);
+                i.setType("image/*");
+                startActivityForResult(Intent.createChooser(i, "Select Cover Pic"), PROFILE_PIC_REQUEST_CODE);
+            }
+        });
+
 
         //Setting of Toolbar
         ((AppCompatActivity)getActivity()).setSupportActionBar(appbar);
         getActivity().setTitle(Title);
         ((AppCompatActivity)getActivity()).getSupportActionBar().setHomeButtonEnabled(true);
+
 
         /**
          * Navigation Drawer Hamburger Icon Setup
@@ -151,13 +206,12 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
          * Profile Page main content and user details
          */
         String userName=sharedPreferences.getString(Constants.PREF_DATA_NAME,"Username");
-        String userEmail=sharedPreferences.getString(Constants.PREF_DATA_EMAIL,"EmailId");
-        user.setText(userName + "\n" + userEmail);
+        String email=sharedPreferences.getString(Constants.PREF_DATA_EMAIL,"EmailId");
+        user.setText(userName);
+        userEmail.setText(email);
 
-        Imageurl=sharedPreferences.getString(Constants.PREF_DATA_PHOTO,"");
-        /**Loading and caching image from url*/
-        ImageLoader.getInstance().displayImage(Imageurl,imageView,displayImageOptions,imageLoadingListener);
 
+        /**Profile Settings */
         profileField =new ArrayList<>();
         profileValue=new ArrayList<>();
         profileField.add(Constants.PROFILE_FIELD_CLAIM);profileValue.add("0");
@@ -172,6 +226,60 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
         return v;
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode==Activity.RESULT_OK) {
+            switch (requestCode) {
+                case COVER_PIC_REQUEST_CODE:
+                    setCoverPic(data);
+                    break;
+                case PROFILE_PIC_REQUEST_CODE:
+                    setProfilePic(data);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    public void setCoverPic(Intent result){
+        String picturePath=getImagePath(result);
+        userCoverPic.setImageBitmap(Constants.getScaledBitmap(picturePath, 267, 200));
+        userPrefEditor=userPref.edit();
+        userPrefEditor.putString(Constants.PREF_DATA_COVER_PIC, picturePath);
+        userPrefEditor.apply();
+        ((ImageView)mDrawer.findViewById(R.id.userCover)).setImageBitmap(Constants.getScaledBitmap(picturePath,267,200));
+    }
+
+    public void setProfilePic(Intent result){
+        String picturePath=getImagePath(result);
+        userPic.setImageBitmap(Constants.getScaledBitmap(picturePath,60,60));
+        userPrefEditor=userPref.edit();
+        userPrefEditor.putString(Constants.PREF_DATA_PHOTO, picturePath);
+        userPrefEditor.apply();
+        ((ImageView)mDrawer.findViewById(R.id.userPhoto)).setImageBitmap(Constants.getScaledBitmap(picturePath, 267, 200));
+    }
+
+    String getImagePath(Intent result){
+        Uri imageUri=result.getData();
+        String[] filePathColoumn={MediaStore.Images.Media.DATA};
+        Cursor cursor=context.getContentResolver().query(imageUri,filePathColoumn,null,null,null);
+        cursor.moveToFirst();
+        int coloumnIndex=cursor.getColumnIndex(filePathColoumn[0]);
+        String picturePath=cursor.getString(coloumnIndex);
+        cursor.close();
+        return picturePath;
+    }
+    
+
+
+
+
+
+    /**
+     * Auto Generated required Methods
+     */
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
