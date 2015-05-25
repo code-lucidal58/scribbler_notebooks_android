@@ -21,7 +21,7 @@ import android.widget.Toast;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
+import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.scribblernotebooks.scribblernotebooks.Activities.LogIn;
@@ -43,11 +43,11 @@ public class LeftNavigationDrawer {
     View mainView = null;
     Context mContext;
 
-    String userName, userPhotoUrl;
+    String userName, userPhotoUrl, userCoverUrl;
 
     ListView mDrawerList;
-    TextView uName;
-    ImageView uPhoto;
+    TextView uName, userEmail;
+    ImageView uPhoto,uCoverPic;
     RelativeLayout mDrawer;
     NavigationListAdapter navigationListAdapter;
     SharedPreferences sharedPreferences;
@@ -59,6 +59,7 @@ public class LeftNavigationDrawer {
     public DisplayImageOptions displayImageOptions;
     public ImageLoadingListener imageLoadingListener;
     public ImageLoaderConfiguration imageLoaderConfiguration;
+
 
     /**
      * Default constructor
@@ -83,7 +84,7 @@ public class LeftNavigationDrawer {
                 .cacheOnDisk(true)
                 .cacheInMemory(true)
                 .considerExifParams(true)
-                .displayer(new RoundedBitmapDisplayer(20)).build();
+                .displayer(new SimpleBitmapDisplayer()).build();
         instantiate();
     }
 
@@ -95,6 +96,8 @@ public class LeftNavigationDrawer {
         mDrawer = (RelativeLayout) mainView.findViewById(R.id.left_drawer_relative);
         uName = (TextView) mainView.findViewById(R.id.userName);
         uPhoto = (ImageView) mainView.findViewById(R.id.userPhoto);
+        uCoverPic=(ImageView)mainView.findViewById(R.id.userCover);
+        userEmail=(TextView)mainView.findViewById(R.id.userEmail);
         userDetailsHolder=(FrameLayout)mainView.findViewById(R.id.userHolder);
         final DrawerLayout mDrawerLayout = (DrawerLayout) mainView.findViewById(R.id.drawer_layout);
 
@@ -118,12 +121,32 @@ public class LeftNavigationDrawer {
         /**Getting user details from shared preferences*/
         sharedPreferences = mContext.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
         userName = sharedPreferences.getString(Constants.PREF_DATA_NAME, "UserName");
+        String email=sharedPreferences.getString(Constants.PREF_DATA_EMAIL,"user@domain.com");
         userPhotoUrl = sharedPreferences.getString(Constants.PREF_DATA_PHOTO, "");
-
+        userCoverUrl=sharedPreferences.getString(Constants.PREF_DATA_COVER_PIC,"");
         uName.setText(userName);
+        userEmail.setText(email);
 
         /**Loading and caching image from url*/
-        ImageLoader.getInstance().displayImage(userPhotoUrl,uPhoto,displayImageOptions,imageLoadingListener);
+        String coverUrl=userCoverUrl;
+        Log.e("PhotoURL Cover",userCoverUrl);
+        if(!coverUrl.isEmpty()){
+            if(coverUrl.contains("http") || coverUrl.contains("ftp")){
+                ImageLoader.getInstance().displayImage(coverUrl,uCoverPic,displayImageOptions,imageLoadingListener);
+            }else {
+                uCoverPic.setImageBitmap(Constants.getScaledBitmap(coverUrl, 267, 200));
+            }
+        }
+        
+        String profileUrl=userPhotoUrl;
+        Log.e("PhotoURL",userPhotoUrl);
+        if(!profileUrl.isEmpty()){
+            if(profileUrl.contains("http") || profileUrl.contains("ftp")){
+                ImageLoader.getInstance().displayImage(profileUrl,uPhoto,displayImageOptions,imageLoadingListener);
+            }else {
+                uPhoto.setImageBitmap(Constants.getScaledBitmap(profileUrl, 60, 60));
+            }
+        }
 
 
         /**Setting navigation Drawer**/
@@ -140,7 +163,7 @@ public class LeftNavigationDrawer {
             }
 
             private void selectItem(int position) {
-                String title=mNavigationDrawerItems.get(position).second;
+                String title = mNavigationDrawerItems.get(position).second;
                 switch (position) {
                     case 0:
                         mContext.startActivity(new Intent(mContext, ScannerActivity.class));
@@ -151,10 +174,10 @@ public class LeftNavigationDrawer {
 
                         break;
                     case 2:
-                        fragment = DealsFragment.newInstance(Constants.serverURL,title);
+                        fragment = DealsFragment.newInstance(Constants.serverURL, title);
                         break;
                     case 3:
-                        fragment = DealsFragment.newInstance(Constants.serverURL + "featuredDeals",title);
+                        fragment = DealsFragment.newInstance(Constants.serverURL + "featuredDeals", title);
                         break;
                     case 4:
                         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -172,7 +195,7 @@ public class LeftNavigationDrawer {
                     FragmentManager fragmentManager = navigationDrawerActivity.getSupportFragmentManager();
                     fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
 
-                    if(position!=0) {
+                    if (position != 0) {
                         mDrawerList.setItemChecked(position, true);
                         mDrawerList.setSelection(position);
                     }

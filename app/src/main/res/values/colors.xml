@@ -17,4 +17,6 @@
 
     <color name="navigation_drawer_list_text_color">#ff3c3c3c</color>
     <color name="navigation_drawer_background">#ffe3e3e3</color>
+    <color name="default_text_color">#000</color>
+    <color name="roundImageViewBorder">#FFF</color>
 </resources>

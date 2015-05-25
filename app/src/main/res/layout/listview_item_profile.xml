@@ -23,6 +23,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
+                android:textColor="@color/default_text_color"
                 android:paddingLeft="20sp"
                 android:text="Aanisha"
                 android:id="@+id/field"/>
@@ -39,6 +40,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="20"
+                android:textColor="@color/default_text_color"
                 android:gravity="center_vertical"
                 android:id="@+id/field_value"/>
 

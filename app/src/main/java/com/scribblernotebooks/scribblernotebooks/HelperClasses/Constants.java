@@ -1,5 +1,7 @@
 package com.scribblernotebooks.scribblernotebooks.HelperClasses;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Pair;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
@@ -29,6 +31,7 @@ public class Constants {
     public static final String PREF_NAME="LogInOut";
     public static final String PREF_DATA_NAME="Name";
     public static final String PREF_DATA_PHOTO="ImageUrl";
+    public static final String PREF_DATA_COVER_PIC="CoverPic";
     public static final String PREF_DATA_EMAIL="EmailId";
 
     public static final String PROFILE_FIELD_CLAIM="Claimed Deals";
@@ -39,12 +42,44 @@ public class Constants {
     public static final String PROFILE_FIELD_INVITE="Invite Friends";
 
 
+    /**
+     * Image Size Reducing
+     */
+    public static Bitmap getScaledBitmap(String picturePath, int width, int height) {
+        BitmapFactory.Options sizeOptions = new BitmapFactory.Options();
+        sizeOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(picturePath, sizeOptions);
 
+        int inSampleSize = calculateInSampleSize(sizeOptions, width, height);
 
+        sizeOptions.inJustDecodeBounds = false;
+        sizeOptions.inSampleSize = inSampleSize;
 
+        return BitmapFactory.decodeFile(picturePath, sizeOptions);
+    }
 
+    private static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
 
+        if (height > reqHeight || width > reqWidth) {
 
+            // Calculate ratios of height and width to requested height and
+            // width
+            final int heightRatio = Math.round((float) height / (float) reqHeight);
+            final int widthRatio = Math.round((float) width / (float) reqWidth);
+
+            // Choose the smallest ratio as inSampleSize value, this will
+            // guarantee
+            // a final image with both dimensions larger than or equal to the
+            // requested height and width.
+            inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
+        }
+
+        return inSampleSize;
+    }
 
 
 
@@ -108,11 +143,11 @@ public class Constants {
      */
     public static ArrayList<Pair<Integer,String>> getNavigationDrawerItems(){
         ArrayList<Pair<Integer,String>> item=new ArrayList<>();
-        item.add(Pair.create(R.drawable.qr_icon_small,"Scan QR Code"));
-        item.add(Pair.create(R.drawable.ic_launcher,"Enter Scribbler Code"));
-        item.add(Pair.create(R.drawable.ic_action_heart_blue,"All Deals"));
-        item.add(Pair.create(R.drawable.ic_action_heart_gray,"Featured Deals"));
-        item.add(Pair.create(R.drawable.ic_action_share,"Sign Out"));
+        item.add(Pair.create(R.drawable.scan_icon,"Scan QR Code"));
+        item.add(Pair.create(R.drawable.enter_code_icon,"Enter Scribbler Code"));
+        item.add(Pair.create(R.drawable.all_deals_icon,"All Deals"));
+        item.add(Pair.create(R.drawable.featured_deals_icon,"Featured Deals"));
+        item.add(Pair.create(R.drawable.sign_out_icon,"Sign Out"));
         return item;
     }
 

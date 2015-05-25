@@ -1,54 +1,89 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.scribblernotebooks.scribblernotebooks.ProfileFragment">
 
-    <RelativeLayout
+    <include
+        android:id="@+id/app_bar"
+        layout="@layout/app_bar" />
+
+    <FrameLayout
+        android:id="@+id/fl"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="200dp"
+        android:layout_below="@+id/app_bar">
 
-        <include layout="@layout/app_bar"
-            android:id="@+id/app_bar" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:orientation="horizontal"
-            android:weightSum="2"
-            android:layout_below="@id/app_bar"
-            android:id="@+id/linearLayout">
-
-            <com.scribblernotebooks.scribblernotebooks.CustomViews.RoundedImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:id="@+id/pic" />
-
-            <TextView
-                style="@style/font"
-                android:layout_width="wrap_content"
-                android:layout_height="60dp"
-                android:id="@+id/username"
-                android:layout_marginLeft="10dp"
-                android:layout_marginStart="10dp"
-                android:gravity="center_vertical"/>
-
-        </LinearLayout>
-
-        <RelativeLayout
+        <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="20dp"
-            android:layout_below="@id/linearLayout">
+            android:src="@drawable/navigation_drawer_cover_pic"
+            android:scaleType="fitXY"
+            android:id="@+id/profileCoverPic"/>
 
-            <ListView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:choiceMode="singleChoice"
-                android:dividerHeight="0dp"
-                android:id="@+id/user_list"/>
+
+        <RelativeLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom">
+
+            <com.scribblernotebooks.scribblernotebooks.CustomViews.RoundedImageView
+                android:layout_width="@dimen/profile_profilepic_size"
+                android:layout_height="@dimen/profile_profilepic_size"
+                android:layout_above="@+id/userName"
+                android:id="@+id/pic"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginBottom="5dp"
+                android:src="@mipmap/ic_launcher" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/userName"
+                android:textSize="18sp"
+                android:background="#66ffffff"
+                android:textStyle="bold"
+                android:padding="5dp"
+                android:textColor="@color/default_text_color"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_above="@+id/userEmail"
+                android:text="User Name" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/userEmail"
+                android:textSize="16sp"
+                android:background="#66ffffff"
+                android:padding="5dp"
+                android:textColor="@color/default_text_color"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_alignParentBottom="true"
+                android:text="user@domain.com" />
 
         </RelativeLayout>
-    </RelativeLayout>
 
-</FrameLayout>
+    </FrameLayout>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/fl"
+        android:layout_marginTop="20dp">
+
+        <ListView
+            android:id="@+id/user_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:choiceMode="singleChoice"
+            android:dividerHeight="0dp" />
+
+    </RelativeLayout>
+</RelativeLayout>

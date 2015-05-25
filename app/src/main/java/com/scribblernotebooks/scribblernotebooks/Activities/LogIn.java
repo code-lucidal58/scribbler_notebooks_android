@@ -42,7 +42,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
 
     EditText name, mobile;
     Button signIn;
-    String userName = "", userMobile = "";
+    String userName = "", userEmail = "";
     SignInButton signInButton;
     LoginButton loginButton;
     CallbackManager callbackManager;
@@ -107,11 +107,15 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                     @Override
                     public void onCompleted(JSONObject jsonObject, GraphResponse graphResponse) {
                         String name = jsonObject.optString("name");
-                        saveUserDetails(name);
+                        String email=jsonObject.optString("email");
+                        JSONObject cover=jsonObject.optJSONObject("cover");
+                        String coverPic=cover.optString("source");
+                        String userdp="https://graph.facebook.com/"+jsonObject.optString("id")+"/picture?type=large";
+                        saveUserDetails(name,email,userdp,coverPic);
                     }
                 });
                 Bundle parameters = new Bundle();
-                parameters.putString("fields", "id,name,email,gender, birthday,link");
+                parameters.putString("fields", "id,name,email,cover");
                 request.setParameters(parameters);
                 request.executeAsync();
             }
@@ -230,12 +234,12 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
             @Override
             public void onClick(View v) {
                 userName = name.getText().toString();
-                userMobile = mobile.getText().toString();
+                userEmail = mobile.getText().toString();
 
-                if (userName.isEmpty() || userMobile.isEmpty()) {
+                if (userName.isEmpty() || userEmail.isEmpty()) {
                     Toast.makeText(getBaseContext(), "Enter valid inputs", Toast.LENGTH_SHORT).show();
                 } else {
-                    saveUserDetails(userName);
+                    saveUserDetails(userName,userEmail,"","");
                 }
             }
         });
@@ -253,12 +257,10 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     protected void onActivityResult(int requestCode, int responseCode,
                                     Intent intent) {
         super.onActivityResult(requestCode, responseCode, intent);
-
         if (requestCode == RC_SIGN_IN) {
             if (responseCode != RESULT_OK) {
                 mSignInClicked = false;
             }
-
             mIntentInProgress = false;
 
             if (!mGoogleApiClient.isConnecting()) {
@@ -267,7 +269,6 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                 mGoogleApiClient.connect();
             }
         }
-
         callbackManager.onActivityResult(requestCode, responseCode, intent);
 
     }
@@ -354,17 +355,20 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
      * Fetching user's information name, email, profile pic
      */
     private void getProfileInformation() {
+        progressDialog.dismiss();
         try {
             if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
                 Person currentPerson = Plus.PeopleApi
                         .getCurrentPerson(mGoogleApiClient);
                 String personName = currentPerson.getDisplayName();
-                saveUserDetails(personName);
+                String personImageUrl=currentPerson.getImage().getUrl();
+                String userEmail=Plus.AccountApi.getAccountName(mGoogleApiClient);
+                String userCover=currentPerson.getCover().getCoverPhoto().getUrl();
+                saveUserDetails(personName,userEmail,personImageUrl,userCover);
             } else {
                 Toast.makeText(getApplicationContext(),
                         "Person information is null", Toast.LENGTH_LONG).show();
             }
-            progressDialog.dismiss();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -373,9 +377,12 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     /**
      * Saving User Details to check next time if already logged in
      */
-    private void saveUserDetails(String name) {
+    private void saveUserDetails(String name,String userEmail, String userImageUrl, String userCoverPic) {
         SharedPreferences.Editor editor = userPrefs.edit();
         editor.putString(Constants.PREF_DATA_NAME, name);
+        editor.putString(Constants.PREF_DATA_PHOTO,userImageUrl);
+        editor.putString(Constants.PREF_DATA_COVER_PIC,userCoverPic);
+        editor.putString(Constants.PREF_DATA_EMAIL,userEmail);
         editor.apply();
         startActivity(new Intent(getApplicationContext(), NavigationDrawer.class));
         finish();
@@ -384,7 +391,6 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        onDestroy();
         finish();
     }
 
