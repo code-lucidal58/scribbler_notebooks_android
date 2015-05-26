@@ -1,11 +1,18 @@
 package com.scribblernotebooks.scribblernotebooks.CustomViews;
 
 import android.content.Context;
+import android.support.v4.widget.DrawerLayout;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 
 import com.scribblernotebooks.scribblernotebooks.Adapters.NotificationDrawerListAdapter;
+import com.scribblernotebooks.scribblernotebooks.Handlers.NotificationDataHandler;
+import com.scribblernotebooks.scribblernotebooks.HelperClasses.Notifications;
 import com.scribblernotebooks.scribblernotebooks.R;
+
+import java.util.ArrayList;
 
 /**
  * Created by Jibin_ism on 17-May-15.
@@ -13,10 +20,12 @@ import com.scribblernotebooks.scribblernotebooks.R;
 public class NotificationDrawer {
 
     View mainView = null;
+    Button clearNotif;
     ListView notificationsListView;
     NotificationDrawerListAdapter drawerListAdapter;
     Context mContext;
-
+    ArrayList<Notifications> notificationList=new ArrayList<>();
+    Boolean refreshed=false;
 
     /**
      * Default Constructor
@@ -27,6 +36,7 @@ public class NotificationDrawer {
         super();
         this.mainView = activityView;
         this.mContext = context;
+
         instantiate();
     }
 
@@ -34,16 +44,59 @@ public class NotificationDrawer {
     protected void instantiate() {
         //View setup
         notificationsListView = (ListView) mainView.findViewById(R.id.right_drawer);
+        clearNotif=(Button)mainView.findViewById(R.id.clearNotifs);
 
-        //Get notifications code
-        String[] notificationList = new String[1];
-        notificationList[0]=mContext.getResources().getString(R.string.noNotificationText);
+        DrawerLayout mDrawerLayout=(DrawerLayout)mainView.findViewById(R.id.drawer_layout);
+        final RelativeLayout mDrawer=(RelativeLayout)mainView.findViewById(R.id.notification_drawer);
+
+        mDrawerLayout.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+                super.onDrawerSlide(drawerView, slideOffset);
+                if(slideOffset==1 || slideOffset==0){
+                    refreshed=false;
+                }
+                if ((slideOffset != 0 )  && drawerView==mDrawer && !refreshed) {
+                    notificationList = retrieveNotifications();
+                    drawerListAdapter = new NotificationDrawerListAdapter(mContext, notificationList);
+                    notificationsListView.setAdapter(drawerListAdapter);
+                }
+            }
+        });
+
+        clearNotif.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NotificationDataHandler handler=new NotificationDataHandler(mContext);
+                handler.open();
+                handler.deleteTable(NotificationDataHandler.TABLE_NAME_DEFAULT);
+                handler.close();
+                notificationList=retrieveNotifications();
+                drawerListAdapter = new NotificationDrawerListAdapter(mContext, notificationList);
+                notificationsListView.setAdapter(drawerListAdapter);
+
+            }
+        });
 
         //Adapter setup
         drawerListAdapter = new NotificationDrawerListAdapter(mContext, notificationList);
         notificationsListView.setAdapter(drawerListAdapter);
 
-
     }
+
+    protected ArrayList<Notifications> retrieveNotifications(){
+        ArrayList<Notifications> notificationsArrayList=new ArrayList<>();
+        NotificationDataHandler notifHandler=new NotificationDataHandler(mContext);
+        notifHandler.open();
+        notificationsArrayList = notifHandler.returnData(NotificationDataHandler.TABLE_NAME_DEFAULT);
+        notifHandler.close();
+        refreshed=true;
+        if(notificationsArrayList.isEmpty()){
+            notificationsArrayList.add(new Notifications(0, "You do not have any notifications", ""));
+        }
+        return notificationsArrayList;
+    }
+
+
 
 }

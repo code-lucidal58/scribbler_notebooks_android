@@ -2,7 +2,11 @@ package com.scribblernotebooks.scribblernotebooks.Activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
@@ -16,6 +20,7 @@ import com.facebook.login.LoginManager;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.plus.Plus;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.DealPopup;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.LeftNavigationDrawer;
@@ -24,10 +29,19 @@ import com.scribblernotebooks.scribblernotebooks.Fragments.DealsFragment;
 import com.scribblernotebooks.scribblernotebooks.Fragments.ManualScribblerCode;
 import com.scribblernotebooks.scribblernotebooks.Fragments.ProfileFragment;
 import com.scribblernotebooks.scribblernotebooks.Fragments.SearchQueryFragment;
+import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.R;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
+
+import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class NavigationDrawer extends AppCompatActivity implements ProfileFragment.OnFragmentInteractionListener,
@@ -45,6 +59,13 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
     static Context sContext;
 
 
+    GoogleCloudMessaging gcm;
+    AtomicInteger msg_id=new AtomicInteger();
+    String regId;
+    String SENDER_ID="872898499478";
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +78,23 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
         /** Save the whole view in a variable to pass into different modules of the app */
         mainView = View.inflate(getApplicationContext(), R.layout.activity_navigation_drawer, null);
         setContentView(mainView);
+
+
+        /**Registering user with GCM service**/
+        if(!checkPlayServices()){
+            Toast.makeText(this,"Google play services not installed on your device. Notification won't be shown",Toast.LENGTH_LONG).show();
+        }
+        else{
+            gcm=GoogleCloudMessaging.getInstance(getApplicationContext());
+            regId=getRegistrationId(getApplicationContext());
+            Log.e("GCM","Registered "+regId);
+            if(regId.isEmpty()){
+                registerInBackground();
+            }
+            else{
+                sendToServer(regId);
+            }
+        }
 
         /** Dimming Status Bar so that app is in focus */
         decorView = getWindow().getDecorView();
@@ -195,5 +233,138 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
         }
         return true;
     }
+
+
+    private String getRegistrationId(Context context){
+        final SharedPreferences gcmSharedPref= getGCMPreferences(context);
+        String regId=gcmSharedPref.getString(Constants.GCM_REG_ID,"");
+        Log.e("GCM","Pref "+regId);
+        if(regId.isEmpty()){
+            return "";
+        }
+        int registeredVersion=gcmSharedPref.getInt(Constants.GCM_APP_VERSION,Integer.MIN_VALUE);
+        int currentVersion=getAppVersion(context);
+        if(registeredVersion!=currentVersion){
+            Log.i(TAG,"App version changed");
+            return "";
+        }
+        return regId;
+    }
+
+    private SharedPreferences getGCMPreferences(Context context){
+        return getSharedPreferences(Constants.PREF_GCM_NAME,MODE_PRIVATE);
+    }
+
+
+    /**
+     * Registers the application with GCM servers asynchronously.
+     * <p>
+     * Stores the registration ID and app versionCode in the application's
+     * shared preferences.
+     */
+
+    private void registerInBackground(){
+        new GCMRegistration().execute();
+    }
+
+    private class GCMRegistration extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            String msg="";
+            Context context=getApplicationContext();
+            try{
+                if(gcm==null){
+                    gcm= GoogleCloudMessaging.getInstance(context);
+                }
+                regId=gcm.register(SENDER_ID);
+                Log.e("GCM","Registered "+regId);
+                msg="Device registered "+regId;
+                sendToServer(regId);
+                showToast(msg);
+                //TODO: send registration id to backend server
+
+
+                storeRegistrationId(context,regId);
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+            return null;
+        }
+    }
+
+
+    /**
+     * Store user reg id on server
+     * @param msg
+     */
+    public void sendToServer(String msg){
+        String name=getSharedPreferences(Constants.PREF_NAME,MODE_PRIVATE).getString(Constants.PREF_DATA_NAME,"").replace(" ","_");
+        String url="http://jazzyarchitects.orgfree.com/register_user.php?name="+name+"&id="+msg;
+        Log.e("Url",url);
+        new LongOperation().execute(url);
+    }
+
+    public class LongOperation extends AsyncTask<String, Void, Void> {
+
+        @Override
+        protected Void doInBackground(String... strings) {
+            try {
+                HttpClient client = new DefaultHttpClient();
+                HttpGet httpGet = new HttpGet(strings[0]);
+                ResponseHandler<String> responseHandler = new BasicResponseHandler();
+                client.execute(httpGet, responseHandler);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+    }
+
+
+
+
+
+
+    public void showToast(String msg){
+//        Toast.makeText(getApplicationContext(),msg,Toast.LENGTH_LONG).show();
+    }
+
+    /**
+     * Stores the registration ID and app versionCode in the application's
+     * {@code SharedPreferences}.
+     *
+     * @param context application's context.
+     * @param regId registration ID
+     */
+    private void storeRegistrationId(Context context, String regId) {
+        final SharedPreferences prefs = getGCMPreferences(context);
+        int appVersion = getAppVersion(context);
+        Log.e("GCM", "Saving regId on app version " + appVersion);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(Constants.GCM_REG_ID, regId);
+        editor.putInt(Constants.GCM_APP_VERSION, appVersion);
+        editor.apply();
+        Log.e("GCM", "After save +" + prefs.getString(Constants.GCM_REG_ID, ""));
+    }
+
+
+
+
+    /**
+     * @return Application's version code from the {@code PackageManager}.
+     */
+    private static int getAppVersion(Context context) {
+        try {
+            PackageInfo packageInfo = context.getPackageManager()
+                    .getPackageInfo(context.getPackageName(), 0);
+            return packageInfo.versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            // should never happen
+            throw new RuntimeException("Could not get package name: " + e);
+        }
+    }
+
 
 }

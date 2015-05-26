@@ -19,7 +19,7 @@
         <com.scribblernotebooks.scribblernotebooks.CustomViews.RoundedImageView
             android:layout_width="@dimen/searchBarIconSize"
             android:layout_height="@dimen/searchBarIconSize"
-            android:src="@drawable/like"
+            android:src="@drawable/category"
             android:layout_centerHorizontal="true"
             android:id="@+id/category"/>
         <TextView
@@ -43,7 +43,7 @@
         <com.scribblernotebooks.scribblernotebooks.CustomViews.RoundedImageView
             android:layout_width="@dimen/searchBarIconSize"
             android:layout_height="@dimen/searchBarIconSize"
-            android:src="@drawable/like"
+            android:src="@drawable/scan"
             android:layout_centerHorizontal="true"
             android:id="@+id/scan"/>
         <TextView
@@ -67,7 +67,7 @@
         <com.scribblernotebooks.scribblernotebooks.CustomViews.RoundedImageView
             android:layout_width="@dimen/searchBarIconSize"
             android:layout_height="@dimen/searchBarIconSize"
-            android:src="@drawable/like"
+            android:src="@drawable/search"
             android:layout_centerHorizontal="true"
             android:id="@+id/search"/>
         <TextView
@@ -91,7 +91,7 @@
         <com.scribblernotebooks.scribblernotebooks.CustomViews.RoundedImageView
             android:layout_width="@dimen/searchBarIconSize"
             android:layout_height="@dimen/searchBarIconSize"
-            android:src="@drawable/like"
+            android:src="@drawable/sort"
             android:layout_centerHorizontal="true"
             android:id="@+id/sort"/>
         <TextView

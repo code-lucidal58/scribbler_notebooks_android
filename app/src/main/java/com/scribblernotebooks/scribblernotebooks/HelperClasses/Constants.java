@@ -30,11 +30,19 @@ public class Constants {
 
     public static final String URL_ARGUMENT = "urlArg";
 
+    /**Shared Pref Tags for USER DATA **/
     public static final String PREF_NAME="LogInOut";
     public static final String PREF_DATA_NAME="Name";
     public static final String PREF_DATA_PHOTO="ImageUrl";
     public static final String PREF_DATA_COVER_PIC="CoverPic";
     public static final String PREF_DATA_EMAIL="EmailId";
+
+    /**Shared Pref Tags for GCM **/
+    public static final String PREF_GCM_NAME="gcmSharedPreferences";
+    public static final String GCM_REG_ID="registrationId";
+    public static final String GCM_APP_VERSION="appVersion";
+
+
 
     public static final String PROFILE_FIELD_CLAIM="Claimed Deals";
     public static final String PROFILE_FIELD_LIKE="Liked Deals";
@@ -42,6 +50,16 @@ public class Constants {
     public static final String PROFILE_FIELD_FOLLOWER="Followers";
     public static final String PROFILE_FIELD_FOLLOWING="Following";
     public static final String PROFILE_FIELD_INVITE="Invite Friends";
+
+
+
+
+
+
+
+
+
+
 
 
     /**

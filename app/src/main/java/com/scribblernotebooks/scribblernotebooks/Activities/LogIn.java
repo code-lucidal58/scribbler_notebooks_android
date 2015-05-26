@@ -43,7 +43,6 @@ import org.json.JSONObject;
 
 public class LogIn extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
-
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private final static String TAG="LogIn";
     EditText name, mobile;
@@ -95,9 +94,6 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
 
         setContentView(R.layout.activity_log_in);
 
-        if(!checkPlayServices()){
-            Toast.makeText(this,"Google play services not installed on your device. Notification won't be shown",Toast.LENGTH_LONG).show();
-        }
 
         /**
          * Facebook Login initialize
@@ -260,7 +256,6 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
 
 
 
-
     /**
      * Function Executed when user SignIns from Either google or facebook.
      *
@@ -289,7 +284,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     }
 
     /**
-     * GoogleAPI callbacks. Called after signin
+     * GoogleAPI callbacks. Called after sign in
      */
     @Override
     public void onConnected(Bundle arg0) {
