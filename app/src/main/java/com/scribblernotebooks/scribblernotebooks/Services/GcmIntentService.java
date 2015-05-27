@@ -49,6 +49,8 @@ public class GcmIntentService extends IntentService {
 
 
                 // Post notification of received message.
+                if(extras.getString("message").isEmpty())
+                    return;
                 sendNotification(extras.getString("message"));
                 Log.i(TAG, "Received: " + extras.toString());
             }
@@ -65,26 +67,17 @@ public class GcmIntentService extends IntentService {
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, NavigationDrawer.class), 0);
 
-        NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.n1)
-                        .setContentTitle("GCM Notification")
-                        .setStyle(new NotificationCompat.BigTextStyle()
-                                .bigText(msg))
-                        .setContentText(msg);
-
-        mBuilder.setContentIntent(contentIntent);
-        mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
 
 
         NotificationDataHandler notifHandler=new NotificationDataHandler(this);
         notifHandler.open();
+        String text="";
         try {
             JSONObject jsonObject = new JSONObject(msg);
             JSONArray jsonArray = jsonObject.optJSONArray("notification");
             JSONObject jsonChild = jsonArray.optJSONObject(0);
             int id = Integer.parseInt(jsonChild.optString("id"));
-            String text = jsonChild.optString("text");
+            text = jsonChild.optString("text");
             String url = jsonChild.optString("imgurl");
             notifHandler.insertData(NotificationDataHandler.TABLE_NAME_DEFAULT, id, text, url);
             notifHandler.insertData(NotificationDataHandler.TABLE_NAME_ALL, id, text, url);
@@ -95,6 +88,16 @@ public class GcmIntentService extends IntentService {
         notifHandler.close();
 
 
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.n1)
+                        .setContentTitle("GCM Notification")
+                        .setStyle(new NotificationCompat.BigTextStyle()
+                                .bigText(text))
+                        .setContentText(text);
+
+        mBuilder.setContentIntent(contentIntent);
+        mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
 
 
     }

@@ -10,6 +10,8 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <!-- For GCM implementation -->
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
@@ -80,6 +82,7 @@
             android:configChanges="keyboard|screenSize|orientation|layoutDirection"
             android:label="Scribbler Notebooks"
             android:launchMode="singleTask"
+            android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustPan|stateHidden" >
             <intent-filter>
                 <data
@@ -102,6 +105,11 @@
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".Services.LocationRetreiver"
+            android:exported="false" >
+        </service>
     </application>
 
 </manifest>

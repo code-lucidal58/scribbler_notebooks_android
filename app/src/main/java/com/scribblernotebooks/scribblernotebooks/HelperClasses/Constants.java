@@ -1,7 +1,10 @@
 package com.scribblernotebooks.scribblernotebooks.HelperClasses;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.text.TextUtils;
 import android.util.Pair;
 import android.util.Patterns;
@@ -27,6 +30,8 @@ public class Constants {
     public static final String TAG_LONG_DESCRIPTION = "ldescription";
     public static final String TAG_ID = "id";
     public static final String TAG_CATEGORY = "category";
+    public static final String TAG_IF_FEATURED="ifFeatured";
+    public static final String TAG_IF_FAVOURITE="ifFavorite";
 
     public static final String URL_ARGUMENT = "urlArg";
 
@@ -36,6 +41,10 @@ public class Constants {
     public static final String PREF_DATA_PHOTO="ImageUrl";
     public static final String PREF_DATA_COVER_PIC="CoverPic";
     public static final String PREF_DATA_EMAIL="EmailId";
+    public static final String PREF_DATA_MOBILE="mobileNo";
+    public static final String PREF_DATA_LOCATION="location";
+    public static final String PREF_DATA_PASS="password";
+
 
     /**Shared Pref Tags for GCM **/
     public static final String PREF_GCM_NAME="gcmSharedPreferences";
@@ -52,9 +61,19 @@ public class Constants {
     public static final String PROFILE_FIELD_INVITE="Invite Friends";
 
 
-
-
-
+    /**
+     * Basic Profile Info fields
+     */
+    public static final String[] sharedPrefTags={Constants.PREF_DATA_NAME,Constants.PREF_DATA_EMAIL,
+            Constants.PREF_DATA_MOBILE,Constants.PREF_DATA_LOCATION};
+    public static ArrayList<Pair<Integer,String>> getProfileInfoFields(){
+        ArrayList<Pair<Integer,String>> list=new ArrayList<>();
+        list.add(Pair.create(R.drawable.user,"Name"));
+        list.add(Pair.create(R.drawable.email, "Email Id"));
+        list.add(Pair.create(R.drawable.maillogin,"Contact Number"));
+        list.add(Pair.create(R.drawable.userlogin,"Location"));
+        return list;
+    }
 
 
 
@@ -179,6 +198,19 @@ public class Constants {
         item.add(Pair.create(R.drawable.sign_out_icon,"Sign Out"));
         return item;
     }
+
+
+    /**
+     * Check if phone is connected to internet
+     */
+    public static boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+
 
 }
 

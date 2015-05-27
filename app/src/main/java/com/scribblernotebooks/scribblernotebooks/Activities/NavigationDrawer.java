@@ -87,7 +87,7 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
         else{
             gcm=GoogleCloudMessaging.getInstance(getApplicationContext());
             regId=getRegistrationId(getApplicationContext());
-            Log.e("GCM","Registered "+regId);
+//            Log.e("GCM","Registered "+regId);
             if(regId.isEmpty()){
                 registerInBackground();
             }
@@ -238,7 +238,7 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
     private String getRegistrationId(Context context){
         final SharedPreferences gcmSharedPref= getGCMPreferences(context);
         String regId=gcmSharedPref.getString(Constants.GCM_REG_ID,"");
-        Log.e("GCM","Pref "+regId);
+//        Log.e("GCM","Pref "+regId);
         if(regId.isEmpty()){
             return "";
         }
@@ -277,7 +277,7 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
                     gcm= GoogleCloudMessaging.getInstance(context);
                 }
                 regId=gcm.register(SENDER_ID);
-                Log.e("GCM","Registered "+regId);
+//                Log.e("GCM","Registered "+regId);
                 msg="Device registered "+regId;
                 sendToServer(regId);
                 showToast(msg);
@@ -301,7 +301,7 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
     public void sendToServer(String msg){
         String name=getSharedPreferences(Constants.PREF_NAME,MODE_PRIVATE).getString(Constants.PREF_DATA_NAME,"").replace(" ","_");
         String url="http://jazzyarchitects.orgfree.com/register_user.php?name="+name+"&id="+msg;
-        Log.e("Url",url);
+//        Log.e("Url",url);
         new LongOperation().execute(url);
     }
 
@@ -346,7 +346,7 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
         editor.putString(Constants.GCM_REG_ID, regId);
         editor.putInt(Constants.GCM_APP_VERSION, appVersion);
         editor.apply();
-        Log.e("GCM", "After save +" + prefs.getString(Constants.GCM_REG_ID, ""));
+//        Log.e("GCM", "After save +" + prefs.getString(Constants.GCM_REG_ID, ""));
     }
 
 
@@ -365,6 +365,8 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
             throw new RuntimeException("Could not get package name: " + e);
         }
     }
+
+
 
 
 }

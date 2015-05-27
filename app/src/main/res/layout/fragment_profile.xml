@@ -2,27 +2,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.scribblernotebooks.scribblernotebooks.ProfileFragment"
-    android:background="@color/darkBlue">
+    android:background="@color/profileBackgroundColor"
+    tools:context="com.scribblernotebooks.scribblernotebooks.ProfileFragment">
 
-    <include
-        android:id="@+id/app_bar"
-        layout="@layout/app_bar" />
-    <!--<ImageView-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_alignParentBottom="true"-->
-        <!--android:src="@drawable/bluehills"/>-->
+    <android.support.v7.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/toolbar"
+        android:background="#00000000"/>
 
     <ScrollView
+        android:id="@+id/sl"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/sl"
         android:layout_below="@+id/app_bar">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
             <FrameLayout
                 android:id="@+id/fl"
@@ -37,112 +34,77 @@
                     android:src="@drawable/navigation_drawer_cover_pic" />
 
 
-                <RelativeLayout
-                    android:id="@+id/linearLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                <com.scribblernotebooks.scribblernotebooks.CustomViews.RoundedImageView
+                    android:id="@+id/pic"
+                    android:layout_width="@dimen/profile_profilepic_size"
+                    android:layout_height="@dimen/profile_profilepic_size"
+                    android:layout_alignParentBottom="true"
                     android:layout_gravity="bottom"
-                    android:layout_marginBottom="10dp">
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginStart="10dp"
+                    android:src="@mipmap/ic_launcher" />
 
-                    <com.scribblernotebooks.scribblernotebooks.CustomViews.RoundedImageView
-                        android:id="@+id/pic"
-                        android:layout_width="@dimen/profile_profilepic_size"
-                        android:layout_height="@dimen/profile_profilepic_size"
-                        android:layout_alignParentBottom="true"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginStart="10dp"
-                        android:src="@mipmap/ic_launcher" />
-
-                    <!--android:layout_above="@+id/userName"-->
-
-                    <!--<EditText-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:id="@+id/userName"-->
-                    <!--android:textSize="18sp"-->
-                    <!--android:background="#66ffffff"-->
-                    <!--android:textStyle="bold"-->
-                    <!--android:padding="5dp"-->
-                    <!--android:textColor="@color/default_text_color"-->
-                    <!--android:layout_marginLeft="5dp"-->
-                    <!--android:layout_marginStart="5dp"-->
-                    <!--android:layout_above="@+id/userEmail"-->
-                    <!--android:enabled="false"-->
-                    <!--android:text="User Name" />-->
-
-
-                    <!--<EditText-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:id="@+id/userEmail"-->
-                    <!--android:textSize="16sp"-->
-                    <!--android:background="#66ffffff"-->
-                    <!--android:padding="5dp"-->
-                    <!--android:textColor="@color/default_text_color"-->
-                    <!--android:layout_marginLeft="5dp"-->
-                    <!--android:layout_marginStart="5dp"-->
-                    <!--android:layout_alignParentBottom="true"-->
-                    <!--android:enabled="false"-->
-                    <!--android:text="user@domain.com" />-->
-
-                </RelativeLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|right|end"
+                    android:background="#55ffffff"
+                    android:textColor="#FFF"
+                    android:text="Change"
+                    android:textStyle="bold"
+                    android:padding="10dp"
+                    android:textSize="16sp"/>
 
             </FrameLayout>
 
-            <LinearLayout
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:weightSum="2"
-                android:padding="5dp"
-                android:orientation="horizontal"
-                android:layout_below="@+id/fl">
+                android:layout_below="@+id/fl"
+                android:text="Basic Information"
+                android:background="@color/darkBlue"
+                android:minHeight="25dp"
+                android:gravity="center_vertical"
+                android:textSize="18sp"
+                android:paddingLeft="10dp"
+                android:textColor="#FFF"
+                android:id="@+id/t1"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:id="@+id/basicRecyclerView"
+                android:layout_below="@id/t1" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/basicRecyclerView"
+                android:orientation="horizontal">
 
 
-                <EditText
-                    android:id="@+id/userName"
-                    style="@style/SignInEditText"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="2.5dp"
-                    android:layout_marginRight="2.5dp"
-                    android:hint="Name"
-                    android:textColor="@color/loginEditTextTextColor"
-                    android:textColorHint="@color/hint_foreground_material_light"
-                    android:textSize="16sp" />
 
+                <com.google.android.gms.common.SignInButton
+                    android:id="@+id/sign_in_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/googlefbbuttonheight"
+                    android:layout_below="@id/or"
+                    android:layout_marginTop="5dp"/>
 
-                <EditText
-                    android:id="@+id/userEmail"
-                    style="@style/SignInEditText"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/userName"
-                    android:hint="Email Id"
-                    android:textColor="@color/loginEditTextTextColor"
-                    android:textColorHint="@color/hint_foreground_material_light"
-                    android:layout_marginLeft="2.5dp"
-                    android:layout_marginStart="2.5dp"
-                    android:textSize="16sp" />
+                <com.facebook.login.widget.LoginButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/googlefbbuttonheight"
+                    android:layout_below="@id/sign_in_button"
+                    android:id="@+id/login_button"
+                    android:padding="0dp"
+                    android:layout_marginTop="5dp" />
 
 
             </LinearLayout>
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@id/userEmail"
-                android:layout_marginTop="20dp">
 
-                <ListView
-                    android:id="@+id/user_list"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:choiceMode="singleChoice"
-                    android:visibility="gone"
-                    android:dividerHeight="0dp" />
-
-            </RelativeLayout>
         </RelativeLayout>
     </ScrollView>
 </RelativeLayout>

@@ -2,18 +2,14 @@ package com.scribblernotebooks.scribblernotebooks.Activities;
 
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.graphics.drawable.ScaleDrawable;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -37,6 +33,7 @@ import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.R;
+import com.scribblernotebooks.scribblernotebooks.Services.LocationRetreiver;
 
 import org.json.JSONObject;
 
@@ -44,14 +41,19 @@ import org.json.JSONObject;
 public class LogIn extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-    private final static String TAG="LogIn";
-    EditText name, mobile;
-    Button signIn;
-    String userName = "", userEmail = "";
+    private final static String TAG = "LogIn";
+    EditText name, email, mobile, password;
+    Button signIn, signUp;
+    String userName = "", userEmail = "", userPassword, userMobile;
     SignInButton signInButton;
     LoginButton loginButton;
     CallbackManager callbackManager;
+    private GoogleApiClient mGoogleApiClient;
+    private ConnectionResult mConnectionResult;
 
+    final int LOGIN = 1;
+    final int SIGNUP = 2;
+    int view_open = LOGIN;
     int screenWidth;
     int screenHeight;
     ImageView sun, cloud1, cloud2;
@@ -60,9 +62,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
 
     private boolean mIntentInProgress;
     private boolean mSignInClicked;
-    private ConnectionResult mConnectionResult;
 
-    private GoogleApiClient mGoogleApiClient;
 
     SharedPreferences userPrefs;
     ProgressDialog progressDialog;
@@ -85,6 +85,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
             e.printStackTrace();
         }
 
+        startService(new Intent(this, LocationRetreiver.class));
 
         /**
          * Initialize facebook api before setting content. Else facebook button will create Error
@@ -112,11 +113,11 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                     @Override
                     public void onCompleted(JSONObject jsonObject, GraphResponse graphResponse) {
                         String name = jsonObject.optString("name");
-                        String email=jsonObject.optString("email");
-                        JSONObject cover=jsonObject.optJSONObject("cover");
-                        String coverPic=cover.optString("source");
-                        String userdp="https://graph.facebook.com/"+jsonObject.optString("id")+"/picture?type=large";
-                        saveUserDetails(name,email,userdp,coverPic);
+                        String email = jsonObject.optString("email");
+                        JSONObject cover = jsonObject.optJSONObject("cover");
+                        String coverPic = cover.optString("source");
+                        String userdp = "https://graph.facebook.com/" + jsonObject.optString("id") + "/picture?type=large";
+                        saveUserDetails(name, email, userdp, coverPic,"","");
                     }
                 });
                 Bundle parameters = new Bundle();
@@ -127,7 +128,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
 
             @Override
             public void onCancel() {
-                Toast.makeText(getApplicationContext(), "Login Failed... Please try again later", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Login Cancelled... Please try again later", Toast.LENGTH_LONG).show();
             }
 
             @Override
@@ -148,13 +149,17 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
 
 
         //View Setup
-        name = (EditText) findViewById(R.id.name);
-        mobile = (EditText) findViewById(R.id.mobileNo);
-        signIn = (Button) findViewById(R.id.signUp);
+        name = (EditText) findViewById(R.id.userName);
+        email = (EditText) findViewById(R.id.userEmail);
+        password = (EditText) findViewById(R.id.userPassword);
+        mobile = (EditText) findViewById(R.id.userPhone);
+        signIn = (Button) findViewById(R.id.signIn);
+        signUp = (Button) findViewById(R.id.signUp);
+
         signInButton = (SignInButton) findViewById(R.id.sign_in_button);
         signInButton.setOnClickListener(this);
         signInButton.setSize(SignInButton.SIZE_WIDE);
-        progressDialog=new ProgressDialog(this);
+        progressDialog = new ProgressDialog(this);
 
         sun = (ImageView) findViewById(R.id.sun);
         cloud1 = (ImageView) findViewById(R.id.cloud1);
@@ -163,15 +168,15 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         /**
          * Setting the drawable heights for both edit texts
          */
-        final ScaleDrawable userIcon = new ScaleDrawable(getResources().getDrawable(R.drawable.user), Gravity.CENTER, 1F, 1F) {
+        final ScaleDrawable userIcon = new ScaleDrawable(getResources().getDrawable(R.drawable.userlogin), Gravity.CENTER, 1F, 1F) {
             @Override
             public int getIntrinsicHeight() {
-                return name.getHeight()*3/4;
+                return name.getHeight() * 3 / 4;
             }
 
             @Override
             public int getIntrinsicWidth() {
-                return name.getHeight()*3/4;
+                return name.getHeight() * 3 / 4;
             }
         };
         userIcon.setLevel(10000);
@@ -188,31 +193,81 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
             }
         });
 
-        final ScaleDrawable emailIcon = new ScaleDrawable(getResources().getDrawable(R.drawable.email), Gravity.CENTER, 1F, 1F) {
+        final ScaleDrawable emailIcon = new ScaleDrawable(getResources().getDrawable(R.drawable.maillogin), Gravity.CENTER, 1F, 1F) {
             @Override
             public int getIntrinsicHeight() {
-                return mobile.getHeight()*3/4;
+                return email.getHeight() * 3 / 4;
             }
 
             @Override
             public int getIntrinsicWidth() {
-                return mobile.getHeight()*3/4;
+                return email.getHeight() * 3 / 4;
             }
         };
         emailIcon.setLevel(10000);
-        mobile.setCompoundDrawables(null, null, userIcon, null);
-        mobile.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+        email.setCompoundDrawables(null, null, userIcon, null);
+        email.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
                 try {
-                    mobile.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, emailIcon, null);
+                    email.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, emailIcon, null);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         });
 
+        final ScaleDrawable phoneIcon = new ScaleDrawable(getResources().getDrawable(R.drawable.phonelogin), Gravity.CENTER, 1F, 1F) {
+            @Override
+            public int getIntrinsicHeight() {
+                return mobile.getHeight() * 3 / 4;
+            }
+
+            @Override
+            public int getIntrinsicWidth() {
+                return mobile.getHeight() * 3 / 4;
+            }
+        };
+        phoneIcon.setLevel(10000);
+        mobile.setCompoundDrawables(null, null, userIcon, null);
+        mobile.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                try {
+                    mobile.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, phoneIcon, null);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+
+        final ScaleDrawable passwordIcon = new ScaleDrawable(getResources().getDrawable(R.drawable.passwordlogin), Gravity.CENTER, 1F, 1F) {
+            @Override
+            public int getIntrinsicHeight() {
+                return mobile.getHeight() * 3 / 4;
+            }
+
+            @Override
+            public int getIntrinsicWidth() {
+                return mobile.getHeight() * 3 / 4;
+            }
+        };
+        passwordIcon.setLevel(10000);
+        password.setCompoundDrawables(null, null, userIcon, null);
+        password.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                try {
+                    password.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, passwordIcon, null);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
 
         /**
@@ -238,22 +293,68 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         signIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                userName = name.getText().toString();
-                userEmail = mobile.getText().toString();
+                loginUser();
+            }
+        });
 
-                if (userName.isEmpty()) {
-                    Toast.makeText(getApplicationContext(),"Oops... Looks like its not a valid Name",Toast.LENGTH_LONG).show();
-                }
-                else if(Constants.isValidEmailId(userEmail) && userEmail.contains("@")){
-                    Toast.makeText(getApplicationContext(),"Oops... Looks like its not a valid Email Id",Toast.LENGTH_LONG).show();
-                }
-                else {
-                    saveUserDetails(userName,userEmail,"","");
-                }
+        signUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                signUpUser();
             }
         });
     }
 
+    private void loginUser() {
+        if (view_open == LOGIN) {
+            userEmail = email.getText().toString();
+            userPassword = password.getText().toString();
+
+            if (userEmail.isEmpty()) {
+                Toast.makeText(getApplicationContext(), "Oops... Looks like you forgot to enter email id", Toast.LENGTH_LONG).show();
+            } else if (validatePassword(userPassword, "SignIn")) {
+                Toast.makeText(getApplicationContext(), "Oops... Looks like you forgot to enter the password", Toast.LENGTH_LONG).show();
+            } else {
+                login(userEmail, userPassword);
+            }
+            return;
+        }
+        name.setVisibility(View.GONE);
+        mobile.setVisibility(View.GONE);
+        view_open = LOGIN;
+
+    }
+
+    public void login(String email, String password) {
+        String a=getSharedPreferences(Constants.PREF_NAME,MODE_PRIVATE).getString(Constants.PREF_DATA_NAME,"");
+        String b=getSharedPreferences(Constants.PREF_NAME,MODE_PRIVATE).getString(Constants.PREF_DATA_PASS,"");
+        if(email.equals(a) && password.equals(b)){
+            startActivity(new Intent(this,NavigationDrawer.class));
+            finish();
+        }
+    }
+
+    public boolean validatePassword(String password, String tag) {
+        return true;
+    }
+
+    public void signUpUser() {
+        if (view_open == SIGNUP) {
+            signUp();
+            return;
+        }
+        name.setVisibility(View.VISIBLE);
+        mobile.setVisibility(View.VISIBLE);
+        view_open = SIGNUP;
+    }
+
+    public void signUp() {
+        if(name.getText().toString().isEmpty() || email.getText().toString().isEmpty() ||
+                password.getText().toString().isEmpty() || mobile.getText().toString().isEmpty())
+            return;
+        saveUserDetails(name.getText().toString(), email.getText().toString(), "", "", mobile.getText().toString(), password.getText().toString());
+
+    }
 
 
     /**
@@ -332,32 +433,20 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sign_in_button:
-                if(isNetworkAvailable()) {
+                if (Constants.isNetworkAvailable(getApplicationContext())) {
                     if (!mGoogleApiClient.isConnecting()) {
                         progressDialog.setMessage("Connecting...");
                         progressDialog.show();
                         mSignInClicked = true;
                         resolveSignInError();
                     }
-                }
-                else
-                {
-                    Toast toast=Toast.makeText(this,"Not connected to Internet\nPlease check the connection and try again later",Toast.LENGTH_SHORT);
-                    toast.setGravity(Gravity.CENTER,0,0);
+                } else {
+                    Toast toast = Toast.makeText(this, "Not connected to Internet\nPlease check the connection and try again later", Toast.LENGTH_SHORT);
+                    toast.setGravity(Gravity.CENTER, 0, 0);
                     toast.show();
                 }
                 break;
         }
-    }
-
-    /**
-     * Check if phone is connected to internet
-     */
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
 
@@ -390,10 +479,11 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                 Person currentPerson = Plus.PeopleApi
                         .getCurrentPerson(mGoogleApiClient);
                 String personName = currentPerson.getDisplayName();
-                String personImageUrl=currentPerson.getImage().getUrl();
-                String userEmail=Plus.AccountApi.getAccountName(mGoogleApiClient);
-                String userCover=currentPerson.getCover().getCoverPhoto().getUrl();
-                saveUserDetails(personName,userEmail,personImageUrl,userCover);
+                String personImageUrl = currentPerson.getImage().getUrl();
+                String s=personImageUrl.replace("photo.jpg?sz=50","photo.jpg?sz=250");
+                String userEmail = Plus.AccountApi.getAccountName(mGoogleApiClient);
+                String userCover = currentPerson.getCover().getCoverPhoto().getUrl();
+                saveUserDetails(personName, userEmail, personImageUrl, userCover,"","");
             } else {
                 Toast.makeText(getApplicationContext(),
                         "Person information is null", Toast.LENGTH_LONG).show();
@@ -406,36 +496,19 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     /**
      * Saving User Details to check next time if already logged in
      */
-    private void saveUserDetails(String name,String userEmail, String userImageUrl, String userCoverPic) {
+    private void saveUserDetails(String name, String userEmail, String userImageUrl, String userCoverPic, String mobileNo, String password) {
         SharedPreferences.Editor editor = userPrefs.edit();
         editor.putString(Constants.PREF_DATA_NAME, name);
-        editor.putString(Constants.PREF_DATA_PHOTO,userImageUrl);
-        editor.putString(Constants.PREF_DATA_COVER_PIC,userCoverPic);
-        editor.putString(Constants.PREF_DATA_EMAIL,userEmail);
+        editor.putString(Constants.PREF_DATA_PHOTO, userImageUrl);
+        editor.putString(Constants.PREF_DATA_COVER_PIC, userCoverPic);
+        editor.putString(Constants.PREF_DATA_EMAIL, userEmail);
+        editor.putString(Constants.PREF_DATA_MOBILE,mobileNo);
+        editor.putString(Constants.PREF_DATA_PASS,password);
         editor.apply();
         startActivity(new Intent(getApplicationContext(), NavigationDrawer.class));
         finish();
     }
 
-
-    /**
-     * Function to check if google play services is available on the phone
-     * @return boolean indicating the availability GMS
-     */
-    private boolean checkPlayServices() {
-        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
-        if (resultCode != ConnectionResult.SUCCESS) {
-            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
-                GooglePlayServicesUtil.getErrorDialog(resultCode, this,
-                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
-            } else {
-                Log.i(TAG, "This device is not supported.");
-                finish();
-            }
-            return false;
-        }
-        return true;
-    }
 
 }
 

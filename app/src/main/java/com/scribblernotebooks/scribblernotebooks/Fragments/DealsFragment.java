@@ -5,13 +5,12 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -31,6 +30,7 @@ import android.widget.TextView;
 
 import com.scribblernotebooks.scribblernotebooks.Adapters.HidingScrollListener;
 import com.scribblernotebooks.scribblernotebooks.Adapters.RecyclerDealsAdapter;
+import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Deal;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.ParseJson;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.SearchBarApplication;
@@ -66,6 +66,7 @@ public class DealsFragment extends android.support.v4.app.Fragment {
     RelativeLayout mDrawer;
     TextView noConnectionText;
     Button noConnectionButton;
+    SwipeRefreshLayout swipeRefreshLayout;
 
     // TODO: Rename and change types of parameters
 
@@ -111,6 +112,8 @@ public class DealsFragment extends android.support.v4.app.Fragment {
         context=getActivity();
         noConnectionText=(TextView)v.findViewById(R.id.noConnectionText);
         noConnectionButton=(Button)v.findViewById(R.id.noConnectionButton);
+        swipeRefreshLayout=(SwipeRefreshLayout)v.findViewById(R.id.swipe_refresh_layout);
+
 
         //Progress Dialog Setup
         progressDialog=new ProgressDialog(context);
@@ -199,6 +202,17 @@ public class DealsFragment extends android.support.v4.app.Fragment {
         //recyclerView setup
         recyclerView.setLayoutManager(new GridLayoutManager(context, getResources().getInteger(R.integer.dealListColoumnCount)));
 
+        /**
+         * Swipe to refresh call
+         */
+        swipeRefreshLayout.setProgressViewOffset(true, 0, paddingTop);
+        swipeRefreshLayout.setColorSchemeResources(R.color.yellow, R.color.green, R.color.red, R.color.darkBlue);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                runAsyncTask();
+            }
+        });
         return v;
     }
 
@@ -239,6 +253,8 @@ public class DealsFragment extends android.support.v4.app.Fragment {
      */
     public class LongOperation extends AsyncTask<String, Void, String> {
 
+        Boolean isFeatured=false;
+
         @Override
         protected String doInBackground(String... urls) {
             String response = "";
@@ -255,9 +271,10 @@ public class DealsFragment extends android.support.v4.app.Fragment {
 
         @Override
         protected void onPostExecute(String s) {
-            progressDialog.dismiss();
+            //progressDialog.dismiss();
+            swipeRefreshLayout.setRefreshing(false);
             dealsList.clear();
-            dealsList = ParseJson.getParsedData(s);
+            dealsList = ParseJson.getParsedData(s,context,isFeatured);
             adapter = new RecyclerDealsAdapter(dealsList, context);
             recyclerView.setAdapter(adapter);
         }
@@ -294,19 +311,11 @@ public class DealsFragment extends android.support.v4.app.Fragment {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
     }
-
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
-
     /**
      * Run AsyncTask Only after phone is connected to internet
      */
     public void runAsyncTask(){
-        if(!isNetworkAvailable())
+        if(!Constants.isNetworkAvailable(getActivity()))
         {
             noConnectionText.setVisibility(View.VISIBLE);
             noConnectionButton.setVisibility(View.VISIBLE);

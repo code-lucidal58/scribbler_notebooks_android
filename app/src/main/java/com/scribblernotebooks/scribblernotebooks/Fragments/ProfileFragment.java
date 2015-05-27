@@ -1,64 +1,68 @@
 package com.scribblernotebooks.scribblernotebooks.Fragments;
 
 import android.app.Activity;
-import android.app.Fragment;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.plus.Plus;
+import com.google.android.gms.plus.model.people.Person;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
-import com.scribblernotebooks.scribblernotebooks.Adapters.ProfileListAdapter;
+import com.scribblernotebooks.scribblernotebooks.Adapters.ProfileInfoEditorAdapter;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.R;
+import com.scribblernotebooks.scribblernotebooks.Services.LocationRetreiver;
 
-import java.util.ArrayList;
+import org.json.JSONObject;
 
-
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link ProfileFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link ProfileFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class ProfileFragment extends android.support.v4.app.Fragment {
+public class ProfileFragment extends android.support.v4.app.Fragment implements GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String TITLE = "title";
 
     ImageView userPic, userCoverPic;
-    EditText user, userEmail;
     Context context;
-    ListView listView;
-    ProfileListAdapter profileListAdapter;
     SharedPreferences sharedPreferences;
-    ArrayList<String> profileField, profileValue;
     Toolbar appbar;
-    String Imageurl;
     DrawerLayout mDrawerLayout;
     RelativeLayout mDrawer;
     SharedPreferences userPref;
@@ -68,10 +72,21 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
     public ImageLoaderConfiguration imageLoaderConfiguration;
     Boolean isInEditMode = false;
 
+    SignInButton signInButton;
+    LoginButton loginButton;
+    CallbackManager callbackManager;
+    private GoogleApiClient mGoogleApiClient;
+    private ConnectionResult mConnectionResult;
+    private boolean mIntentInProgress;
+    private boolean mSignInClicked;
+    ProgressDialog progressDialog=null;
+
+    RecyclerView basicInfoRecyclerView;
+
     final int PROFILE_PIC_REQUEST_CODE = 1;
     final int COVER_PIC_REQUEST_CODE = 2;
+    private static final int RC_SIGN_IN = 0;
 
-    // TODO: Rename and change types of parameters
     private String Title;
 
     private OnFragmentInteractionListener mListener;
@@ -79,11 +94,7 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter
-     * @return A new instance of fragment ProfileFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static ProfileFragment newInstance(String param1) {
         ProfileFragment fragment = new ProfileFragment();
         Bundle args = new Bundle();
@@ -102,8 +113,7 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
         if (getArguments() != null) {
             Title = getArguments().getString(TITLE);
         }
-
-        context = getActivity();
+        context = getActivity().getApplicationContext();
         /**Configurations for image caching library */
         imageLoaderConfiguration = new ImageLoaderConfiguration.Builder(context).build();
         ImageLoader.getInstance().init(imageLoaderConfiguration);
@@ -126,6 +136,8 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
                 .considerExifParams(true)
                 .displayer(new SimpleBitmapDisplayer()).build();
 
+        FacebookSdk.sdkInitialize(context);
+
     }
 
     @Override
@@ -133,14 +145,12 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
-        context = getActivity();
+        context = getActivity().getApplicationContext();
         sharedPreferences = context.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
         userPic = (ImageView) v.findViewById(R.id.pic);
-        userEmail = (EditText) v.findViewById(R.id.userEmail);
         userCoverPic = (ImageView) v.findViewById(R.id.profileCoverPic);
-        user = (EditText) v.findViewById(R.id.userName);
-        listView = (ListView) v.findViewById(R.id.user_list);
-        appbar = (Toolbar) v.findViewById(R.id.app_bar);
+        appbar = (Toolbar) v.findViewById(R.id.toolbar);
+        basicInfoRecyclerView = (RecyclerView) v.findViewById(R.id.basicRecyclerView);
 
         /**Initiating Shared Prefs*/
         userPref = context.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
@@ -163,6 +173,13 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
             }
         }
 
+        context.startService(new Intent(context, LocationRetreiver.class));
+
+        ((AppCompatActivity) getActivity()).setSupportActionBar(appbar);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
+
+
         /**
          * Changing image for cover pic
          */
@@ -170,7 +187,7 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
             @Override
             public void onClick(View v) {
                 if (isInEditMode) {
-                    checkData();
+//                    checkData();
                     return;
                 }
                 Intent i = new Intent(Intent.ACTION_GET_CONTENT);
@@ -183,7 +200,7 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
             @Override
             public void onClick(View v) {
                 if (isInEditMode) {
-                    checkData();
+//                    checkData();
                     return;
                 }
                 Intent i = new Intent(Intent.ACTION_GET_CONTENT);
@@ -193,105 +210,99 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
         });
 
 
-        //Setting of Toolbar
-        ((AppCompatActivity) getActivity()).setSupportActionBar(appbar);
-        getActivity().setTitle(Title);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeButtonEnabled(true);
-
-
         /**
-         * Navigation Drawer Hamburger Icon Setup
+         * Profile Page main content and user details
          */
-        mDrawerLayout = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
-        mDrawer = (RelativeLayout) getActivity().findViewById(R.id.left_drawer_relative);
-        final ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(getActivity(), mDrawerLayout, appbar, R.string.open, R.string.close) {
+        ProfileInfoEditorAdapter profileListAdapter = new ProfileInfoEditorAdapter(getActivity().getApplicationContext(), getActivity().findViewById(R.id.left_drawer_relative));
+        basicInfoRecyclerView.setAdapter(profileListAdapter);
+        basicInfoRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+        int height = (int) (Constants.getProfileInfoFields().size() * getResources().getDimension(R.dimen.profile_basic_info_item_height));
+        basicInfoRecyclerView.getLayoutParams().height = height;
+        basicInfoRecyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
             @Override
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
+            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+                int action = e.getAction();
+                switch (action) {
+                    case MotionEvent.ACTION_MOVE:
+                        rv.getParent().requestDisallowInterceptTouchEvent(true);
+                        break;
+                    default:
+                        break;
+                }
+                return false;
             }
 
             @Override
-            public void onDrawerClosed(View drawerView) {
-                super.onDrawerClosed(drawerView);
-            }
-        };
-        actionBarDrawerToggle.setDrawerIndicatorEnabled(true);
-        mDrawerLayout.setDrawerListener(actionBarDrawerToggle);
-        mDrawerLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                actionBarDrawerToggle.syncState();
+            public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+
             }
         });
 
         /**
-         * Profile Page main content and user details
+         * Facebook Login initialize
+         * @Link https://developers.facebook.com/docs/facebook-login/android/v2.3
          */
-        String userName = sharedPreferences.getString(Constants.PREF_DATA_NAME, "Username");
-        String email = sharedPreferences.getString(Constants.PREF_DATA_EMAIL, "EmailId");
-        user.setText(userName);
-        if (!email.isEmpty())
-            userEmail.setText(email);
-        else {
-            userEmail.setHint("Enter Email Id");
-            userEmail.setText("");
-            userEmail.setEnabled(true);
-        }
-
-
-        View.OnTouchListener enabledView=new View.OnTouchListener() {
+        callbackManager = CallbackManager.Factory.create();
+        loginButton = (LoginButton) v.findViewById(R.id.login_button);
+        loginButton.setReadPermissions("user_friends");
+        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                Log.e("User Fields Profile","Enabled");
-                v.setEnabled(true);
-                v.setFocusable(true);
-                v.setFocusableInTouchMode(true);
-                return false;
+            public void onSuccess(LoginResult loginResult) {
+                /**
+                 * Current SDK uses GraphAPI to retrieve data from facebook
+                 */
+                GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
+                    @Override
+                    public void onCompleted(JSONObject jsonObject, GraphResponse graphResponse) {
+                        String name = jsonObject.optString("name");
+                        String email = jsonObject.optString("email");
+                        JSONObject cover = jsonObject.optJSONObject("cover");
+                        String coverPic = cover.optString("source");
+                        String userdp = "https://graph.facebook.com/" + jsonObject.optString("id") + "/picture?type=large";
+                        saveUserDetails(name, email, userdp, coverPic);
+                        setCoverPic(coverPic);
+                        setProfilePic(userdp);
+                    }
+                });
+                Bundle parameters = new Bundle();
+                parameters.putString("fields", "id,name,email,cover");
+                request.setParameters(parameters);
+                request.executeAsync();
             }
-        };
-        user.setOnTouchListener(enabledView);
-        userEmail.setOnTouchListener(enabledView);
 
-        /**Profile Settings */
-        profileField = new ArrayList<>();
-        profileValue = new ArrayList<>();
-        profileField.add(Constants.PROFILE_FIELD_CLAIM);
-        profileValue.add("0");
-        profileField.add(Constants.PROFILE_FIELD_LIKE);
-        profileValue.add("0");
-        profileField.add(Constants.PROFILE_FIELD_SHARE);
-        profileValue.add("0");
-        profileField.add(Constants.PROFILE_FIELD_FOLLOWER);
-        profileValue.add("0");
-        profileField.add(Constants.PROFILE_FIELD_FOLLOWING);
-        profileValue.add("0");
-        profileField.add(Constants.PROFILE_FIELD_INVITE);
-        profileValue.add("");
+            @Override
+            public void onCancel() {
+                Toast.makeText(context.getApplicationContext(), "Login Cancelled... Please try again later", Toast.LENGTH_LONG).show();
+            }
 
-        profileListAdapter = new ProfileListAdapter(getActivity(), profileField, profileValue);
-        listView.setAdapter(profileListAdapter);
+            @Override
+            public void onError(FacebookException exception) {
+                Toast.makeText(context.getApplicationContext(), "Login Failed... Please try again later", Toast.LENGTH_LONG).show();
+            }
+        });
+
+
+        /**
+         * Setting up GoogleAPI Client for sign in through google
+         */
+        mGoogleApiClient = new GoogleApiClient.Builder(context)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(Plus.API, Plus.PlusOptions.builder().build())
+                .addScope(Plus.SCOPE_PLUS_LOGIN).build();
+
+
         return v;
     }
 
-    public boolean checkData() {
-        if (user.getText().toString().isEmpty()) {
-            Toast.makeText(getActivity(), "Not a valid Name", Toast.LENGTH_LONG).show();
-            return false;
-        } else if (!Constants.isValidEmailId(userEmail.getText().toString())) {
-            Toast.makeText(getActivity(), "Not a valid Email ID", Toast.LENGTH_LONG).show();
-            return false;
-        } else {
-            SharedPreferences.Editor editor = userPref.edit();
-            editor.putString(Constants.PREF_DATA_NAME, user.getText().toString());
-            editor.putString(Constants.PREF_DATA_EMAIL, user.getText().toString());
-            editor.apply();
-            isInEditMode = false;
-            user.setEnabled(false);
-            userEmail.setEnabled(false);
-            return true;
-        }
-    }
 
+    /**
+     * Function Executed when user SignIns from Either google or facebook.
+     *
+     * @param requestCode code of intent which requested the result
+     * @param resultCode  result code saying if result is OK
+     * @param data        the calling intent
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -303,10 +314,141 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
                 case PROFILE_PIC_REQUEST_CODE:
                     setProfilePic(data);
                     break;
+                case RC_SIGN_IN:
+                    mSignInClicked = false;
+                    mIntentInProgress = false;
+                    if (!mGoogleApiClient.isConnecting()) {
+                        progressDialog.setMessage("Connecting...");
+                        progressDialog.show();
+                        mGoogleApiClient.connect();
+                    }
                 default:
                     break;
             }
         }
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+
+    /**
+     * GoogleAPI callbacks. Called after sign in
+     */
+    @Override
+    public void onConnected(Bundle arg0) {
+        mSignInClicked = false;
+        getProfileInformation();
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {
+        if (!result.hasResolution()) {
+            GooglePlayServicesUtil.getErrorDialog(result.getErrorCode(), getActivity(), 0).show();
+            progressDialog.hide();
+            Toast.makeText(context, "Could not connect", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (!mIntentInProgress) {
+            mConnectionResult = result;
+
+            if (mSignInClicked) {
+                resolveSignInError();
+            }
+        }
+    }
+
+    /**
+     * Handling clicks on buttons
+     */
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.sign_in_button:
+                if (isNetworkAvailable()) {
+                    if (!mGoogleApiClient.isConnecting()) {
+                        progressDialog.setMessage("Connecting...");
+                        progressDialog.show();
+                        mSignInClicked = true;
+                        resolveSignInError();
+                    }
+                } else {
+                    Toast toast = Toast.makeText(context, "Not connected to Internet\nPlease check the connection and try again later", Toast.LENGTH_SHORT);
+                    toast.setGravity(Gravity.CENTER, 0, 0);
+                    toast.show();
+                }
+                break;
+        }
+    }
+
+    /**
+     * Check if phone is connected to internet
+     */
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    /**
+     * Google Provided Method
+     */
+    private void resolveSignInError() {
+        try {
+            if (mConnectionResult.hasResolution()) {
+                try {
+                    mIntentInProgress = true;
+                    mConnectionResult.startResolutionForResult(getActivity(), RC_SIGN_IN);
+                } catch (IntentSender.SendIntentException e) {
+                    mIntentInProgress = false;
+                    mGoogleApiClient.connect();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Fetching user's information name, email, profile pic
+     */
+    private void getProfileInformation() {
+        if(progressDialog!=null) {
+            if (progressDialog.isShowing())
+                progressDialog.dismiss();
+        }
+        try {
+            if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
+                Person currentPerson = Plus.PeopleApi
+                        .getCurrentPerson(mGoogleApiClient);
+                String personName = currentPerson.getDisplayName();
+                String personImageUrl = currentPerson.getImage().getUrl();
+                String userEmail = Plus.AccountApi.getAccountName(mGoogleApiClient);
+                String userCover = currentPerson.getCover().getCoverPhoto().getUrl();
+                saveUserDetails(personName, userEmail, personImageUrl, userCover);
+                setCoverPic(userCover);
+                setProfilePic(personImageUrl);
+            } else {
+                Toast.makeText(context,
+                        "Person information is null", Toast.LENGTH_LONG).show();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Connect Google Client on startup of activity
+     */
+    @Override
+    public void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
     }
 
     public void setCoverPic(Intent result) {
@@ -318,6 +460,19 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
         ((ImageView) mDrawer.findViewById(R.id.userCover)).setImageBitmap(Constants.getScaledBitmap(picturePath, 267, 200));
     }
 
+    public void setCoverPic(String url){
+        String coverUrl = userPref.getString(Constants.PREF_DATA_COVER_PIC, "");
+        if (!coverUrl.isEmpty()) {
+            if (coverUrl.contains("http") || coverUrl.contains("ftp")) {
+                ImageLoader.getInstance().displayImage(coverUrl, userCoverPic, displayImageOptionsCover, imageLoadingListener);
+            } else {
+                userCoverPic.setImageBitmap(Constants.getScaledBitmap(coverUrl, 267, 200));
+            }
+            ImageLoader.getInstance().displayImage(url, ((ImageView) mDrawer.findViewById(R.id.userCover)), displayImageOptionsCover, imageLoadingListener);
+
+        }
+    }
+
     public void setProfilePic(Intent result) {
         String picturePath = getImagePath(result);
         userPic.setImageBitmap(Constants.getScaledBitmap(picturePath, 160, 160));
@@ -325,6 +480,17 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
         userPrefEditor.putString(Constants.PREF_DATA_PHOTO, picturePath);
         userPrefEditor.apply();
         ((ImageView) mDrawer.findViewById(R.id.userPhoto)).setImageBitmap(Constants.getScaledBitmap(picturePath, 100, 100));
+    }
+
+    public void setProfilePic(String url){
+         String profileUrl = userPref.getString(Constants.PREF_DATA_PHOTO, "");
+        if (!profileUrl.isEmpty()) {
+            if (profileUrl.contains("http") || profileUrl.contains("ftp")) {
+                ImageLoader.getInstance().displayImage(profileUrl, userPic, displayImageOptions, imageLoadingListener);
+            } else {
+                userPic.setImageBitmap(Constants.getScaledBitmap(profileUrl, 150, 150));
+            }ImageLoader.getInstance().displayImage(url,((ImageView) mDrawer.findViewById(R.id.userPhoto)),displayImageOptions,imageLoadingListener);
+        }
     }
 
     String getImagePath(Intent result) {
@@ -338,20 +504,18 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
         return picturePath;
     }
 
+    private void saveUserDetails(String name, String userEmail, String userImageUrl, String userCoverPic) {
+        SharedPreferences.Editor editor = context.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE).edit();
+        editor.putString(Constants.PREF_DATA_PHOTO, userImageUrl);
+        editor.putString(Constants.PREF_DATA_COVER_PIC, userCoverPic);
+        editor.putString(Constants.PREF_DATA_EMAIL, userEmail);
+        editor.apply();
+    }
+
+
     @Override
     public void onStop() {
-        if(isInEditMode) {
-            if (checkData()) {
-                super.onStop();
-            }
-            else {
-                onResume();
-            }
-        }
-        else
-        {
-            super.onStop();
-        }
+        super.onStop();
     }
 
     /**

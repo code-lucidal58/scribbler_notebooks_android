@@ -8,7 +8,7 @@ import java.io.Serializable;
 public class Deal implements Serializable {
 
     String id, title, category, shortDescription, imageUrl, longDescription;
-    Boolean isFav;
+    Boolean isFav,isFeatured;
 
     public Deal(){
         super();
@@ -21,12 +21,23 @@ public class Deal implements Serializable {
     public Deal(String id, String title, String category, String shortDescription, String imageUrl, Boolean isFav, String longDesciption) {
         this.title = title;
         this.category = category;
-
         this.shortDescription = shortDescription;
         this.imageUrl = imageUrl;
         this.isFav = isFav;
         this.id = id;
         this.longDescription = longDesciption;
+    }
+
+    public Deal (String id, String title, String category, String shortDescription, String imageUrl,String longDesciption, Boolean isFav,Boolean isFeatured)
+    {
+        this.title = title;
+        this.category = category;
+        this.shortDescription = shortDescription;
+        this.longDescription = longDesciption;
+        this.imageUrl = imageUrl;
+        this.isFav = isFav;
+        this.id = id;
+        this.isFeatured=isFeatured;
     }
 
 
@@ -40,9 +51,6 @@ public class Deal implements Serializable {
     public void sendShareStatus(){
         //Code to synchronise with server
     }
-
-
-
 
     /**
      * Getter and Setter functions
@@ -66,6 +74,10 @@ public class Deal implements Serializable {
     public void setIsFav(Boolean isFav) {
         this.isFav = isFav;
         sendLikeStatus(isFav);
+    }
+
+    public void setIsFeatured(Boolean isFeatured){
+        this.isFeatured=isFeatured;
     }
 
     public void setLongDescription(String longDescription){ this.longDescription=longDescription; }
@@ -97,5 +109,10 @@ public class Deal implements Serializable {
     }
 
     public String getLongDescription(){return this.longDescription;}
+
+    public Boolean isFeatured()
+    {
+        return this.isFeatured;
+    }
 
 }

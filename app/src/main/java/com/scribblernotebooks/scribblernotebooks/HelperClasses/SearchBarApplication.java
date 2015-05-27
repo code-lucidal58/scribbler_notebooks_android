@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.scribblernotebooks.scribblernotebooks.Activities.ScannerActivity;
@@ -27,7 +28,7 @@ public class SearchBarApplication implements SearchQueryFragment.OnFragmentInter
     View view;
     ViewGroup viewGroup;
     Context context;
-    ImageView search, scan, sort, category;
+    RelativeLayout search, scan, sort, category;
     EditText query;
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
@@ -45,10 +46,11 @@ public class SearchBarApplication implements SearchQueryFragment.OnFragmentInter
     }
 
     public void ImplementFunctions(){
-        category=(ImageView)view.findViewById(R.id.category);
-        scan=(ImageView)view.findViewById(R.id.scan);
-        search= (ImageView) view.findViewById(R.id.search);
-        sort=(ImageView)view.findViewById(R.id.sort);
+        category=(RelativeLayout)view.findViewById(R.id.layoutCategory);
+        scan=(RelativeLayout)view.findViewById(R.id.layoutScan);
+        search= (RelativeLayout) view.findViewById(R.id.layoutSearch);
+        sort=(RelativeLayout)view.findViewById(R.id.layoutSort);
+        query=(EditText)view.findViewById(R.id.query);
 
 
 
@@ -64,7 +66,7 @@ public class SearchBarApplication implements SearchQueryFragment.OnFragmentInter
             @Override
             public void onClick(View v) {
                 Toast.makeText(context,"Scan",Toast.LENGTH_SHORT).show();
-                InflateFragment(1, "Scan", "");
+                InflateFragment(1,"Scan","");
             }
         });
 
@@ -97,9 +99,6 @@ public class SearchBarApplication implements SearchQueryFragment.OnFragmentInter
             fragmentTransaction.replace(R.id.content_frame, fragment);
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();
-
-//            query=(EditText)view.findViewById(R.id.query);
-//            query.setHint(hint);
         }
     }
 
