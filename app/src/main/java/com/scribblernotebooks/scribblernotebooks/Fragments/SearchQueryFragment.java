@@ -36,10 +36,12 @@ public class SearchQueryFragment extends android.support.v4.app.Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_OPTION_IMAGE = "optionImage";
     private static final String ARG_OPTION_NAME = "optionName";
+    private static final String ARG_OPTION_HINT="optionHint";
 
     // TODO: Rename and change types of parameters
     private Integer optionImageId;
     private String optionNameId;
+    private String optionHint;
 
     private OnFragmentInteractionListener mListener;
 
@@ -52,11 +54,12 @@ public class SearchQueryFragment extends android.support.v4.app.Fragment {
     ArrayList<String> suggestionList;
 
 
-    public static SearchQueryFragment newInstance(int param1, String param2) {
+    public static SearchQueryFragment newInstance(int param1, String param2, String param3) {
         SearchQueryFragment fragment = new SearchQueryFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_OPTION_IMAGE, param1);
         args.putString(ARG_OPTION_NAME, param2);
+        args.putString(ARG_OPTION_HINT,param3);
         fragment.setArguments(args);
         return fragment;
     }
@@ -71,6 +74,7 @@ public class SearchQueryFragment extends android.support.v4.app.Fragment {
         if (getArguments() != null) {
             optionImageId = getArguments().getInt(ARG_OPTION_IMAGE);
             optionNameId = getArguments().getString(ARG_OPTION_NAME);
+            optionHint=getArguments().getString(ARG_OPTION_HINT);
         }
     }
 
@@ -112,6 +116,7 @@ public class SearchQueryFragment extends android.support.v4.app.Fragment {
          * Change in query detected, and suggestions displayed accordingly
          */
         querySearchListAdapter=new SearchListAdapter(suggestionList);
+        query.setHint(optionHint);
         query.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
