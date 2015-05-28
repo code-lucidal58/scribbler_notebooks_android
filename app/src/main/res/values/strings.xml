@@ -71,4 +71,5 @@
     <string name="not_connected">No Internet Connectivity. Please check your internet connection.\n Swipe or shake to load new deals.</string>
 
     <string name="noNotificationText">Aawww....You do not have any notification :(</string>
+    <string name="title_activity_setting">SettingActivity</string>
 </resources>
