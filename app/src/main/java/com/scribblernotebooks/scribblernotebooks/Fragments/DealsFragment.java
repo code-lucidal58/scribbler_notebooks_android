@@ -22,11 +22,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.scribblernotebooks.scribblernotebooks.Adapters.HidingScrollListener;
 import com.scribblernotebooks.scribblernotebooks.Adapters.RecyclerDealsAdapter;
@@ -34,6 +33,7 @@ import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Deal;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.ParseJson;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.SearchBarApplication;
+import com.scribblernotebooks.scribblernotebooks.HelperClasses.ShakeEventManager;
 import com.scribblernotebooks.scribblernotebooks.R;
 
 import org.apache.http.client.HttpClient;
@@ -46,11 +46,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class DealsFragment extends android.support.v4.app.Fragment {
-    private static final String ARG_PARAM1 = "url";
-
 
     private static final String URL = "url";
-    private static final String TITLE= "title";
+    private static final String TITLE = "title";
 
     RecyclerView recyclerView;
     ArrayList<Deal> dealsList = new ArrayList<>();
@@ -61,26 +59,27 @@ public class DealsFragment extends android.support.v4.app.Fragment {
     View searchbar;
     LinearLayout toolbarContainer;
     int mToolbarHeight;
-    ImageView nav;
     DrawerLayout mDrawerLayout;
     RelativeLayout mDrawer;
     TextView noConnectionText;
-    Button noConnectionButton;
     SwipeRefreshLayout swipeRefreshLayout;
+    Boolean reload;
+    ShakeEventManager shakeEventManager;
 
     // TODO: Rename and change types of parameters
 
-    private String url,title;
+    private String url, title;
 
     private OnFragmentInteractionListener mListener;
 
 
     /**
      * Setting statically the new fragment
+     *
      * @param url the url to be sent to server for getting listview_item_deals
      * @return the Deal list fragment
      */
-    public static DealsFragment newInstance(String url,String title) {
+    public static DealsFragment newInstance(String url, String title) {
         DealsFragment fragment = new DealsFragment();
         Bundle args = new Bundle();
         args.putString(URL, url);
@@ -90,7 +89,9 @@ public class DealsFragment extends android.support.v4.app.Fragment {
     }
 
 
-    /** Auto Generated */
+    /**
+     * Auto Generated
+     */
     public DealsFragment() {
         // Required empty public constructor
     }
@@ -100,7 +101,7 @@ public class DealsFragment extends android.support.v4.app.Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             url = getArguments().getString(URL);
-            title= getArguments().getString(TITLE);
+            title = getArguments().getString(TITLE);
         }
     }
 
@@ -108,31 +109,30 @@ public class DealsFragment extends android.support.v4.app.Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v= inflater.inflate(R.layout.fragment_deals, container, false);
-        context=getActivity();
-        noConnectionText=(TextView)v.findViewById(R.id.noConnectionText);
-        noConnectionButton=(Button)v.findViewById(R.id.noConnectionButton);
-        swipeRefreshLayout=(SwipeRefreshLayout)v.findViewById(R.id.swipe_refresh_layout);
-
+        View v = inflater.inflate(R.layout.fragment_deals, container, false);
+        context = getActivity();
+        noConnectionText = (TextView) v.findViewById(R.id.noConnectionText);
+        swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipe_refresh_layout);
+        reload = true;
 
         //Progress Dialog Setup
-        progressDialog=new ProgressDialog(context);
+        progressDialog = new ProgressDialog(context);
         progressDialog.setMessage("Loading Deals...");
         progressDialog.setCancelable(false);
 
         //Setting toolbars
-        toolbarContainer=(LinearLayout)v.findViewById(R.id.toolbar_container);
-        appbar=(Toolbar)v.findViewById(R.id.app_bar);
-        searchbar=v.findViewById(R.id.search_bar);
-        ((AppCompatActivity)getActivity()).setSupportActionBar(appbar);
+        toolbarContainer = (LinearLayout) v.findViewById(R.id.toolbar_container);
+        appbar = (Toolbar) v.findViewById(R.id.app_bar);
+        searchbar = v.findViewById(R.id.search_bar);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(appbar);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeButtonEnabled(true);
         getActivity().setTitle(title);
 
         /**
-         * Calling functions for execution of the 4 functionalities of search bar
+         * Calling functions for execution of the 4 functionality of search bar
          */
-        FragmentManager fragmentManager=getActivity().getSupportFragmentManager();
-        SearchBarApplication searchBarApplication=new SearchBarApplication(searchbar,container,context,fragmentManager);
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        SearchBarApplication searchBarApplication = new SearchBarApplication(searchbar, container, context, fragmentManager);
         searchBarApplication.ImplementFunctions();
 
         /**
@@ -140,7 +140,7 @@ public class DealsFragment extends android.support.v4.app.Fragment {
          */
         mDrawerLayout = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
         mDrawer = (RelativeLayout) getActivity().findViewById(R.id.left_drawer_relative);
-        final ActionBarDrawerToggle actionBarDrawerToggle=new ActionBarDrawerToggle(getActivity(),mDrawerLayout,appbar,R.string.open,R.string.close){
+        final ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(getActivity(), mDrawerLayout, appbar, R.string.open, R.string.close) {
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
@@ -164,7 +164,7 @@ public class DealsFragment extends android.support.v4.app.Fragment {
          * Setting Deals List along with scrolling effects of toolbars
          */
         mToolbarHeight = getToolbarHeight(getActivity());
-        recyclerView=(RecyclerView)v.findViewById(R.id.recyclerView);
+        recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
         int paddingTop = getToolbarHeight(context) + getTabsHeight(context);
         recyclerView.setPadding(recyclerView.getPaddingLeft(), paddingTop, recyclerView.getPaddingRight(), recyclerView.getPaddingBottom());
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
@@ -192,13 +192,6 @@ public class DealsFragment extends android.support.v4.app.Fragment {
 
         runAsyncTask();
 
-        noConnectionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                runAsyncTask();
-            }
-        });
-
         //recyclerView setup
         recyclerView.setLayoutManager(new GridLayoutManager(context, getResources().getInteger(R.integer.dealListColoumnCount)));
 
@@ -210,6 +203,20 @@ public class DealsFragment extends android.support.v4.app.Fragment {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                reload = false;
+                runAsyncTask();
+            }
+        });
+
+        /**
+         * Shake to refresh
+         */
+        shakeEventManager = new ShakeEventManager(context);
+        shakeEventManager.setOnShakeListener(new ShakeEventManager.OnShakeListener() {
+            @Override
+            public void onShake() {
+                Toast.makeText(context, "Shaken", Toast.LENGTH_SHORT).show();
+                reload=true;
                 runAsyncTask();
             }
         });
@@ -218,6 +225,7 @@ public class DealsFragment extends android.support.v4.app.Fragment {
 
     /**
      * Returning toolbar height for implementing animation
+     *
      * @param context activity context
      * @return toolbarheight
      */
@@ -234,35 +242,42 @@ public class DealsFragment extends android.support.v4.app.Fragment {
     }
 
 
-
-
     /**
      * To change to number of columns in the deal list. 1 when portrait and 2 when landscape
+     *
      * @param newConfig android config
      */
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         recyclerView.setLayoutManager(new GridLayoutManager(context, getResources().getInteger(R.integer.dealListColoumnCount)));
-}
-
-
+    }
 
     /**
      * Async task to get the data from the server and process it
      */
     public class LongOperation extends AsyncTask<String, Void, String> {
+        Boolean isFeatured = false;
 
-        Boolean isFeatured=false;
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            if (reload) {
+                progressDialog.show();
+                reload = false;
+            }
+        }
 
         @Override
         protected String doInBackground(String... urls) {
+
             String response = "";
             try {
                 HttpClient client = new DefaultHttpClient();
                 HttpGet httpGet = new HttpGet(urls[0]);
                 ResponseHandler<String> responseHandler = new BasicResponseHandler();
                 response = client.execute(httpGet, responseHandler);
+                //TODO: some codes relating to database is missing here
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -271,10 +286,10 @@ public class DealsFragment extends android.support.v4.app.Fragment {
 
         @Override
         protected void onPostExecute(String s) {
-            //progressDialog.dismiss();
+            progressDialog.dismiss();
             swipeRefreshLayout.setRefreshing(false);
             dealsList.clear();
-            dealsList = ParseJson.getParsedData(s,context,isFeatured);
+            dealsList = ParseJson.getParsedData(s, context, isFeatured);
             adapter = new RecyclerDealsAdapter(dealsList, context);
             recyclerView.setAdapter(adapter);
         }
@@ -282,6 +297,7 @@ public class DealsFragment extends android.support.v4.app.Fragment {
 
     /**
      * Auto-generated methods
+     *
      * @param uri
      */
     public void onButtonPressed(Uri uri) {
@@ -302,6 +318,19 @@ public class DealsFragment extends android.support.v4.app.Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        shakeEventManager.resume();
+        reload = true;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        shakeEventManager.pause();
+    }
+
+    @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
@@ -311,18 +340,15 @@ public class DealsFragment extends android.support.v4.app.Fragment {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
     }
+
     /**
      * Run AsyncTask Only after phone is connected to internet
      */
-    public void runAsyncTask(){
-        if(!Constants.isNetworkAvailable(getActivity()))
-        {
+    public void runAsyncTask() {
+        if (!Constants.isNetworkAvailable(getActivity())) {
             noConnectionText.setVisibility(View.VISIBLE);
-            noConnectionButton.setVisibility(View.VISIBLE);
-        }
-        else{
+        } else {
             noConnectionText.setVisibility(View.GONE);
-            noConnectionButton.setVisibility(View.GONE);
             //Get response from server
             new LongOperation().execute(url);
         }

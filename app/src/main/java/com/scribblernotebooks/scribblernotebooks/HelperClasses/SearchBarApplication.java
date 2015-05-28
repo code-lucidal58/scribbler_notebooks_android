@@ -94,7 +94,7 @@ public class SearchBarApplication implements SearchQueryFragment.OnFragmentInter
         }
         else{
             fragmentTransaction = fragmentManager.beginTransaction();
-            Fragment fragment= SearchQueryFragment.newInstance(id, name);
+            Fragment fragment= SearchQueryFragment.newInstance(id, name,hint);
             fragmentTransaction.setCustomAnimations(R.anim.push_down_in,0,0,R.anim.push_up_out);
             fragmentTransaction.replace(R.id.content_frame, fragment);
             fragmentTransaction.addToBackStack(null);
