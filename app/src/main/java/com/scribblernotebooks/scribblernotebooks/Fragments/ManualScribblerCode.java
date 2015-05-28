@@ -20,7 +20,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -42,7 +41,7 @@ public class ManualScribblerCode extends Fragment {
     String url = "";
     Uri uri;
     LinearLayout ll;
-    ImageView notificationIcon;
+//    ImageView notificationIcon;
     int screenWidth;
     int screenHeight;
 
@@ -126,19 +125,22 @@ public class ManualScribblerCode extends Fragment {
         sun = (ImageView) v.findViewById(R.id.sun);
         cloud1 = (ImageView) v.findViewById(R.id.cloud1);
         cloud2 = (ImageView) v.findViewById(R.id.cloud2);
-        notificationIcon=(ImageView)v.findViewById(R.id.notificationIcon);
+
+//        notificationIcon=(ImageView)v.findViewById(R.id.notificationIcon);
 
         final DrawerLayout mDrawerLayout = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
-        final RelativeLayout mDrawer = (RelativeLayout) getActivity().findViewById(R.id.notification_drawer);
+
+        //TODO: Uncomment with notification Drawer
+//        final RelativeLayout mDrawer = (RelativeLayout) getActivity().findViewById(R.id.notification_drawer);
         /**
          * Opening Notification drawer on notification icon click
          */
-        notificationIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDrawerLayout.openDrawer(mDrawer);
-            }
-        });
+//        notificationIcon.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                mDrawerLayout.openDrawer(mDrawer);
+//            }
+//        });
 
         /**
          * Setting up notification icon animation
@@ -153,7 +155,7 @@ public class ManualScribblerCode extends Fragment {
            getResources().getDrawable(R.drawable.n7),
            getResources().getDrawable(R.drawable.n8),
         });
-        notificationIcon.setImageDrawable(cyclicTransitionDrawable);
+//        notificationIcon.setImageDrawable(cyclicTransitionDrawable);
         cyclicTransitionDrawable.startTransition(NOTIFICATION_ICON_TRANSITION_DURATION, 0);
         final Animation dance= AnimationUtils.loadAnimation(mContext,R.anim.dancing_notification_icon);
         dance.setFillEnabled(true);
@@ -165,7 +167,7 @@ public class ManualScribblerCode extends Fragment {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                notificationIcon.startAnimation(dance);
+//                notificationIcon.startAnimation(dance);
             }
 
             @Override
@@ -173,7 +175,7 @@ public class ManualScribblerCode extends Fragment {
 
             }
         });
-        notificationIcon.startAnimation(dance);
+//        notificationIcon.startAnimation(dance);
 
 
 

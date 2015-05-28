@@ -17,9 +17,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -58,7 +58,7 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String TITLE = "title";
-
+    final String TAG = "ProfileFragment";
     ImageView userPic, userCoverPic;
     Context context;
     SharedPreferences sharedPreferences;
@@ -70,7 +70,6 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
     public DisplayImageOptions displayImageOptions, displayImageOptionsCover;
     public ImageLoadingListener imageLoadingListener;
     public ImageLoaderConfiguration imageLoaderConfiguration;
-    Boolean isInEditMode = false;
 
     SignInButton signInButton;
     LoginButton loginButton;
@@ -79,13 +78,13 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
     private ConnectionResult mConnectionResult;
     private boolean mIntentInProgress;
     private boolean mSignInClicked;
-    ProgressDialog progressDialog=null;
+    ProgressDialog progressDialog = null;
 
     RecyclerView basicInfoRecyclerView;
 
-    final int PROFILE_PIC_REQUEST_CODE = 1;
-    final int COVER_PIC_REQUEST_CODE = 2;
-    private static final int RC_SIGN_IN = 0;
+    static final int PROFILE_PIC_REQUEST_CODE = 11;
+    static final int COVER_PIC_REQUEST_CODE = 12;
+    private static final int RC_SIGN_IN = 10;
 
     private String Title;
 
@@ -136,7 +135,6 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
                 .considerExifParams(true)
                 .displayer(new SimpleBitmapDisplayer()).build();
 
-        FacebookSdk.sdkInitialize(context);
 
     }
 
@@ -144,6 +142,7 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
         context = getActivity().getApplicationContext();
         sharedPreferences = context.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
@@ -151,9 +150,17 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
         userCoverPic = (ImageView) v.findViewById(R.id.profileCoverPic);
         appbar = (Toolbar) v.findViewById(R.id.toolbar);
         basicInfoRecyclerView = (RecyclerView) v.findViewById(R.id.basicRecyclerView);
+        signInButton = (SignInButton) v.findViewById(R.id.sign_in_button);
+
+        progressDialog = new ProgressDialog(getActivity());
+        signInButton.setOnClickListener(this);
 
         /**Initiating Shared Prefs*/
         userPref = context.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
+
+
+        Log.e(TAG, "Data  Saved starting" + userPref.getString(Constants.PREF_DATA_EMAIL, "") + " " + userPref.getString(Constants.PREF_DATA_COVER_PIC, "")
+                + " " + userPref.getString(Constants.PREF_DATA_PHOTO, ""));
 
         /**Setting images from shared Prefs**/
         String coverUrl = userPref.getString(Constants.PREF_DATA_COVER_PIC, "");
@@ -173,6 +180,7 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
             }
         }
 
+        /**Get User location*/
         context.startService(new Intent(context, LocationRetreiver.class));
 
         ((AppCompatActivity) getActivity()).setSupportActionBar(appbar);
@@ -186,10 +194,6 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
         userCoverPic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isInEditMode) {
-//                    checkData();
-                    return;
-                }
                 Intent i = new Intent(Intent.ACTION_GET_CONTENT);
                 i.setType("image/*");
                 startActivityForResult(Intent.createChooser(i, "Select Cover Pic"), COVER_PIC_REQUEST_CODE);
@@ -199,10 +203,6 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
         userPic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isInEditMode) {
-//                    checkData();
-                    return;
-                }
                 Intent i = new Intent(Intent.ACTION_GET_CONTENT);
                 i.setType("image/*");
                 startActivityForResult(Intent.createChooser(i, "Select Cover Pic"), PROFILE_PIC_REQUEST_CODE);
@@ -213,30 +213,30 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
         /**
          * Profile Page main content and user details
          */
-        ProfileInfoEditorAdapter profileListAdapter = new ProfileInfoEditorAdapter(getActivity().getApplicationContext(), getActivity().findViewById(R.id.left_drawer_relative));
+        ProfileInfoEditorAdapter profileListAdapter = new ProfileInfoEditorAdapter(getActivity().getApplicationContext(), getActivity().findViewById(R.id.left_drawer_relative), mListener);
         basicInfoRecyclerView.setAdapter(profileListAdapter);
         basicInfoRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         int height = (int) (Constants.getProfileInfoFields().size() * getResources().getDimension(R.dimen.profile_basic_info_item_height));
         basicInfoRecyclerView.getLayoutParams().height = height;
-        basicInfoRecyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
-            @Override
-            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-                int action = e.getAction();
-                switch (action) {
-                    case MotionEvent.ACTION_MOVE:
-                        rv.getParent().requestDisallowInterceptTouchEvent(true);
-                        break;
-                    default:
-                        break;
-                }
-                return false;
-            }
-
-            @Override
-            public void onTouchEvent(RecyclerView rv, MotionEvent e) {
-
-            }
-        });
+//        basicInfoRecyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+//            @Override
+//            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+//                int action = e.getAction();
+//                switch (action) {
+//                    case MotionEvent.ACTION_MOVE:
+//                        rv.getParent().requestDisallowInterceptTouchEvent(true);
+//                        break;
+//                    default:
+//                        break;
+//                }
+//                return false;
+//            }
+//
+//            @Override
+//            public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+//
+//            }
+//        });
 
         /**
          * Facebook Login initialize
@@ -244,7 +244,8 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
          */
         callbackManager = CallbackManager.Factory.create();
         loginButton = (LoginButton) v.findViewById(R.id.login_button);
-        loginButton.setReadPermissions("user_friends");
+        loginButton.setFragment(this);
+        loginButton.setReadPermissions("user_friends", "email");
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -285,7 +286,7 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
         /**
          * Setting up GoogleAPI Client for sign in through google
          */
-        mGoogleApiClient = new GoogleApiClient.Builder(context)
+        mGoogleApiClient = new GoogleApiClient.Builder(getActivity().getApplicationContext())
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(Plus.API, Plus.PlusOptions.builder().build())
@@ -315,37 +316,58 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
                     setProfilePic(data);
                     break;
                 case RC_SIGN_IN:
-                    mSignInClicked = false;
+                    mSignInClicked = true;
                     mIntentInProgress = false;
                     if (!mGoogleApiClient.isConnecting()) {
                         progressDialog.setMessage("Connecting...");
                         progressDialog.show();
                         mGoogleApiClient.connect();
                     }
+                    break;
                 default:
                     break;
             }
         }
-        callbackManager.onActivityResult(requestCode, resultCode, data);
-    }
+        if (requestCode != COVER_PIC_REQUEST_CODE && requestCode != PROFILE_PIC_REQUEST_CODE && requestCode != RC_SIGN_IN) {
+            callbackManager.onActivityResult(requestCode, resultCode, data);
 
+        }
+    }
 
     /**
      * GoogleAPI callbacks. Called after sign in
      */
     @Override
     public void onConnected(Bundle arg0) {
-        mSignInClicked = false;
-        getProfileInformation();
+        Log.e(TAG, "Google Connected");
+        dismissProgressDialog();
+        if (mSignInClicked) {
+            getProfileInformation();
+            mSignInClicked = false;
+        }
+
+    }
+
+    public void dismissProgressDialog() {
+        try {
+            progressDialog.dismiss();
+        } catch (Exception e) {
+            Log.e("ProfileFragment", "Progress Dialog error");
+        }
     }
 
     @Override
     public void onConnectionSuspended(int i) {
+        Log.e(TAG, "Google Suspended");
+        dismissProgressDialog();
         mGoogleApiClient.connect();
+
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult result) {
+        Log.e(TAG, "Google Failed");
+        dismissProgressDialog();
         if (!result.hasResolution()) {
             GooglePlayServicesUtil.getErrorDialog(result.getErrorCode(), getActivity(), 0).show();
             progressDialog.hide();
@@ -410,7 +432,8 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            dismissProgressDialog();
+            Toast.makeText(getActivity(), "Already Logged In", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -418,9 +441,10 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
      * Fetching user's information name, email, profile pic
      */
     private void getProfileInformation() {
-        if(progressDialog!=null) {
-            if (progressDialog.isShowing())
-                progressDialog.dismiss();
+        try {
+            progressDialog.dismiss();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         try {
             if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
@@ -428,9 +452,10 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
                         .getCurrentPerson(mGoogleApiClient);
                 String personName = currentPerson.getDisplayName();
                 String personImageUrl = currentPerson.getImage().getUrl();
+                String s = personImageUrl.replace("photo.jpg?sz=50", "photo.jpg?sz=250");
                 String userEmail = Plus.AccountApi.getAccountName(mGoogleApiClient);
                 String userCover = currentPerson.getCover().getCoverPhoto().getUrl();
-                saveUserDetails(personName, userEmail, personImageUrl, userCover);
+                saveUserDetails(personName, userEmail, s, userCover);
                 setCoverPic(userCover);
                 setProfilePic(personImageUrl);
             } else {
@@ -457,10 +482,10 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
         userPrefEditor = userPref.edit();
         userPrefEditor.putString(Constants.PREF_DATA_COVER_PIC, picturePath);
         userPrefEditor.apply();
-        ((ImageView) mDrawer.findViewById(R.id.userCover)).setImageBitmap(Constants.getScaledBitmap(picturePath, 267, 200));
+        mListener.onUserCoverChanged();
     }
 
-    public void setCoverPic(String url){
+    public void setCoverPic(String url) {
         String coverUrl = userPref.getString(Constants.PREF_DATA_COVER_PIC, "");
         if (!coverUrl.isEmpty()) {
             if (coverUrl.contains("http") || coverUrl.contains("ftp")) {
@@ -468,7 +493,7 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
             } else {
                 userCoverPic.setImageBitmap(Constants.getScaledBitmap(coverUrl, 267, 200));
             }
-            ImageLoader.getInstance().displayImage(url, ((ImageView) mDrawer.findViewById(R.id.userCover)), displayImageOptionsCover, imageLoadingListener);
+            mListener.onUserCoverChanged();
 
         }
     }
@@ -479,17 +504,18 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
         userPrefEditor = userPref.edit();
         userPrefEditor.putString(Constants.PREF_DATA_PHOTO, picturePath);
         userPrefEditor.apply();
-        ((ImageView) mDrawer.findViewById(R.id.userPhoto)).setImageBitmap(Constants.getScaledBitmap(picturePath, 100, 100));
+        mListener.onUserDPChanged();
     }
 
-    public void setProfilePic(String url){
-         String profileUrl = userPref.getString(Constants.PREF_DATA_PHOTO, "");
+    public void setProfilePic(String url) {
+        String profileUrl = userPref.getString(Constants.PREF_DATA_PHOTO, "");
         if (!profileUrl.isEmpty()) {
             if (profileUrl.contains("http") || profileUrl.contains("ftp")) {
                 ImageLoader.getInstance().displayImage(profileUrl, userPic, displayImageOptions, imageLoadingListener);
             } else {
                 userPic.setImageBitmap(Constants.getScaledBitmap(profileUrl, 150, 150));
-            }ImageLoader.getInstance().displayImage(url,((ImageView) mDrawer.findViewById(R.id.userPhoto)),displayImageOptions,imageLoadingListener);
+            }
+            mListener.onUserDPChanged();
         }
     }
 
@@ -506,10 +532,14 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
 
     private void saveUserDetails(String name, String userEmail, String userImageUrl, String userCoverPic) {
         SharedPreferences.Editor editor = context.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE).edit();
+        editor.putString(Constants.PREF_DATA_NAME,name);
         editor.putString(Constants.PREF_DATA_PHOTO, userImageUrl);
         editor.putString(Constants.PREF_DATA_COVER_PIC, userCoverPic);
         editor.putString(Constants.PREF_DATA_EMAIL, userEmail);
+
+        basicInfoRecyclerView.getAdapter().notifyDataSetChanged();
         editor.apply();
+
     }
 
 
@@ -557,7 +587,16 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
+        void onFragmentInteraction(Uri uri);
+
+        void onUserNameChanged();
+
+        void onUserEmailChanged();
+
+        void onUserDPChanged();
+
+        void onUserCoverChanged();
     }
+
 
 }

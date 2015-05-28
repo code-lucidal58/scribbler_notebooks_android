@@ -13,6 +13,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -54,6 +56,7 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
     public static GoogleApiClient mGoogleApiClient;
     View mainView;
     View decorView;
+
     String url = "";
     Fragment fragment;
     static Context sContext;
@@ -122,7 +125,7 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
         mDrawerLayout = (DrawerLayout) mainView.findViewById(R.id.drawer_layout);
 
         /** Setting Up Navigation Drawer and Right Notification Drawer */
-        setupNotificationDrawer();
+//        setupNotificationDrawer();
         setupNavigationDrawer();
 
         /** Initializing Google+API incase user wants to logOut */
@@ -150,9 +153,6 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
         final android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
 
-    }
-
-    public void onFragmentInteraction(Uri uri) {
     }
 
     @Override
@@ -256,6 +256,13 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
     }
 
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        ProfileFragment profileFragment=(ProfileFragment)getSupportFragmentManager().findFragmentById(R.id.content_frame);
+        profileFragment.onActivityResult(requestCode, resultCode, data);
+    }
+
     /**
      * Registers the application with GCM servers asynchronously.
      * <p>
@@ -284,7 +291,7 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
                 //TODO: send registration id to backend server
 
 
-                storeRegistrationId(context,regId);
+                storeRegistrationId(context, regId);
             }
             catch (Exception e){
                 e.printStackTrace();
@@ -299,7 +306,7 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
      * @param msg
      */
     public void sendToServer(String msg){
-        String name=getSharedPreferences(Constants.PREF_NAME,MODE_PRIVATE).getString(Constants.PREF_DATA_NAME,"").replace(" ","_");
+        String name=getSharedPreferences(Constants.PREF_NAME,MODE_PRIVATE).getString(Constants.PREF_DATA_NAME,"").replace(" ", "_");
         String url="http://jazzyarchitects.orgfree.com/register_user.php?name="+name+"&id="+msg;
 //        Log.e("Url",url);
         new LongOperation().execute(url);
@@ -367,6 +374,49 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
     }
 
 
+    public void onFragmentInteraction(Uri uri) {
+    }
 
+    @Override
+    public void onUserNameChanged() {
+        LeftNavigationDrawer.setUserName();
+
+    }
+    @Override
+    public void onUserEmailChanged() {
+        LeftNavigationDrawer.setUserEmail();
+    }
+
+    @Override
+    public void onUserDPChanged() {
+        LeftNavigationDrawer.setUserProfilePic();
+    }
+
+    @Override
+    public void onUserCoverChanged() {
+        LeftNavigationDrawer.setUserCover();
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        ;
+        getMenuInflater().inflate(R.menu.menu_navigation_drawer,menu);
+        return super.onCreateOptionsMenu(menu);
+
+    }
+
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        super.onOptionsItemSelected(item);
+        if(item.getItemId()==android.R.id.home){
+            if(getSupportFragmentManager().getBackStackEntryCount()>0){
+                getSupportFragmentManager().popBackStack();
+            }
+        }
+        return true;
+    }
 
 }

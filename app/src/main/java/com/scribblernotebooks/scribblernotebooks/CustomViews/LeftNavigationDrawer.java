@@ -42,6 +42,8 @@ import java.util.ArrayList;
 public class LeftNavigationDrawer {
     View mainView = null;
     Context mContext;
+    static Context sContext;
+    static View sMainView;
 
     String userName, userPhotoUrl, userCoverUrl;
 
@@ -60,6 +62,10 @@ public class LeftNavigationDrawer {
     public DisplayImageOptions displayImageOptionsCover;
     public ImageLoadingListener imageLoadingListener;
     public ImageLoaderConfiguration imageLoaderConfiguration;
+    public static DisplayImageOptions sdisplayImageOptions;
+    public static DisplayImageOptions sdisplayImageOptionsCover;
+    public static ImageLoadingListener simageLoadingListener;
+    public static ImageLoaderConfiguration simageLoaderConfiguration;
 
 
     /**
@@ -73,6 +79,8 @@ public class LeftNavigationDrawer {
         this.navigationDrawerActivity=navigationDrawerActivity;
         this.mainView = activityView;
         this.mContext = context;
+        sContext=context;
+        sMainView=activityView;
 
         /**Configurations for image caching library */
         imageLoaderConfiguration=new ImageLoaderConfiguration.Builder(this.mContext).build();
@@ -95,6 +103,10 @@ public class LeftNavigationDrawer {
                 .considerExifParams(true)
                 .displayer(new SimpleBitmapDisplayer()).build();
 
+        sdisplayImageOptions=displayImageOptions;
+        sdisplayImageOptionsCover=displayImageOptionsCover;
+        simageLoadingListener=imageLoadingListener;
+        simageLoaderConfiguration=imageLoaderConfiguration;
 
         instantiate();
     }
@@ -119,9 +131,9 @@ public class LeftNavigationDrawer {
             @Override
             public void onClick(View v) {
                 mDrawerLayout.closeDrawers();
-                Fragment fragment= ProfileFragment.newInstance("Profile");
+                Fragment fragment = ProfileFragment.newInstance("Profile");
                 FragmentManager fragmentManager = navigationDrawerActivity.getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.content_frame, fragment);
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
@@ -129,35 +141,10 @@ public class LeftNavigationDrawer {
         });
 
 
-        /**Getting user details from shared preferences*/
-        sharedPreferences = mContext.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
-        userName = sharedPreferences.getString(Constants.PREF_DATA_NAME, "UserName");
-        String email=sharedPreferences.getString(Constants.PREF_DATA_EMAIL,"user@domain.com");
-        userPhotoUrl = sharedPreferences.getString(Constants.PREF_DATA_PHOTO, "");
-        userCoverUrl=sharedPreferences.getString(Constants.PREF_DATA_COVER_PIC,"");
-        uName.setText(userName);
-        userEmail.setText(email);
-
-        /**Loading and caching image from url*/
-        String coverUrl=userCoverUrl;
-        Log.e("PhotoURL Cover",userCoverUrl);
-        if(!coverUrl.isEmpty()){
-            if(coverUrl.contains("http") || coverUrl.contains("ftp")){
-                ImageLoader.getInstance().displayImage(coverUrl,uCoverPic,displayImageOptionsCover,imageLoadingListener);
-            }else {
-                uCoverPic.setImageBitmap(Constants.getScaledBitmap(coverUrl, 267, 200));
-            }
-        }
-        
-        String profileUrl=userPhotoUrl;
-        Log.e("PhotoURL",userPhotoUrl);
-        if(!profileUrl.isEmpty()){
-            if(profileUrl.contains("http") || profileUrl.contains("ftp")){
-                ImageLoader.getInstance().displayImage(profileUrl,uPhoto,displayImageOptions,imageLoadingListener);
-            }else {
-                uPhoto.setImageBitmap(Constants.getScaledBitmap(profileUrl, 60, 60));
-            }
-        }
+        LeftNavigationDrawer.setUserName();
+        LeftNavigationDrawer.setUserEmail();
+        LeftNavigationDrawer.setUserCover();
+        LeftNavigationDrawer.setUserProfilePic();
 
 
         /**Setting navigation Drawer**/
@@ -191,6 +178,7 @@ public class LeftNavigationDrawer {
                         fragment = DealsFragment.newInstance(Constants.serverURL + "featuredDeals", title);
                         break;
                     case 4:
+                        SharedPreferences sharedPreferences=mContext.getSharedPreferences(Constants.PREF_NAME,Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.clear();
                         editor.apply();
@@ -223,6 +211,45 @@ public class LeftNavigationDrawer {
             }
         });
     }
+
+    public static void setUserName(){
+        SharedPreferences sharedPreferences = sContext.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
+        ((TextView)sMainView.findViewById(R.id.userName)).setText(sharedPreferences.getString(Constants.PREF_DATA_NAME, "Name"));
+    }
+
+    public static void setUserEmail(){
+        SharedPreferences sharedPreferences = sContext.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
+        ((TextView)sMainView.findViewById(R.id.userEmail)).setText(sharedPreferences.getString(Constants.PREF_DATA_EMAIL, "user@domain.com"));
+    }
+
+    public static void setUserCover(){
+        SharedPreferences sharedPreferences = sContext.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
+        /**Loading and caching image from url*/
+        String coverUrl=sharedPreferences.getString(Constants.PREF_DATA_COVER_PIC, "");
+        ImageView uCoverPic=(ImageView)sMainView.findViewById(R.id.userCover);
+        if(!coverUrl.isEmpty()){
+            if(coverUrl.contains("http") || coverUrl.contains("ftp")){
+                ImageLoader.getInstance().displayImage(coverUrl,uCoverPic,sdisplayImageOptionsCover,simageLoadingListener);
+            }else {
+                uCoverPic.setImageBitmap(Constants.getScaledBitmap(coverUrl, 267, 200));
+            }
+        }
+    }
+
+    public static void setUserProfilePic(){
+        SharedPreferences sharedPreferences = sContext.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
+        /**Loading and caching image from url*/
+        String picUrl=sharedPreferences.getString(Constants.PREF_DATA_PHOTO, "");
+        ImageView uPic=(ImageView)sMainView.findViewById(R.id.userPhoto);
+        if(!picUrl.isEmpty()){
+            if(picUrl.contains("http") || picUrl.contains("ftp")){
+                ImageLoader.getInstance().displayImage(picUrl,uPic,sdisplayImageOptions,simageLoadingListener);
+            }else {
+                uPic.setImageBitmap(Constants.getScaledBitmap(picUrl, 267, 200));
+            }
+        }
+    }
+
 
 
 

@@ -1,16 +1,13 @@
 package com.scribblernotebooks.scribblernotebooks.CustomViews;
 
 import android.content.Context;
-import android.support.v4.widget.DrawerLayout;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 
 import com.scribblernotebooks.scribblernotebooks.Adapters.NotificationDrawerListAdapter;
 import com.scribblernotebooks.scribblernotebooks.Handlers.NotificationDataHandler;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Notifications;
-import com.scribblernotebooks.scribblernotebooks.R;
 
 import java.util.ArrayList;
 
@@ -43,44 +40,44 @@ public class NotificationDrawer {
 
     protected void instantiate() {
         //View setup
-        notificationsListView = (ListView) mainView.findViewById(R.id.right_drawer);
-        clearNotif=(Button)mainView.findViewById(R.id.clearNotifs);
+//        notificationsListView = (ListView) mainView.findViewById(R.id.right_drawer);
+//        clearNotif=(Button)mainView.findViewById(R.id.clearNotifs);
 
-        DrawerLayout mDrawerLayout=(DrawerLayout)mainView.findViewById(R.id.drawer_layout);
-        final RelativeLayout mDrawer=(RelativeLayout)mainView.findViewById(R.id.notification_drawer);
+//        DrawerLayout mDrawerLayout=(DrawerLayout)mainView.findViewById(R.id.drawer_layout);
+//        final RelativeLayout mDrawer=(RelativeLayout)mainView.findViewById(R.id.notification_drawer);
 
-        mDrawerLayout.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-                super.onDrawerSlide(drawerView, slideOffset);
-                if(slideOffset==1 || slideOffset==0){
-                    refreshed=false;
-                }
-                if ((slideOffset != 0 )  && drawerView==mDrawer && !refreshed) {
-                    notificationList = retrieveNotifications();
-                    drawerListAdapter = new NotificationDrawerListAdapter(mContext, notificationList);
-                    notificationsListView.setAdapter(drawerListAdapter);
-                }
-            }
-        });
-
-        clearNotif.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NotificationDataHandler handler=new NotificationDataHandler(mContext);
-                handler.open();
-                handler.deleteTable(NotificationDataHandler.TABLE_NAME_DEFAULT);
-                handler.close();
-                notificationList=retrieveNotifications();
-                drawerListAdapter = new NotificationDrawerListAdapter(mContext, notificationList);
-                notificationsListView.setAdapter(drawerListAdapter);
-
-            }
-        });
-
-        //Adapter setup
-        drawerListAdapter = new NotificationDrawerListAdapter(mContext, notificationList);
-        notificationsListView.setAdapter(drawerListAdapter);
+//        mDrawerLayout.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+//            @Override
+//            public void onDrawerSlide(View drawerView, float slideOffset) {
+//                super.onDrawerSlide(drawerView, slideOffset);
+//                if(slideOffset==1 || slideOffset==0){
+//                    refreshed=false;
+//                }
+//                if ((slideOffset != 0 )  && drawerView==mDrawer && !refreshed) {
+//                    notificationList = retrieveNotifications();
+//                    drawerListAdapter = new NotificationDrawerListAdapter(mContext, notificationList);
+//                    notificationsListView.setAdapter(drawerListAdapter);
+//                }
+//            }
+//        });
+//
+//        clearNotif.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                NotificationDataHandler handler=new NotificationDataHandler(mContext);
+//                handler.open();
+//                handler.deleteTable(NotificationDataHandler.TABLE_NAME_DEFAULT);
+//                handler.close();
+//                notificationList=retrieveNotifications();
+//                drawerListAdapter = new NotificationDrawerListAdapter(mContext, notificationList);
+//                notificationsListView.setAdapter(drawerListAdapter);
+//
+//            }
+//        });
+//
+//        //Adapter setup
+//        drawerListAdapter = new NotificationDrawerListAdapter(mContext, notificationList);
+//        notificationsListView.setAdapter(drawerListAdapter);
 
     }
 

@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.scribblernotebooks.scribblernotebooks.Fragments.ProfileFragment;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.R;
 
@@ -29,12 +30,14 @@ public class ProfileInfoEditorAdapter extends RecyclerView.Adapter<ProfileInfoEd
     SharedPreferences.Editor userPrefEditor;
     View drawer;
     int[] viewids={R.id.userName,R.id.userEmail};
+    ProfileFragment.OnFragmentInteractionListener mListener;
 
-    public ProfileInfoEditorAdapter(Context context, View view) {
+    public ProfileInfoEditorAdapter(Context context, View view, ProfileFragment.OnFragmentInteractionListener listener) {
         this.fieldList=Constants.getProfileInfoFields();
         sharedPrefTags= Constants.sharedPrefTags;
         this.mContext=context;
         drawer=view;
+        this.mListener=listener;
         userPrefs=mContext.getSharedPreferences(Constants.PREF_NAME,Context.MODE_PRIVATE);
     }
 
@@ -61,11 +64,17 @@ public class ProfileInfoEditorAdapter extends RecyclerView.Adapter<ProfileInfoEd
             public void onFocusChange(View v, boolean hasFocus) {
                 if(!hasFocus){
                     userPrefEditor = userPrefs.edit();
-                    userPrefEditor.putString(prefTag, ((EditText)v).getText().toString());
+                    userPrefEditor.putString(prefTag, ((EditText) v).getText().toString());
                     userPrefEditor.apply();
                     if(position==0 || position==1)
                         ((TextView)drawer.findViewById(viewids[position])).setText(((EditText) v).getText().toString());
                     Log.i("UserData", "Name " + ((EditText)v).getText().toString());
+                    if(position==0){
+                        mListener.onUserNameChanged();
+                    }
+                    if(position==1){
+                        mListener.onUserEmailChanged();
+                    }
                 }
             }
         });

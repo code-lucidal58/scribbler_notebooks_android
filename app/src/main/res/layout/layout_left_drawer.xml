@@ -31,7 +31,7 @@
                 android:id="@+id/userPhoto"
                 android:layout_width="@dimen/userPicSize"
                 android:layout_height="@dimen/userPicSize"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="5dp"
                 android:src="@drawable/ic_launcher" />
 
             <TextView

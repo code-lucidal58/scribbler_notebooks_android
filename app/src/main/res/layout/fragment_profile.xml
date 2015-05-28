@@ -1,21 +1,15 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/profileBackgroundColor"
     tools:context="com.scribblernotebooks.scribblernotebooks.ProfileFragment">
 
-    <android.support.v7.widget.Toolbar
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/toolbar"
-        android:background="#00000000"/>
-
     <ScrollView
         android:id="@+id/sl"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/app_bar">
+        android:layout_height="match_parent">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -24,7 +18,7 @@
             <FrameLayout
                 android:id="@+id/fl"
                 android:layout_width="match_parent"
-                android:layout_height="200dp">
+                android:layout_height="250dp">
 
                 <ImageView
                     android:id="@+id/profileCoverPic"
@@ -38,7 +32,6 @@
                     android:id="@+id/pic"
                     android:layout_width="@dimen/profile_profilepic_size"
                     android:layout_height="@dimen/profile_profilepic_size"
-                    android:layout_alignParentBottom="true"
                     android:layout_gravity="bottom"
                     android:layout_marginBottom="10dp"
                     android:layout_marginLeft="10dp"
@@ -50,6 +43,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="top|right|end"
                     android:background="#55ffffff"
+                    android:layout_marginTop="60dp"
                     android:textColor="#FFF"
                     android:text="Change"
                     android:textStyle="bold"
@@ -89,22 +83,29 @@
 
                 <com.google.android.gms.common.SignInButton
                     android:id="@+id/sign_in_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/googlefbbuttonheight"
-                    android:layout_below="@id/or"
+                    android:layout_width="@dimen/half_login_editText_width"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"/>
 
                 <com.facebook.login.widget.LoginButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/googlefbbuttonheight"
-                    android:layout_below="@id/sign_in_button"
+                    android:layout_width="@dimen/half_login_editText_width"
+                    android:layout_height="wrap_content"
                     android:id="@+id/login_button"
                     android:padding="0dp"
                     android:layout_marginTop="5dp" />
 
-
+ 
             </LinearLayout>
 
         </RelativeLayout>
     </ScrollView>
+
+
+    <android.support.v7.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="?attr/actionBarSize"
+        style="@style/Theme.AppCompat"
+        android:id="@+id/toolbar"
+        android:background="#5513657b"/>
 </RelativeLayout>

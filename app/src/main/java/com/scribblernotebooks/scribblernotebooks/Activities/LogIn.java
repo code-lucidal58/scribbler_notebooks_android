@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -40,7 +41,6 @@ import org.json.JSONObject;
 
 public class LogIn extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
-    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private final static String TAG = "LogIn";
     EditText name, email, mobile, password;
     Button signIn, signUp;
@@ -102,7 +102,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
          */
         callbackManager = CallbackManager.Factory.create();
         loginButton = (LoginButton) findViewById(R.id.login_button);
-        loginButton.setReadPermissions("user_friends");
+        loginButton.setReadPermissions("user_friends","email");
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -247,12 +247,12 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         final ScaleDrawable passwordIcon = new ScaleDrawable(getResources().getDrawable(R.drawable.passwordlogin), Gravity.CENTER, 1F, 1F) {
             @Override
             public int getIntrinsicHeight() {
-                return mobile.getHeight() * 3 / 4;
+                return password.getHeight() * 3 / 4;
             }
 
             @Override
             public int getIntrinsicWidth() {
-                return mobile.getHeight() * 3 / 4;
+                return password.getHeight() * 3 / 4;
             }
         };
         passwordIcon.setLevel(10000);
@@ -282,8 +282,10 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
 
         int width = signInButton.getWidth();
         int height = signInButton.getHeight();
+
         loginButton.setHeight(height);
         loginButton.setWidth(width);
+        loginButton.setPadding(signInButton.getPaddingLeft(),signInButton.getPaddingTop(),signInButton.getPaddingRight(),signInButton.getPaddingBottom());
 
 
         /**
@@ -312,7 +314,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
 
             if (userEmail.isEmpty()) {
                 Toast.makeText(getApplicationContext(), "Oops... Looks like you forgot to enter email id", Toast.LENGTH_LONG).show();
-            } else if (validatePassword(userPassword, "SignIn")) {
+            } else if (!validatePassword(userPassword, "SignIn")) {
                 Toast.makeText(getApplicationContext(), "Oops... Looks like you forgot to enter the password", Toast.LENGTH_LONG).show();
             } else {
                 login(userEmail, userPassword);
@@ -356,7 +358,6 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
 
     }
 
-
     /**
      * Function Executed when user SignIns from Either google or facebook.
      *
@@ -381,7 +382,6 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
             }
         }
         callbackManager.onActivityResult(requestCode, responseCode, intent);
-
     }
 
     /**
@@ -389,6 +389,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
      */
     @Override
     public void onConnected(Bundle arg0) {
+        Log.e(TAG,"Google Connected");
         mSignInClicked = false;
         getProfileInformation();
     }
@@ -483,7 +484,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                 String s=personImageUrl.replace("photo.jpg?sz=50","photo.jpg?sz=250");
                 String userEmail = Plus.AccountApi.getAccountName(mGoogleApiClient);
                 String userCover = currentPerson.getCover().getCoverPhoto().getUrl();
-                saveUserDetails(personName, userEmail, personImageUrl, userCover,"","");
+                saveUserDetails(personName, userEmail, s, userCover,"","");
             } else {
                 Toast.makeText(getApplicationContext(),
                         "Person information is null", Toast.LENGTH_LONG).show();
