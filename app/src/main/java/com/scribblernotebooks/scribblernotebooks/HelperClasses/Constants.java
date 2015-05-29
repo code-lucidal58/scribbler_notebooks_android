@@ -194,7 +194,7 @@ public class Constants {
         item.add(Pair.create(R.drawable.scan_icon,"Scan QR Code"));
         item.add(Pair.create(R.drawable.enter_code_icon,"Enter Scribbler Code"));
         item.add(Pair.create(R.drawable.all_deals_icon,"All Deals"));
-        item.add(Pair.create(R.drawable.featured_deals_icon,"Featured Deals"));
+        item.add(Pair.create(R.drawable.featured_deals_icon,"Claimed Deals"));
         item.add(Pair.create(R.drawable.sign_out_icon,"Sign Out"));
         return item;
     }

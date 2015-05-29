@@ -6,8 +6,10 @@ import android.app.Fragment;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,6 +54,15 @@ public class ClaimedDeals extends android.support.v4.app.Fragment {
         // Inflate the layout for this fragment
         context=getActivity().getApplicationContext();
         View v = inflater.inflate(R.layout.fragment_claimed_deals, container, false);
+
+
+        Toolbar appbar;
+        appbar = (Toolbar) v.findViewById(R.id.app_bar);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(appbar);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeButtonEnabled(true);
+        getActivity().setTitle("Claimed Deals");
+
+
         recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));

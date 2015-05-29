@@ -35,6 +35,9 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
     Boolean isClaimed=false;
 
     public RecyclerDealsAdapter(ArrayList<Deal> dealsList, Context context) {
+        this.dealsList = dealsList;
+        this.context = context;
+        init();
     }
 
     public RecyclerDealsAdapter(ArrayList<Deal> dealsList,Context context,Boolean isClaimed){
@@ -110,13 +113,14 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
         /** Setting list View item details */
         viewHolder.txtViewTitle.setText(title);
         viewHolder.txtViewCategory.setText(category);
-        if(!isClaimed)
+        if(!isClaimed) {
             viewHolder.txtViewDealDetails.setText(details);
+            viewHolder.favoriteIcon.setChecked(isfavorited);
+        }
         else
         {
-            viewHolder.txtViewDealDetails.setText("Coupon Code: "+deal.getCouponCode());
+            viewHolder.txtViewDealDetails.setText("Coupon Code: " + deal.getCouponCode());
         }
-        viewHolder.favoriteIcon.setChecked(isfavorited);
 
         ImageLoader.getInstance().displayImage(deal.getImageUrl(),viewHolder.imgViewIcon,displayImageOptions,imageLoadingListener);
 

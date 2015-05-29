@@ -12,10 +12,8 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.Pair;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,6 +28,7 @@ import com.scribblernotebooks.scribblernotebooks.Activities.LogIn;
 import com.scribblernotebooks.scribblernotebooks.Activities.NavigationDrawer;
 import com.scribblernotebooks.scribblernotebooks.Activities.ScannerActivity;
 import com.scribblernotebooks.scribblernotebooks.Adapters.NavigationRecyclerAdapter;
+import com.scribblernotebooks.scribblernotebooks.Fragments.ClaimedDeals;
 import com.scribblernotebooks.scribblernotebooks.Fragments.DealsFragment;
 import com.scribblernotebooks.scribblernotebooks.Fragments.ManualScribblerCode;
 import com.scribblernotebooks.scribblernotebooks.Fragments.ProfileFragment;
@@ -173,7 +172,7 @@ public class LeftNavigationDrawer {
                     fragment = DealsFragment.newInstance(Constants.serverURL, title);
                     break;
                 case 3:
-                    fragment = DealsFragment.newInstance(Constants.serverURL + "featuredDeals", title);
+                    fragment = ClaimedDeals.newInstance();
                     break;
                 case 4:
                     SharedPreferences sharedPreferences = mContext.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);

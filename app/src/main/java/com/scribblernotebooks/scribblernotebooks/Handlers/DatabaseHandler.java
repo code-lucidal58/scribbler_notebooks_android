@@ -178,7 +178,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 deal.setCategory(cursor.getString(2));
                 deal.setImageUrl(cursor.getString(4));
                 deal.setShortDescription(cursor.getString(3));
-                deal.setCategory(cursor.getString(5));
+                deal.setCouponCode(cursor.getString(5));
                 dealArrayList.add(deal);
             } while (cursor.moveToNext());
         }
