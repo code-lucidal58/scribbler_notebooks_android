@@ -402,9 +402,8 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     @Override
     public void onConnectionFailed(ConnectionResult result) {
         if (!result.hasResolution()) {
-            GooglePlayServicesUtil.getErrorDialog(result.getErrorCode(), this,
-                    0).show();
-            progressDialog.hide();
+            progressDialog.dismiss();
+            GooglePlayServicesUtil.getErrorDialog(result.getErrorCode(), this, 0).show();
             Toast.makeText(this, "Could not connect", Toast.LENGTH_SHORT).show();
             return;
         }

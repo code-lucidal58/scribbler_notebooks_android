@@ -74,7 +74,8 @@ public class ShakeEventManager implements SensorEventListener {
             mShakeCount = 0;
         }
 
-        if ((now - mLastTime) > TIME_THRESHOLD) {
+        if ((now - mLastTime)
+                > TIME_THRESHOLD) {
             long diff = now - mLastTime;
             float speed = Math.abs(event.values[0] +event.values[1] + event.values[2] - mLastX - mLastY - mLastZ) / diff * 10000;
             if (speed > FORCE_THRESHOLD) {

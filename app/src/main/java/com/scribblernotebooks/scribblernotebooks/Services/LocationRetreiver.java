@@ -27,41 +27,59 @@ public class LocationRetreiver extends IntentService implements LocationListener
     @Override
     protected void onHandleIntent(Intent intent) {
 
-        LocationManager locationManager=(LocationManager)getSystemService(LOCATION_SERVICE);
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,0,0,this);
-        Location lastKnown=locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
-        double lattitude=lastKnown.getLatitude();
-        double longitude=lastKnown.getLongitude();
-        String cityName = "Not Found";
-        Geocoder gcd = new Geocoder(getBaseContext(), Locale.getDefault());
+        Location lastKnown;
         try {
-
-            List<Address> addresses = gcd.getFromLocation(lattitude, longitude,
-                    10);
-
-            for (Address adrs : addresses) {
-                if (adrs != null) {
-
-                    String city = adrs.getLocality();
-                    if (city != null && !city.equals("")) {
-                        cityName = city;
-                        System.out.println("city ::  " + cityName);
-                        Log.e("City",cityName);
-                        SharedPreferences userPref=getSharedPreferences(Constants.PREF_NAME,MODE_PRIVATE);
-                        SharedPreferences.Editor editor=userPref.edit();
-                        editor.putString(Constants.PREF_DATA_LOCATION,city);
-                        editor.apply();
-                        break;
-                    }
-                }
-
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
+            lastKnown = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        }
+        catch (Exception e){
+            try{
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+                lastKnown = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+            catch (Exception ef){
+                locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 0, 0, this);
+                lastKnown = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+            }
         }
 
+        try {
+            double lattitude = lastKnown.getLatitude();
+            double longitude = lastKnown.getLongitude();
+            String cityName = "Not Found";
+            Geocoder gcd = new Geocoder(getBaseContext(), Locale.getDefault());
+            try {
+
+                List<Address> addresses = gcd.getFromLocation(lattitude, longitude,
+                        10);
+
+                for (Address adrs : addresses) {
+                    if (adrs != null) {
+
+                        String city = adrs.getLocality();
+                        if (city != null && !city.equals("")) {
+                            cityName = city;
+                            System.out.println("city ::  " + cityName);
+                            Log.e("City", cityName);
+                            SharedPreferences userPref = getSharedPreferences(Constants.PREF_NAME, MODE_PRIVATE);
+                            SharedPreferences.Editor editor = userPref.edit();
+                            editor.putString(Constants.PREF_DATA_LOCATION, city);
+                            editor.apply();
+                            break;
+                        }
+                    }
+
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
+
 
     @Override
     public void onLocationChanged(Location location) {

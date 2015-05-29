@@ -7,6 +7,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.Pair;
 import android.view.View;
@@ -27,7 +29,7 @@ import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListene
 import com.scribblernotebooks.scribblernotebooks.Activities.LogIn;
 import com.scribblernotebooks.scribblernotebooks.Activities.NavigationDrawer;
 import com.scribblernotebooks.scribblernotebooks.Activities.ScannerActivity;
-import com.scribblernotebooks.scribblernotebooks.Adapters.NavigationListAdapter;
+import com.scribblernotebooks.scribblernotebooks.Adapters.NavigationRecyclerAdapter;
 import com.scribblernotebooks.scribblernotebooks.Fragments.DealsFragment;
 import com.scribblernotebooks.scribblernotebooks.Fragments.ManualScribblerCode;
 import com.scribblernotebooks.scribblernotebooks.Fragments.ProfileFragment;
@@ -47,14 +49,15 @@ public class LeftNavigationDrawer {
 
     String userName, userPhotoUrl, userCoverUrl;
 
-    ListView mDrawerList;
+    RecyclerView mDrawerList;
     TextView uName, userEmail;
     ImageView uPhoto,uCoverPic;
     RelativeLayout mDrawer;
-    NavigationListAdapter navigationListAdapter;
+    NavigationRecyclerAdapter navigationRecyclerAdapter;
     SharedPreferences sharedPreferences;
     Fragment fragment;
     FrameLayout userDetailsHolder;
+    DrawerLayout mDrawerLayout;
 
     ArrayList<Pair<Integer,String>> mNavigationDrawerItems;
     NavigationDrawer navigationDrawerActivity;
@@ -115,14 +118,14 @@ public class LeftNavigationDrawer {
      * Initiating the views and data
      */
     protected void instantiate() {
-        mDrawerList = (ListView) mainView.findViewById(R.id.left_drawer);
+        mDrawerList = (RecyclerView) mainView.findViewById(R.id.left_drawer);
         mDrawer = (RelativeLayout) mainView.findViewById(R.id.left_drawer_relative);
         uName = (TextView) mainView.findViewById(R.id.userName);
         uPhoto = (ImageView) mainView.findViewById(R.id.userPhoto);
-        uCoverPic=(ImageView)mainView.findViewById(R.id.userCover);
-        userEmail=(TextView)mainView.findViewById(R.id.userEmail);
-        userDetailsHolder=(FrameLayout)mainView.findViewById(R.id.userHolder);
-        final DrawerLayout mDrawerLayout = (DrawerLayout) mainView.findViewById(R.id.drawer_layout);
+        uCoverPic = (ImageView) mainView.findViewById(R.id.userCover);
+        userEmail = (TextView) mainView.findViewById(R.id.userEmail);
+        userDetailsHolder = (FrameLayout) mainView.findViewById(R.id.userHolder);
+        mDrawerLayout = (DrawerLayout) mainView.findViewById(R.id.drawer_layout);
 
         /**
          * Open Profile management when user clicks section of navigation drawer
@@ -148,69 +151,63 @@ public class LeftNavigationDrawer {
 
 
         /**Setting navigation Drawer**/
-        mNavigationDrawerItems=Constants.getNavigationDrawerItems();
-        navigationListAdapter = new NavigationListAdapter(mContext, mNavigationDrawerItems);
-        mDrawerList.setAdapter(navigationListAdapter);
-
+        mNavigationDrawerItems = Constants.getNavigationDrawerItems();
+        navigationRecyclerAdapter = new NavigationRecyclerAdapter(mContext, mNavigationDrawerItems,this);
+        mDrawerList.setLayoutManager(new LinearLayoutManager(mContext));
+        mDrawerList.setAdapter(navigationRecyclerAdapter);
+    }
 
         /**Handling clicks on navigation drawer**/
-        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectItem(position);
+        public void clickAction(int position){
+            String title = mNavigationDrawerItems.get(position).second;
+            switch (position) {
+                case 0:
+                    mContext.startActivity(new Intent(mContext, ScannerActivity.class));
+                    mDrawerLayout.closeDrawers();
+                    break;
+                case 1:
+                    fragment = ManualScribblerCode.newInstance(mContext, "");
+
+                    break;
+                case 2:
+                    fragment = DealsFragment.newInstance(Constants.serverURL, title);
+                    break;
+                case 3:
+                    fragment = DealsFragment.newInstance(Constants.serverURL + "featuredDeals", title);
+                    break;
+                case 4:
+                    SharedPreferences sharedPreferences = mContext.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.clear();
+                    editor.apply();
+                    navigationDrawerActivity.signOut();
+                    Toast.makeText(mContext, "Successfully Logged out", Toast.LENGTH_LONG).show();
+                    mContext.startActivity(new Intent(mContext, LogIn.class));
+                    break;
+                default:
+                    break;
             }
 
-            private void selectItem(int position) {
-                String title = mNavigationDrawerItems.get(position).second;
-                switch (position) {
-                    case 0:
-                        mContext.startActivity(new Intent(mContext, ScannerActivity.class));
-                        mDrawerLayout.closeDrawers();
-                        break;
-                    case 1:
-                        fragment = ManualScribblerCode.newInstance(mContext, "");
+            if (fragment != null) {
+                FragmentManager fragmentManager = navigationDrawerActivity.getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
 
-                        break;
-                    case 2:
-                        fragment = DealsFragment.newInstance(Constants.serverURL, title);
-                        break;
-                    case 3:
-                        fragment = DealsFragment.newInstance(Constants.serverURL + "featuredDeals", title);
-                        break;
-                    case 4:
-                        SharedPreferences sharedPreferences=mContext.getSharedPreferences(Constants.PREF_NAME,Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.clear();
-                        editor.apply();
-                        navigationDrawerActivity.signOut();
-                        Toast.makeText(mContext, "Successfully Logged out", Toast.LENGTH_LONG).show();
-                        mContext.startActivity(new Intent(mContext, LogIn.class));
-                        break;
-                    default:
-                        break;
+//                if (position != 0) {
+//                    mDrawerList.setSelected(true);
+//                    mDrawerList.setItemChecked(position, true);
+//                    mDrawerList.setSelection(position);
+//                }
+                try {
+                    navigationDrawerActivity.getSupportActionBar().setTitle(mNavigationDrawerItems.get(position).second);
+                } catch (Exception e) {
+                    Log.e("Navigation Drawer", "No Action Bar");
                 }
+                navigationDrawerActivity.mDrawerLayout.closeDrawer(mDrawer);
 
-                if (fragment != null) {
-                    FragmentManager fragmentManager = navigationDrawerActivity.getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
-
-                    if (position != 0) {
-                        mDrawerList.setItemChecked(position, true);
-                        mDrawerList.setSelection(position);
-                    }
-                    try {
-                        navigationDrawerActivity.getSupportActionBar().setTitle(mNavigationDrawerItems.get(position).second);
-                    } catch (Exception e) {
-                        Log.e("Navigation Drawer", "No Action Bar");
-                    }
-                    navigationDrawerActivity.mDrawerLayout.closeDrawer(mDrawer);
-
-                } else {
-                    Log.e("MainActivity", "Error in creating fragment");
-                }
+            } else {
+                Log.e("MainActivity", "Error in creating fragment");
             }
-        });
-    }
+        }
 
     public static void setUserName(){
         SharedPreferences sharedPreferences = sContext.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
