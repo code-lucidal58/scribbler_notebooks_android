@@ -1,24 +1,25 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
+    <style name="AppTheme" parent="AppTheme.Base">
+
+    </style>
+
+    <style name="AppTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/themeColor</item>
-        <item name="android:textColorPrimary">#FFF</item>
+    </style>
+
+    <style name="ScannerTheme" parent="AppTheme.Base">
 
     </style>
 
-    <style name="ScannerTheme" parent="Theme.AppCompat.Light.NoActionBar">
 
-    </style>
-
-
-    <style name="font" parent="AppTheme">
+    <style name="font" parent="AppTheme.Base">
         <item name="android:textSize">18sp</item>
         <item name="android:gravity">center</item>
     </style>
 
-    <style name="SignInEditText">
+    <style name="SignInEditText" parent="AppTheme.Base">
         <item name="android:singleLine">true</item>
         <item name="android:textColor">@color/table_text</item>
         <item name="android:textCursorDrawable">@drawable/bootstrap_edit_text_cursor</item>
