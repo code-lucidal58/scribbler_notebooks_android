@@ -27,6 +27,7 @@ import com.google.android.gms.plus.Plus;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.DealPopup;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.LeftNavigationDrawer;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.NotificationDrawer;
+import com.scribblernotebooks.scribblernotebooks.Fragments.ClaimedDeals;
 import com.scribblernotebooks.scribblernotebooks.Fragments.DealsFragment;
 import com.scribblernotebooks.scribblernotebooks.Fragments.ManualScribblerCode;
 import com.scribblernotebooks.scribblernotebooks.Fragments.ProfileFragment;
@@ -47,7 +48,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class NavigationDrawer extends AppCompatActivity implements ProfileFragment.OnFragmentInteractionListener,
-        DealsFragment.OnFragmentInteractionListener,ManualScribblerCode.OnFragmentInteractionListener, SearchQueryFragment.OnFragmentInteractionListener {
+        DealsFragment.OnFragmentInteractionListener,ManualScribblerCode.OnFragmentInteractionListener,
+        SearchQueryFragment.OnFragmentInteractionListener,ClaimedDeals.OnFragmentInteractionListener {
 
 
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
@@ -259,8 +261,12 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        ProfileFragment profileFragment=(ProfileFragment)getSupportFragmentManager().findFragmentById(R.id.content_frame);
-        profileFragment.onActivityResult(requestCode, resultCode, data);
+        try {
+            ProfileFragment profileFragment = (ProfileFragment) getSupportFragmentManager().findFragmentById(R.id.content_frame);
+            profileFragment.onActivityResult(requestCode, resultCode, data);
+        }catch (ClassCastException e){
+            e.printStackTrace();
+        }
     }
 
     /**

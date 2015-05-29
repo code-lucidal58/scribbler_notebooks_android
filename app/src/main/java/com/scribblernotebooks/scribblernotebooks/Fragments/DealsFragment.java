@@ -64,7 +64,7 @@ public class DealsFragment extends android.support.v4.app.Fragment {
     TextView noConnectionText;
     SwipeRefreshLayout swipeRefreshLayout;
     Boolean reload;
-    ShakeEventManager shakeEventManager;
+    ShakeEventManager shakeEventManager=null;
 
     // TODO: Rename and change types of parameters
 
@@ -320,7 +320,9 @@ public class DealsFragment extends android.support.v4.app.Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        shakeEventManager.resume();
+        if(shakeEventManager!=null){
+            shakeEventManager.resume();
+        }
         reload = true;
     }
 

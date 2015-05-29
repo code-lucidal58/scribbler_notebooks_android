@@ -32,10 +32,19 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
     public DisplayImageOptions displayImageOptions;
     public ImageLoadingListener imageLoadingListener;
     public ImageLoaderConfiguration imageLoaderConfiguration;
+    Boolean isClaimed=false;
 
     public RecyclerDealsAdapter(ArrayList<Deal> dealsList, Context context) {
+    }
+
+    public RecyclerDealsAdapter(ArrayList<Deal> dealsList,Context context,Boolean isClaimed){
         this.dealsList = dealsList;
         this.context = context;
+        this.isClaimed=isClaimed;
+        init();
+    }
+
+    public void init(){
 
         imageLoaderConfiguration=new ImageLoaderConfiguration.Builder(this.context).build();
         ImageLoader.getInstance().init(imageLoaderConfiguration);
@@ -101,7 +110,12 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
         /** Setting list View item details */
         viewHolder.txtViewTitle.setText(title);
         viewHolder.txtViewCategory.setText(category);
-        viewHolder.txtViewDealDetails.setText(details);
+        if(!isClaimed)
+            viewHolder.txtViewDealDetails.setText(details);
+        else
+        {
+            viewHolder.txtViewDealDetails.setText("Coupon Code: "+deal.getCouponCode());
+        }
         viewHolder.favoriteIcon.setChecked(isfavorited);
 
         ImageLoader.getInstance().displayImage(deal.getImageUrl(),viewHolder.imgViewIcon,displayImageOptions,imageLoadingListener);

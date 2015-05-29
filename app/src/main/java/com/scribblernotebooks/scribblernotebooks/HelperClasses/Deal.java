@@ -7,8 +7,9 @@ import java.io.Serializable;
  */
 public class Deal implements Serializable {
 
-    String id, title, category, shortDescription, imageUrl, longDescription;
-    Boolean isFav,isFeatured;
+    private String id, title, category, shortDescription, imageUrl, longDescription;
+    private Boolean isFav,isFeatured;
+    private String couponCode;
 
     public Deal(){
         super();
@@ -80,6 +81,10 @@ public class Deal implements Serializable {
         this.isFeatured=isFeatured;
     }
 
+    public void setCouponCode(String couponCode){
+        this.couponCode=couponCode;
+    }
+
     public void setLongDescription(String longDescription){ this.longDescription=longDescription; }
 
     public void setId(String id) {
@@ -113,6 +118,10 @@ public class Deal implements Serializable {
     public Boolean isFeatured()
     {
         return this.isFeatured;
+    }
+
+    public String getCouponCode(){
+        return this.couponCode;
     }
 
 }

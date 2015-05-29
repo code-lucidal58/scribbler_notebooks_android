@@ -23,6 +23,9 @@ import java.util.Random;
  */
 public class Constants {
 
+    public static final String parentURLForGetRequest="http://someshit-akasantony.rhcloud.com/deal/";
+    public static final String parentURLForCouponCode="http://someshit-akasantony.rhcloud.com/deal/";
+
     public static final String serverURL = "http://jazzyarchitects.orgfree.com/intern58195/sn7315/request.php?table=";
     public static final String TAG_DEAL_NAME = "dealName";
     public static final String TAG_IMAGE_URL = "imgurl";
@@ -32,6 +35,8 @@ public class Constants {
     public static final String TAG_CATEGORY = "category";
     public static final String TAG_IF_FEATURED="ifFeatured";
     public static final String TAG_IF_FAVOURITE="ifFavorite";
+    public static final String TAG_DETAILS="detail";
+    public static final String TAG_COUPON_CODE="couponCode";
 
     public static final String URL_ARGUMENT = "urlArg";
 

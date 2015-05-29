@@ -28,6 +28,7 @@ import com.scribblernotebooks.scribblernotebooks.Activities.LogIn;
 import com.scribblernotebooks.scribblernotebooks.Activities.NavigationDrawer;
 import com.scribblernotebooks.scribblernotebooks.Activities.ScannerActivity;
 import com.scribblernotebooks.scribblernotebooks.Adapters.NavigationListAdapter;
+import com.scribblernotebooks.scribblernotebooks.Fragments.ClaimedDeals;
 import com.scribblernotebooks.scribblernotebooks.Fragments.DealsFragment;
 import com.scribblernotebooks.scribblernotebooks.Fragments.ManualScribblerCode;
 import com.scribblernotebooks.scribblernotebooks.Fragments.ProfileFragment;
@@ -175,7 +176,7 @@ public class LeftNavigationDrawer {
                         fragment = DealsFragment.newInstance(Constants.serverURL, title);
                         break;
                     case 3:
-                        fragment = DealsFragment.newInstance(Constants.serverURL + "featuredDeals", title);
+                        fragment = ClaimedDeals.newInstance();
                         break;
                     case 4:
                         SharedPreferences sharedPreferences=mContext.getSharedPreferences(Constants.PREF_NAME,Context.MODE_PRIVATE);

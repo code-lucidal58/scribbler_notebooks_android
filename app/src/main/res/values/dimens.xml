@@ -8,9 +8,9 @@
     <dimen name="details_cardViewElevation">3dp</dimen>
     <dimen name="details_cardCorner">3dp</dimen>
 
-    <dimen name="editText1CornerRadius">5dp</dimen>
-    <dimen name="editText2CornerRadius">5dp</dimen>
-    <dimen name="buttonCornerRadius">8dp</dimen>
+    <dimen name="editText1CornerRadius">3dp</dimen>
+    <dimen name="editText2CornerRadius">3dp</dimen>
+    <dimen name="buttonCornerRadius">3dp</dimen>
 
     <dimen name="scanner_button_width">275dp</dimen>
     <dimen name="scannerToManual_button_width">165dp</dimen>
@@ -26,7 +26,7 @@
     <dimen name="loginButtonHeight">35dp</dimen>
     <dimen name="googlefbbuttonheight">40dp</dimen>
 
-    <dimen name="popup_width">300dp</dimen>
+    <dimen name="popup_width">275dp</dimen>
     <dimen name="popup_button_width">275dp</dimen>
 
     <dimen name="sec_activity_horizontal_margin">20dp</dimen>
@@ -64,5 +64,7 @@
 
     <dimen name="profile_basic_info_item_height">40dp</dimen>
     <dimen name="profileEditTextFontSize">16sp</dimen>
+    <dimen name="popupImageWidth">70dp</dimen>
+    <dimen name="popupImageHeight">70dp</dimen>
 
 </resources>

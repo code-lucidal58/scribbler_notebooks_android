@@ -57,7 +57,6 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
         GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String TITLE = "title";
     final String TAG = "ProfileFragment";
     ImageView userPic, userCoverPic;
     Context context;
@@ -86,7 +85,6 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
     static final int COVER_PIC_REQUEST_CODE = 12;
     private static final int RC_SIGN_IN = 10;
 
-    private String Title;
 
     private OnFragmentInteractionListener mListener;
 
@@ -97,7 +95,6 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
     public static ProfileFragment newInstance(String param1) {
         ProfileFragment fragment = new ProfileFragment();
         Bundle args = new Bundle();
-        args.putString(TITLE, param1);
         fragment.setArguments(args);
         return fragment;
     }
@@ -109,9 +106,7 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            Title = getArguments().getString(TITLE);
-        }
+
         context = getActivity().getApplicationContext();
         /**Configurations for image caching library */
         imageLoaderConfiguration = new ImageLoaderConfiguration.Builder(context).build();
@@ -141,8 +136,9 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
+
+        // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
         context = getActivity().getApplicationContext();
         sharedPreferences = context.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
@@ -158,9 +154,6 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
         /**Initiating Shared Prefs*/
         userPref = context.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
 
-
-        Log.e(TAG, "Data  Saved starting" + userPref.getString(Constants.PREF_DATA_EMAIL, "") + " " + userPref.getString(Constants.PREF_DATA_COVER_PIC, "")
-                + " " + userPref.getString(Constants.PREF_DATA_PHOTO, ""));
 
         /**Setting images from shared Prefs**/
         String coverUrl = userPref.getString(Constants.PREF_DATA_COVER_PIC, "");
@@ -183,9 +176,11 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
         /**Get User location*/
         context.startService(new Intent(context, LocationRetreiver.class));
 
-        ((AppCompatActivity) getActivity()).setSupportActionBar(appbar);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
+        AppCompatActivity currentActivity=(AppCompatActivity)getActivity();
+        currentActivity.setSupportActionBar(appbar);
+        currentActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        currentActivity.getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
+        currentActivity.getSupportActionBar().setTitle("Profile");
 
 
         /**

@@ -44,4 +44,14 @@
     <color name="yellow">#FFFFFB5A</color>
     <color name="red">#FFFF3F3A</color>
     <color name="green">#FF59FF70</color>
+
+
+    <color name="hour0600">#ff70a993</color>
+    <color name="hour0900">#ff52bacb</color>
+    <color name="hour1200">#ff21ddff</color>
+    <color name="hour1500">#ff21aed0</color>
+    <color name="hour1800">#ff12495c</color>
+    <color name="hour2100">#ff181818</color>
+    <color name="hour0000">#ff000000</color>
+    <color name="popupTextColor">#ff104858</color>
 </resources>

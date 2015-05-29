@@ -11,28 +11,63 @@
         android:layout_height="wrap_content"
         android:background="@color/themeColor"
         android:textColor="#FFF"
-        android:text="Title"
+        android:text="Scribbler Deal"
         android:minHeight="50dp"
         android:padding="10dp"
-        android:textSize="18sp"
+        android:textSize="20sp"
         android:gravity="center"
         android:id="@+id/title"  />
 
     <RelativeLayout
         android:layout_width="@dimen/popup_width"
         android:layout_height="wrap_content"
-        android:minHeight="200dp"
+        android:minHeight="150dp"
         android:id="@+id/ll"
         android:padding="5dp"
         android:background="#ffd6ff32">
 
+        <ImageView
+            android:layout_width="@dimen/popupImageWidth"
+            android:layout_height="@dimen/popupImageHeight"
+            android:id="@+id/dealIcon"
+            android:src="@mipmap/ic_launcher"/>
+
         <TextView
-            android:layout_width="@dimen/popup_width"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/themeColorDark"
-            android:text="Description Here"
+            android:layout_toRightOf="@id/dealIcon"
+            android:layout_toEndOf="@id/dealIcon"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/popupTextColor"
+            android:layout_marginStart="10dp"
+            android:text="Title"
+            android:textStyle="bold"
+            android:id="@+id/dealTitle"
+            android:textSize="18sp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/dealIcon"
+            android:layout_toEndOf="@id/dealIcon"
+            android:layout_below="@+id/dealTitle"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:text="Category"
+            android:id="@+id/dealCategory"
+            android:textColor="@color/popupTextColor"
+            android:textSize="14sp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/dealIcon"
+            android:layout_marginTop="5dp"
             android:textSize="16sp"
-            android:id="@+id/description"/>
+            android:id="@+id/dealDescription"
+            android:textColor="@color/popupTextColor"
+            android:text="@string/lorem_ipsum"/>
 
 
 

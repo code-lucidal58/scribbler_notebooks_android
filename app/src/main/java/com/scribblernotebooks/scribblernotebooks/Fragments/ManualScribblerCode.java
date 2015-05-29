@@ -1,10 +1,12 @@
 package com.scribblernotebooks.scribblernotebooks.Fragments;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -20,6 +22,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -28,7 +31,14 @@ import com.scribblernotebooks.scribblernotebooks.Activities.ScannerActivity;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.CyclicTransitionDrawable;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.DealPopup;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
+import com.scribblernotebooks.scribblernotebooks.HelperClasses.Deal;
+import com.scribblernotebooks.scribblernotebooks.HelperClasses.ParseJson;
 import com.scribblernotebooks.scribblernotebooks.R;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 
 public class ManualScribblerCode extends Fragment {
@@ -41,14 +51,19 @@ public class ManualScribblerCode extends Fragment {
     String url = "";
     Uri uri;
     LinearLayout ll;
-//    ImageView notificationIcon;
+    //    ImageView notificationIcon;
     int screenWidth;
     int screenHeight;
 
+    Deal currentDeal=null;
+
+    RelativeLayout root;
+
+    ProgressDialog progressDialog;
 
     ImageView sun, cloud1, cloud2;
 
-    int NOTIFICATION_ICON_TRANSITION_DURATION=1000;
+    int NOTIFICATION_ICON_TRANSITION_DURATION = 1000;
     int notificationCount = 3;
     private Context mContext;
     private static Context sContext;
@@ -80,7 +95,6 @@ public class ManualScribblerCode extends Fragment {
         mContext = getActivity().getApplicationContext();
 
         this.mContext = sContext;
-
         /**
          * See if the url is empty
          * If empty that means started from navigation drawer
@@ -97,12 +111,13 @@ public class ManualScribblerCode extends Fragment {
 
 
         //Initialize Google API code
-        mGoogleApiClient = new GoogleApiClient.Builder(mContext)
+        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
                 .addApi(Plus.API, Plus.PlusOptions.builder().build())
                 .addScope(Plus.SCOPE_PLUS_LOGIN)
                 .build();
         mGoogleApiClient.connect();
     }
+
     @Override
     public void onPause() {
         super.onPause();
@@ -114,7 +129,11 @@ public class ManualScribblerCode extends Fragment {
         //Inflate view
         View v = inflater.inflate(R.layout.fragment_manual_scribbler_code, container, false);
 
+        progressDialog=new ProgressDialog(mContext);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("Just a moment...\nWe are fetching your deal...");
         //View Setup
+        root = (RelativeLayout) v.findViewById(R.id.manualRoot);
         back = (LinearLayout) v.findViewById(R.id.backToScan);
         textView = (TextView) back.findViewById(R.id.textView);
         image = (ImageView) back.findViewById(R.id.imageView);
@@ -142,22 +161,23 @@ public class ManualScribblerCode extends Fragment {
 //            }
 //        });
 
+
         /**
          * Setting up notification icon animation
          */
-        CyclicTransitionDrawable cyclicTransitionDrawable=new CyclicTransitionDrawable(new Drawable[]{
-           getResources().getDrawable(R.drawable.n1),
-           getResources().getDrawable(R.drawable.n2),
-           getResources().getDrawable(R.drawable.n3),
-           getResources().getDrawable(R.drawable.n4),
-           getResources().getDrawable(R.drawable.n5),
-           getResources().getDrawable(R.drawable.n6),
-           getResources().getDrawable(R.drawable.n7),
-           getResources().getDrawable(R.drawable.n8),
+        CyclicTransitionDrawable cyclicTransitionDrawable = new CyclicTransitionDrawable(new Drawable[]{
+                getResources().getDrawable(R.drawable.n1),
+                getResources().getDrawable(R.drawable.n2),
+                getResources().getDrawable(R.drawable.n3),
+                getResources().getDrawable(R.drawable.n4),
+                getResources().getDrawable(R.drawable.n5),
+                getResources().getDrawable(R.drawable.n6),
+                getResources().getDrawable(R.drawable.n7),
+                getResources().getDrawable(R.drawable.n8),
         });
 //        notificationIcon.setImageDrawable(cyclicTransitionDrawable);
         cyclicTransitionDrawable.startTransition(NOTIFICATION_ICON_TRANSITION_DURATION, 0);
-        final Animation dance= AnimationUtils.loadAnimation(mContext,R.anim.dancing_notification_icon);
+        final Animation dance = AnimationUtils.loadAnimation(mContext, R.anim.dancing_notification_icon);
         dance.setFillEnabled(true);
         dance.setAnimationListener(new Animation.AnimationListener() {
             @Override
@@ -176,8 +196,6 @@ public class ManualScribblerCode extends Fragment {
             }
         });
 //        notificationIcon.startAnimation(dance);
-
-
 
 
         /**
@@ -205,7 +223,6 @@ public class ManualScribblerCode extends Fragment {
                     case MotionEvent.ACTION_UP:
                         setDrawable(back, getResources().getDrawable(R.drawable.scan_enabled));
                         startActivity(new Intent(mContext, ScannerActivity.class));
-                        getActivity().finish();
                         break;
                     default:
                         setDrawable(back, getResources().getDrawable(R.drawable.scan_enabled));
@@ -225,6 +242,7 @@ public class ManualScribblerCode extends Fragment {
                 //Show popup containing deal details
                 url = code.getText().toString();
                 if (!url.isEmpty()) {
+                    progressDialog.show();
                     getDealDetailsAndShow(url);
                 }
             }
@@ -249,40 +267,56 @@ public class ManualScribblerCode extends Fragment {
     /**
      * Show the popup containing the deal details
      *
-     * @param url the url of the request
+     * @param dealCode the url of the request
      */
-    public void getDealDetailsAndShow(String url) {
-        DealPopup dealPopup = new DealPopup(mContext);
-        dealPopup.setUrl(url);
-        dealPopup.show();
+    public void getDealDetailsAndShow(String dealCode) {
+        getDealDetails(dealCode);
     }
 
 
+    String response;
     /**
      * Under development Method
      * To decode data from the url query
      *
-     * @param url url to be decoded
+     * @param dealCode url to be decoded
      * @return the decoded strings
      */
-    String getDealDetails(Uri url) {
-        String scheme, host, data, query;
-        scheme = url.getScheme();
-        host = url.getHost();
-        data = url.getEncodedPath();
-        query = url.getQuery();
+    public void  getDealDetails(final String dealCode) {
+        response = "";
+        new AsyncTask<String,Void,String>(){
+            @Override
+            protected String doInBackground(String... params) {
+                try {
+                    URL url=new URL(Constants.parentURLForGetRequest+params[0]);
+//                    Log.e("Deal ", "URL " + params[0]);
+                    HttpURLConnection connection=(HttpURLConnection)url.openConnection();
+                    connection.setRequestMethod("GET");
+                    connection.connect();
+                    BufferedReader in=new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                    return in.readLine();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return "";
+            }
 
-        String dealCode, advertisersCode;
-        dealCode = url.getQueryParameter("dealCode");
-        advertisersCode = url.getQueryParameter("advertisersId");
-
-        String s = "Scheme: " + scheme +
-                "\nHost: " + host +
-                "\nData: " + data +
-                "\nQuery: " + query +
-                "\n\nDeal Code: " + dealCode +
-                "\nAdvertisers Code: " + advertisersCode;
-        return s;
+            @Override
+            protected void onPostExecute(String s) {
+                super.onPostExecute(s);
+                progressDialog.dismiss();
+                DealPopup dealPopup = new DealPopup(mContext);
+//                Log.e("Deal","Response "+s);
+                Deal deal= ParseJson.parseSingleDeal(s);
+                dealPopup.setTitle(deal.getTitle());
+                dealPopup.setCategory(deal.getCategory());
+                dealPopup.setDescription(deal.getLongDescription());
+                dealPopup.setImage(deal.getImageUrl());
+                dealPopup.setCurrentDeal(deal);
+                dealPopup.show();
+                currentDeal=deal;
+            }
+        }.execute(dealCode);
 
     }
 

@@ -141,11 +141,21 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         /**
          * Setting up GoogleAPI Client for sign in through google
          */
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(Plus.API, Plus.PlusOptions.builder().build())
-                .addScope(Plus.SCOPE_PLUS_LOGIN).build();
+        try {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(Plus.API, Plus.PlusOptions.builder().build())
+                    .addScope(Plus.SCOPE_PLUS_LOGIN).build();
+        }catch (Exception e){
+            e.printStackTrace();
+            mGoogleApiClient.connect();
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(Plus.API, Plus.PlusOptions.builder().build())
+                    .addScope(Plus.SCOPE_PLUS_LOGIN).build();
+        }
 
 
         //View Setup
@@ -402,10 +412,15 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     @Override
     public void onConnectionFailed(ConnectionResult result) {
         if (!result.hasResolution()) {
-            GooglePlayServicesUtil.getErrorDialog(result.getErrorCode(), this,
-                    0).show();
-            progressDialog.hide();
-            Toast.makeText(this, "Could not connect", Toast.LENGTH_SHORT).show();
+            try{
+                GooglePlayServicesUtil.getErrorDialog(result.getErrorCode(), this,
+                        0).show();
+                progressDialog.dismiss();
+//                showGoogleError(result);
+                Toast.makeText(this, "Could not connect", Toast.LENGTH_SHORT).show();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
             return;
         }
 
@@ -415,6 +430,17 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
             if (mSignInClicked) {
                 resolveSignInError();
             }
+        }
+    }
+
+    public void showGoogleError(ConnectionResult result){
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP){
+            GooglePlayServicesUtil.getErrorDialog(result.getErrorCode(), this,
+                    0).create();
+        }
+        else{
+            GooglePlayServicesUtil.getErrorDialog(result.getErrorCode(), this,
+                    0).show();
         }
     }
 
