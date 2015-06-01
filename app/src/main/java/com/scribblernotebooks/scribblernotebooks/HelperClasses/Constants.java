@@ -13,6 +13,7 @@ import android.view.animation.LinearInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.scribblernotebooks.scribblernotebooks.R;
 
 import java.util.ArrayList;
@@ -22,6 +23,8 @@ import java.util.Random;
  * Created by Jibin_ism on 08-May-15.
  */
 public class Constants {
+
+    public static final String MIXPANEL_TOKEN="873f1995dd119bdb63b8a51bc2f4951d";
 
     public static final String parentURLForGetRequest="http://someshit-akasantony.rhcloud.com/deal/";
     public static final String parentURLForCouponCode="http://someshit-akasantony.rhcloud.com/deal/";
@@ -64,6 +67,11 @@ public class Constants {
     public static final String PROFILE_FIELD_FOLLOWER="Followers";
     public static final String PROFILE_FIELD_FOLLOWING="Following";
     public static final String PROFILE_FIELD_INVITE="Invite Friends";
+
+
+    public static MixpanelAPI getMixPanelInstance(Context context){
+        return MixpanelAPI.getInstance(context,MIXPANEL_TOKEN);
+    }
 
 
     /**

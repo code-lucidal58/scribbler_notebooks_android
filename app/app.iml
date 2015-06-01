@@ -108,6 +108,7 @@
     <orderEntry type="library" exported="" name="play-services-panorama-7.3.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-appindexing-7.3.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-location-7.3.0" level="project" />
+    <orderEntry type="library" exported="" name="mixpanel-android-4.5.3" level="project" />
     <orderEntry type="library" exported="" name="facebook-android-sdk-4.0.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-analytics-7.3.0" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-22.1.1" level="project" />
