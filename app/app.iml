@@ -103,7 +103,19 @@
     <orderEntry type="library" exported="" name="play-services-7.3.0" level="project" />
     <orderEntry type="library" exported="" name="bolts-android-1.1.4" level="project" />
     <orderEntry type="library" exported="" name="play-services-base-7.3.0" level="project" />
+<<<<<<< HEAD
     <orderEntry type="library" exported="" name="play-services-safetynet-7.3.0" level="project" />
+=======
+    <orderEntry type="library" exported="" name="universal-image-loader-1.9.3" level="project" />
+    <orderEntry type="library" exported="" name="material-ripple-1.0.2" level="project" />
+    <orderEntry type="library" exported="" name="play-services-panorama-7.3.0" level="project" />
+    <orderEntry type="library" exported="" name="play-services-appindexing-7.3.0" level="project" />
+    <orderEntry type="library" exported="" name="play-services-location-7.3.0" level="project" />
+    <orderEntry type="library" exported="" name="mixpanel-android-4.5.3" level="project" />
+    <orderEntry type="library" exported="" name="facebook-android-sdk-4.0.0" level="project" />
+    <orderEntry type="library" exported="" name="play-services-analytics-7.3.0" level="project" />
+    <orderEntry type="library" exported="" name="support-annotations-22.1.1" level="project" />
+>>>>>>> 98afbe653b239157ad23efdfbe60d7220b3a397c
     <orderEntry type="library" exported="" name="play-services-appinvite-7.3.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-gcm-7.3.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-nearby-7.3.0" level="project" />
