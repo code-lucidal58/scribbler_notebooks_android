@@ -108,6 +108,10 @@
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".Activities.SettingsActivity"
+            android:label="Settings" >
+        </activity>
 
         <service
             android:name=".Services.LocationRetreiver"

@@ -5,17 +5,21 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.util.Pair;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.facebook.login.LoginManager;
@@ -46,6 +50,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -78,7 +83,6 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         sContext=getApplicationContext();
 
         if(!checkPlayServices()){
@@ -169,7 +173,6 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
         fragment = ManualScribblerCode.newInstance(NavigationDrawer.this, url);
         final android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
-
     }
 
     @Override
@@ -422,7 +425,7 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         ;
-        getMenuInflater().inflate(R.menu.menu_navigation_drawer,menu);
+        getMenuInflater().inflate(R.menu.menu_navigation_drawer, menu);
         return super.onCreateOptionsMenu(menu);
 
     }
@@ -439,5 +442,4 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
         }
         return true;
     }
-
 }

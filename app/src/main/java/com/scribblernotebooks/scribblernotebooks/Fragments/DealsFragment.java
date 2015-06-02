@@ -3,11 +3,13 @@ package com.scribblernotebooks.scribblernotebooks.Fragments;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -324,6 +326,14 @@ public class DealsFragment extends android.support.v4.app.Fragment {
             shakeEventManager.resume();
         }
         reload = true;
+        getNotificationStatus();
+    }
+
+    public void getNotificationStatus(){
+        SharedPreferences sd= PreferenceManager.getDefaultSharedPreferences(context);
+        boolean onoff=sd.getBoolean(Constants.PREF_NOTIFICATION_ON_OFF, true);
+        boolean dealofday=sd.getBoolean(Constants.PREF_NOTIFICATION_DEAL_OF_DAY,true);
+        Toast.makeText(context,Boolean.toString(onoff)+Boolean.toString(dealofday),Toast.LENGTH_SHORT).show();
     }
 
     @Override
