@@ -27,6 +27,7 @@ import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListene
 import com.scribblernotebooks.scribblernotebooks.Activities.LogIn;
 import com.scribblernotebooks.scribblernotebooks.Activities.NavigationDrawer;
 import com.scribblernotebooks.scribblernotebooks.Activities.ScannerActivity;
+import com.scribblernotebooks.scribblernotebooks.Activities.SettingsActivity;
 import com.scribblernotebooks.scribblernotebooks.Adapters.NavigationRecyclerAdapter;
 import com.scribblernotebooks.scribblernotebooks.Fragments.ClaimedDeals;
 import com.scribblernotebooks.scribblernotebooks.Fragments.DealsFragment;
@@ -57,6 +58,7 @@ public class LeftNavigationDrawer {
     Fragment fragment;
     FrameLayout userDetailsHolder;
     DrawerLayout mDrawerLayout;
+    RelativeLayout settings, aboutUs, signOut;
 
     ArrayList<Pair<Integer,String>> mNavigationDrawerItems;
     NavigationDrawer navigationDrawerActivity;
@@ -125,6 +127,9 @@ public class LeftNavigationDrawer {
         userEmail = (TextView) mainView.findViewById(R.id.userEmail);
         userDetailsHolder = (FrameLayout) mainView.findViewById(R.id.userHolder);
         mDrawerLayout = (DrawerLayout) mainView.findViewById(R.id.drawer_layout);
+        settings=(RelativeLayout)mainView.findViewById(R.id.settings);
+        aboutUs=(RelativeLayout)mainView.findViewById(R.id.aboutUs);
+        signOut=(RelativeLayout)mainView.findViewById(R.id.signout);
 
         /**
          * Open Profile management when user clicks section of navigation drawer
@@ -154,6 +159,9 @@ public class LeftNavigationDrawer {
         navigationRecyclerAdapter = new NavigationRecyclerAdapter(mContext, mNavigationDrawerItems,this);
         mDrawerList.setLayoutManager(new LinearLayoutManager(mContext));
         mDrawerList.setAdapter(navigationRecyclerAdapter);
+
+        /**Settings, Feedback and SignOut**/
+        secondNavFunctions();
     }
 
         /**Handling clicks on navigation drawer**/
@@ -166,22 +174,12 @@ public class LeftNavigationDrawer {
                     break;
                 case 1:
                     fragment = ManualScribblerCode.newInstance(mContext, "");
-
                     break;
                 case 2:
                     fragment = DealsFragment.newInstance(Constants.serverURL, title);
                     break;
                 case 3:
                     fragment = ClaimedDeals.newInstance();
-                    break;
-                case 4:
-                    SharedPreferences sharedPreferences = mContext.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.clear();
-                    editor.apply();
-                    navigationDrawerActivity.signOut();
-                    Toast.makeText(mContext, "Successfully Logged out", Toast.LENGTH_LONG).show();
-                    mContext.startActivity(new Intent(mContext, LogIn.class));
                     break;
                 default:
                     break;
@@ -190,13 +188,8 @@ public class LeftNavigationDrawer {
             if (fragment != null) {
                 FragmentManager fragmentManager = navigationDrawerActivity.getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
-
-//                if (position != 0) {
-//                    mDrawerList.setSelected(true);
-//                    mDrawerList.setItemChecked(position, true);
-//                    mDrawerList.setSelection(position);
-//                }
                 try {
+                    //noinspection ConstantConditions
                     navigationDrawerActivity.getSupportActionBar().setTitle(mNavigationDrawerItems.get(position).second);
                 } catch (Exception e) {
                     Log.e("Navigation Drawer", "No Action Bar");
@@ -207,6 +200,39 @@ public class LeftNavigationDrawer {
                 Log.e("MainActivity", "Error in creating fragment");
             }
         }
+
+    /**
+     * handling second part of navigation Drawer i.e. settings, feedback and signOut
+     */
+    public void secondNavFunctions()
+    {
+        settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mContext.startActivity(new Intent(mContext, SettingsActivity.class));
+            }
+        });
+
+        aboutUs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        signOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences sharedPreferences = mContext.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.clear();
+                editor.apply();
+                navigationDrawerActivity.signOut();
+                Toast.makeText(mContext, "Successfully Logged out", Toast.LENGTH_LONG).show();
+                mContext.startActivity(new Intent(mContext, LogIn.class));
+            }
+        });
+    }
 
     public static void setUserName(){
         SharedPreferences sharedPreferences = sContext.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);

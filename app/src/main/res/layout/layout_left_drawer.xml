@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/left_drawer_relative"
     android:layout_width="@dimen/navigation_drawer_width"
     android:layout_height="match_parent"
     android:layout_gravity="start"
-    android:background="@color/navigation_drawer_background"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    android:background="@color/navigation_drawer_background">
 
     <FrameLayout
+        android:id="@+id/userHolder"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/navigation_drawer_cover_pic_height"
-        android:id="@+id/userHolder">
+        android:layout_height="@dimen/navigation_drawer_cover_pic_height">
 
         <ImageView
+            android:id="@+id/userCover"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="fitXY"
-            android:id="@+id/userCover"
-            android:src="@drawable/navigation_drawer_cover_pic"/>
+            android:src="@drawable/navigation_drawer_cover_pic" />
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|start"
-            android:layout_marginStart="25dp"
             android:layout_marginBottom="15dp"
-            android:layout_marginLeft="25dp">
+            android:layout_marginLeft="25dp"
+            android:layout_marginStart="25dp">
 
             <com.scribblernotebooks.scribblernotebooks.CustomViews.RoundedImageView
                 android:id="@+id/userPhoto"
@@ -40,10 +40,10 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/userPhoto"
                 android:gravity="center_vertical"
-                android:textSize="@dimen/userNameTextSize"
-                android:textStyle="bold"
                 android:text="User Name"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/userNameTextSize"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/userEmail"
@@ -51,9 +51,9 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/userName"
                 android:gravity="center_vertical"
-                android:textSize="@dimen/userEmailTextSize"
                 android:text="user@domain.com"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/userEmailTextSize" />
 
         </RelativeLayout>
 
@@ -65,9 +65,84 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/userHolder"
-        android:clipToPadding="false"
         android:choiceMode="singleChoice"
+        android:clipToPadding="false"
         android:divider="@android:color/transparent"
         android:dividerHeight="0dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:weightSum="3">
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:id="@+id/settings">
+
+            <ImageView
+                android:id="@+id/settings_image"
+                android:layout_width="@dimen/navigation_drawer_icon_size"
+                android:layout_height="@dimen/navigation_drawer_icon_size"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/settings" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/settings_image"
+                android:gravity="center"
+                android:textColor="@color/text_color"
+                android:text="Settings"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:id="@+id/aboutUs">
+
+            <ImageView
+                android:id="@+id/aboutUs_image"
+                android:layout_width="@dimen/navigation_drawer_icon_size"
+                android:layout_height="@dimen/navigation_drawer_icon_size"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/about" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/aboutUs_image"
+                android:gravity="center"
+                android:textColor="@color/text_color"
+                android:text="About Us"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:id="@+id/signout">
+
+            <ImageView
+                android:id="@+id/signout_image"
+                android:layout_width="@dimen/navigation_drawer_icon_size"
+                android:layout_height="@dimen/navigation_drawer_icon_size"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/sign_out_icon" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/signout_image"
+                android:gravity="center"
+                android:textColor="@color/text_color"
+                android:text="Sign Out"/>
+
+        </RelativeLayout>
+
+    </LinearLayout>
 
 </RelativeLayout>

@@ -53,6 +53,12 @@ public class Constants {
     public static final String PREF_DATA_LOCATION="location";
     public static final String PREF_DATA_PASS="password";
 
+    public static final String PREF_NOTIFICATION_NAME="Notification";
+    public static final String PREF_NOTIFICATION_ON_OFF="NotifyOnOff";
+    public static final String PREF_NOTIFICATION_DEAL_OF_DAY="DealOfDay";
+    public static final String PREF_NOTIFICATION_RINGTONE="Ringtone";
+
+
 
     /**Shared Pref Tags for GCM **/
     public static final String PREF_GCM_NAME="gcmSharedPreferences";
@@ -203,7 +209,7 @@ public class Constants {
         item.add(Pair.create(R.drawable.enter_code_icon,"Enter Scribbler Code"));
         item.add(Pair.create(R.drawable.all_deals_icon,"All Deals"));
         item.add(Pair.create(R.drawable.featured_deals_icon,"Claimed Deals"));
-        item.add(Pair.create(R.drawable.sign_out_icon,"Sign Out"));
+        //item.add(Pair.create(R.drawable.sign_out_icon,"Sign Out"));
         return item;
     }
 

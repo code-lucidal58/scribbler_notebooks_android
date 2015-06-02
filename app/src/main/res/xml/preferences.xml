@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="NOTIFICATIONS"
+        android:key="notificationCategory">
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="NotifyOnOff"
+            android:title="Receive Notifications" />
+        <SwitchPreference
+            android:title="Deal of the Day"
+            android:key="DealOfDay"
+            android:defaultValue="true"
+            android:summary="Receive the best deal of the day"/>
+        <RingtonePreference
+            android:title="Ringtone for notifications"
+            android:key="Ringtone"
+            android:ringtoneType="notification"
+            android:showDefault="true"
+            android:showSilent="false"
+            android:defaultValue="content://settings/system/notification_sound"/>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
