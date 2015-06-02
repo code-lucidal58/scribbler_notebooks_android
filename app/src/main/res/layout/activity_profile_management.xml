@@ -5,7 +5,8 @@
     <ScrollView
         android:id="@+id/sl"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginBottom="5dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -197,9 +198,19 @@
                 android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/save"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="Logout"
+                    android:textColor="#FFF"
+                    android:onClick="logOutAll"
+                    android:background="@drawable/scanner_button"/>
+
+                <Button
+                    android:layout_marginLeft="5dp"
+                    android:id="@+id/save"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="0dp"
                     android:background="@drawable/scanner_button"
                     android:text="Save"
                     android:textColor="#FFF" />
@@ -216,7 +227,7 @@
         style="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#5513657b"
+        android:background="#8813657b"
         android:minHeight="?attr/actionBarSize" />
 </RelativeLayout>
 

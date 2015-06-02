@@ -65,18 +65,140 @@
                 android:textColor="#FFF"
                 android:id="@+id/t1"/>
 
-            <android.support.v7.widget.RecyclerView
+            <TableLayout
+                android:id="@+id/table"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="5dp"
-                android:id="@+id/basicRecyclerView"
-                android:layout_below="@id/t1" />
+                android:layout_height="wrap_content"
+                android:layout_below="@id/t1">
+
+                <TableRow android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="@dimen/tableRowHeight"
+                        android:layout_height="@dimen/tableRowHeight"
+                        android:layout_weight="1"
+                        android:padding="7dp"
+                        android:src="@drawable/userlogin" />
+
+                    <EditText
+                        android:id="@+id/et_name"
+                        android:layout_height="@dimen/tableRowHeight"
+                        android:layout_weight="10"
+                        android:background="@color/profileBackgroundColor"
+                        android:gravity="center_vertical"
+                        android:hint="Name"
+                        android:textColor="@color/profileBackgroundEditTextTextColor"
+                        android:textColorHint="@color/profileBackgroundEditTextHintColor"
+                        android:textSize="@dimen/profileEditTextFontSize" />
+
+                </TableRow>
+
+                <TableRow android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="@dimen/tableRowHeight"
+                        android:layout_height="@dimen/tableRowHeight"
+                        android:layout_weight="1"
+                        android:padding="7dp"
+                        android:src="@drawable/phonelogin" />
+
+                    <EditText
+                        android:id="@+id/et_mobile"
+                        android:layout_height="@dimen/tableRowHeight"
+                        android:inputType="phone"
+                        android:layout_weight="10"
+                        android:background="@color/profileBackgroundColor"
+                        android:gravity="center_vertical"
+                        android:hint="Contact Number"
+                        android:textColor="@color/profileBackgroundEditTextTextColor"
+                        android:textColorHint="@color/profileBackgroundEditTextHintColor"
+                        android:textSize="@dimen/profileEditTextFontSize" />
+
+                </TableRow>
+
+                <TableRow android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="@dimen/tableRowHeight"
+                        android:layout_height="@dimen/tableRowHeight"
+                        android:layout_weight="1"
+                        android:padding="7dp"
+                        android:src="@drawable/maillogin" />
+
+                    <EditText
+                        android:id="@+id/et_email"
+                        android:layout_height="@dimen/tableRowHeight"
+                        android:layout_weight="10"
+                        android:background="@color/profileBackgroundColor"
+                        android:gravity="center_vertical"
+                        android:inputType="none"
+                        android:hint="Email Address"
+                        android:focusableInTouchMode="false"
+                        android:focusable="false"
+                        android:clickable="false"
+                        android:textColor="@color/profileBackgroundEditTextTextColor"
+                        android:textColorHint="@color/profileBackgroundEditTextHintColor"
+                        android:textSize="@dimen/profileEditTextFontSize" />
+
+                </TableRow>
+
+                <TableRow android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="@dimen/tableRowHeight"
+                        android:layout_height="@dimen/tableRowHeight"
+                        android:layout_weight="1"
+                        android:padding="7dp"
+                        android:src="@drawable/passwordlogin" />
+
+                    <EditText
+                        android:id="@+id/et_password"
+                        android:layout_height="@dimen/tableRowHeight"
+                        android:layout_weight="10"
+                        android:inputType="textPassword"
+                        android:background="@color/profileBackgroundColor"
+                        android:gravity="center_vertical"
+                        android:hint="Password"
+                        android:textColor="@color/profileBackgroundEditTextTextColor"
+                        android:textColorHint="@color/profileBackgroundEditTextHintColor"
+                        android:textSize="@dimen/profileEditTextFontSize" />
+
+                </TableRow>
+
+                <TableRow android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="@dimen/tableRowHeight"
+                        android:layout_height="@dimen/tableRowHeight"
+                        android:layout_weight="1"
+                        android:padding="7dp"
+                        android:src="@drawable/location" />
+
+                    <EditText
+                        android:id="@+id/et_location"
+                        android:layout_height="@dimen/tableRowHeight"
+                        android:layout_weight="10"
+                        android:background="@color/profileBackgroundColor"
+                        android:gravity="center_vertical"
+                        android:hint="Location"
+                        android:focusable="false"
+                        android:clickable="false"
+                        android:focusableInTouchMode="false"
+                        android:textColor="@color/profileBackgroundEditTextTextColor"
+                        android:textColorHint="@color/profileBackgroundEditTextHintColor"
+                        android:textSize="@dimen/profileEditTextFontSize" />
+
+                </TableRow>
+
+
+            </TableLayout>
+
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:layout_below="@+id/basicRecyclerView"
+                android:layout_below="@+id/table"
                 android:orientation="horizontal">
 
 

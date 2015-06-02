@@ -25,6 +25,9 @@ import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
+import com.facebook.login.LoginManager;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.plus.Plus;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -51,24 +54,19 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class ProfileManagement extends AppCompatActivity {
 
+    static final int PROFILE_PIC_REQUEST_CODE = 11;
+    static final int COVER_PIC_REQUEST_CODE = 12;
+    public static GoogleApiClient mGoogleApiClient;
+    public DisplayImageOptions displayImageOptions, displayImageOptionsCover;
+    public ImageLoadingListener imageLoadingListener;
+    public ImageLoaderConfiguration imageLoaderConfiguration;
     ImageView userPic, userCoverPic;
     Toolbar appbar;
     SharedPreferences userPref;
     SharedPreferences.Editor userPrefEditor;
-
     EditText userName, userEmail, userPass, userMob, userLocation;
-
-    public DisplayImageOptions displayImageOptions, displayImageOptionsCover;
-    public ImageLoadingListener imageLoadingListener;
-    public ImageLoaderConfiguration imageLoaderConfiguration;
-
     ScrollView scrollView;
-
     Button saveButton;
-
-    static final int PROFILE_PIC_REQUEST_CODE = 11;
-    static final int COVER_PIC_REQUEST_CODE = 12;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,8 +75,8 @@ public class ProfileManagement extends AppCompatActivity {
         userPic = (ImageView) findViewById(R.id.pic);
         userCoverPic = (ImageView) findViewById(R.id.profileCoverPic);
         appbar = (Toolbar) findViewById(R.id.toolbar);
-        scrollView=(ScrollView)findViewById(R.id.sl);
-        saveButton=(Button)findViewById(R.id.save);
+        scrollView = (ScrollView) findViewById(R.id.sl);
+        saveButton = (Button) findViewById(R.id.save);
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -86,47 +84,21 @@ public class ProfileManagement extends AppCompatActivity {
             }
         });
 
-        final ColorDrawable colorDrawable=new ColorDrawable(getResources().getColor(R.color.darkBlue));
-        colorDrawable.setAlpha(50);
-        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.JELLY_BEAN){
-            appbar.setBackground(colorDrawable);
-        }
-        else{
-            appbar.setBackgroundDrawable(colorDrawable);
-        }
-        scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
-            @Override
-            public void onScrollChanged() {
-                colorDrawable.setAlpha(getAlphaForActionBar(scrollView.getScrollY()));
-            }
-
-            private int getAlphaForActionBar(int scrollY){
-                int minDist = 0,maxDist = 650;
-                if(scrollY>maxDist){
-                    return 255;
-                }
-                else if(scrollY<minDist){
-                    return 0;
-                }
-                else {
-                    int alpha = 0;
-                    alpha = (int)  ((255.0/maxDist)*scrollY);
-                    return alpha;
-                }
-            }
-        });
-
-
         /**Configurations for image caching library */
         imageLoaderConfiguration = new ImageLoaderConfiguration.Builder(this).build();
         ImageLoader.getInstance().init(imageLoaderConfiguration);
         imageLoadingListener = new SimpleImageLoadingListener();
 
-        displayImageOptions =Constants.getProfilePicDisplayImageOptions();
+        displayImageOptions = Constants.getProfilePicDisplayImageOptions();
         displayImageOptionsCover = Constants.getCoverPicDisplayImageOptions();
 
+        /**Google API**/
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(Plus.API, Plus.PlusOptions.builder().build())
+                .addScope(Plus.SCOPE_PLUS_LOGIN).build();
 
-        /**Setting values to the fields*/
+
+        /**View Setup*/
         userName = (EditText) findViewById(R.id.et_name);
         userEmail = (EditText) findViewById(R.id.et_email);
         userPass = (EditText) findViewById(R.id.et_password);
@@ -134,13 +106,13 @@ public class ProfileManagement extends AppCompatActivity {
         userLocation = (EditText) findViewById(R.id.et_location);
 
 
-        /**Initiating Shared Prefs*/
+        /**Initiating Shared Prefs and setting values*/
         userPref = getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
-        userName.setText(userPref.getString(Constants.PREF_DATA_NAME,""));
-        userEmail.setText(userPref.getString(Constants.PREF_DATA_EMAIL,""));
-        userLocation.setText(userPref.getString(Constants.PREF_DATA_LOCATION,""));
-        userPass.setText(userPref.getString(Constants.PREF_DATA_PASS,""));
-        userMob.setText(userPref.getString(Constants.PREF_DATA_MOBILE,""));
+        userName.setText(userPref.getString(Constants.PREF_DATA_NAME, ""));
+        userEmail.setText(userPref.getString(Constants.PREF_DATA_EMAIL, ""));
+        userLocation.setText(userPref.getString(Constants.PREF_DATA_LOCATION, ""));
+        userPass.setText(userPref.getString(Constants.PREF_DATA_PASS, ""));
+        userMob.setText(userPref.getString(Constants.PREF_DATA_MOBILE, ""));
 
         /**Setting images from shared Prefs**/
         String coverUrl = userPref.getString(Constants.PREF_DATA_COVER_PIC, "");
@@ -188,13 +160,12 @@ public class ProfileManagement extends AppCompatActivity {
 
     }
 
-    public boolean isValidPassword(String password){
-        if(password.isEmpty())
-        {
+    public boolean isValidPassword(String password) {
+        if (password.isEmpty()) {
             userPass.setError("Password cannot be empty");
             return false;
         }
-        if(password.length()<8){
+        if (password.length() < 8) {
             userPass.setError("Password must be at least 8 characters");
             return false;
         }
@@ -205,7 +176,7 @@ public class ProfileManagement extends AppCompatActivity {
      * Saving the user details
      */
     public void save() {
-        if(!isValidPassword(userPass.getText().toString())){
+        if (!isValidPassword(userPass.getText().toString())) {
             return;
         }
         final SharedPreferences userPref = getSharedPreferences(Constants.PREF_NAME, MODE_PRIVATE);
@@ -285,7 +256,7 @@ public class ProfileManagement extends AppCompatActivity {
                             //loginUser();
                             return new String[]{};
                         }
-                        return new String[]{token,mixpanelId};
+                        return new String[]{token, mixpanelId};
                     }
 
 
@@ -301,10 +272,9 @@ public class ProfileManagement extends AppCompatActivity {
                 String token, mixpanelid;
                 super.onPostExecute(s);
                 if (s.length == 0) {
-                    startActivity(new Intent(getApplicationContext(),NavigationDrawer.class));
+                    startActivity(new Intent(getApplicationContext(), NavigationDrawer.class));
                     return;
-                }
-                else {
+                } else {
                     token = s[0];
                     mixpanelid = s[1];
                 }
@@ -382,5 +352,28 @@ public class ProfileManagement extends AppCompatActivity {
         return picturePath;
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+    public void logOutAll(View v) {
+        if (mGoogleApiClient.isConnected()) {
+            Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
+            mGoogleApiClient.disconnect();
+//            mGoogleApiClient.connect();
+        }
+
+        try {
+            LoginManager.getInstance().logOut();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        SharedPreferences userPref = getSharedPreferences(Constants.PREF_NAME, MODE_PRIVATE);
+        userPref.edit().clear().apply();
+        startActivity(new Intent(this, LogIn.class));
+        finish();
+    }
 
 }

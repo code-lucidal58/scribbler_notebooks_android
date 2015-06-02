@@ -184,14 +184,24 @@
 
             </LinearLayout>
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/forgotPassword"
+                android:textColor="#FFF"
+                android:layout_alignLeft="@+id/ll2"
+                android:layout_marginTop="5dp"
+                android:textSize="12sp"
+                android:layout_below="@+id/ll2"
+                android:text="Forgot Password? Click Here"/>
 
 
             <TextView
                 style="@style/font"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/ll2"
-                android:textSize="13sp"
+                android:layout_below="@id/forgotPassword"
+                android:textSize="12sp"
                 android:layout_marginTop="10dp"
                 android:text="OR"
                 android:textColor="#FFF"

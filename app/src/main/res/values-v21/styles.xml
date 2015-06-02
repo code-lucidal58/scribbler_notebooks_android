@@ -2,7 +2,7 @@
 <resources>
     <style name="AppTheme" parent="AppTheme.Base">
         <item name="android:colorPrimary">@color/themeColor</item>
-        <item name="android:colorPrimaryDark">@color/darkBlue</item>
+        <item name="android:colorPrimaryDark">@color/darkerBlue</item>
         <item name="android:colorAccent">@color/colorAccent</item>
         <item name="android:navigationBarColor">@color/darkerBlue</item>
         <item name="android:windowBackground">@color/windowBackground</item>

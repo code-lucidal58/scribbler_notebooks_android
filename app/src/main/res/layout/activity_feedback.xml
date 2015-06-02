@@ -1,12 +1,89 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     tools:context="com.scribblernotebooks.scribblernotebooks.Activities.FeedbackActivity">
 
-    <TextView android:text="@string/hello_world" android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
 
+    <include
+        layout="@layout/app_bar"
+        android:id="@+id/appBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/appBar"
+        android:padding="5dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="From:"
+        android:layout_alignBaseline="@+id/et_email"
+        android:textSize="17sp"
+        android:textColor="#000"
+        android:id="@+id/t2"
+        android:gravity="center_vertical"/>
+
+
+        <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/t2"
+            android:layout_toRightOf="@+id/t2"
+        android:maxLines="1"
+        android:scrollHorizontally="true"
+        android:hint="Email Id"
+        android:textSize="16sp"
+        android:inputType="textEmailAddress"
+        android:id="@+id/et_email"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:id="@+id/t1"
+        android:gravity="center_vertical"
+        android:textSize="16sp"
+        android:textColor="#222"
+        android:layout_below="@id/et_email"
+        android:text="Rate us:"/>
+
+    <RatingBar
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:id="@+id/ratingBar"
+        android:numStars="5"
+        android:stepSize="0.5"
+        android:rating="2"
+        android:layout_margin="3dp"
+        android:layout_toEndOf="@+id/t1"
+        android:layout_toRightOf="@+id/t1"
+        android:layout_below="@+id/et_email"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/ratingBar"
+        android:hint="Enter your feedback"
+        android:textSize="16sp"
+        android:inputType="textMultiLine"
+        android:layout_above="@+id/submit"
+        android:background="#FFF"
+        android:layout_marginBottom="5dp"
+        android:padding="5dp"
+        android:id="@+id/et_feedback"
+        android:gravity="top|start"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#FFF"
+        android:background="@drawable/scanner_button"
+        android:layout_alignParentBottom="true"
+        android:text="Submit"
+        android:id="@+id/submit"/>
+    </RelativeLayout>
 </RelativeLayout>

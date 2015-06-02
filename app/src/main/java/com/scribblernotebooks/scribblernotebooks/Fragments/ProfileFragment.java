@@ -23,6 +23,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -66,6 +67,9 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
     RelativeLayout mDrawer;
     SharedPreferences userPref;
     SharedPreferences.Editor userPrefEditor;
+
+    EditText userName, userEmail, userPass, userMob, userLocation;
+
     public DisplayImageOptions displayImageOptions, displayImageOptionsCover;
     public ImageLoadingListener imageLoadingListener;
     public ImageLoaderConfiguration imageLoaderConfiguration;
@@ -130,16 +134,26 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
         userPic = (ImageView) v.findViewById(R.id.pic);
         userCoverPic = (ImageView) v.findViewById(R.id.profileCoverPic);
         appbar = (Toolbar) v.findViewById(R.id.toolbar);
-        basicInfoRecyclerView = (RecyclerView) v.findViewById(R.id.basicRecyclerView);
         signInButton = (SignInButton) v.findViewById(R.id.sign_in_button);
+        /**Setting values to the fields*/
+        userName = (EditText) v.findViewById(R.id.et_name);
+        userEmail = (EditText) v.findViewById(R.id.et_email);
+        userPass = (EditText) v.findViewById(R.id.et_password);
+        userMob = (EditText) v.findViewById(R.id.et_mobile);
+        userLocation = (EditText) v.findViewById(R.id.et_location);
 
         appbar.setTitleTextColor(Color.WHITE);
 
         progressDialog = new ProgressDialog(getActivity());
         signInButton.setOnClickListener(this);
 
-        /**Initiating Shared Prefs*/
+        /**Initiating Shared Prefs and setting values*/
         userPref = context.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
+        userName.setText(userPref.getString(Constants.PREF_DATA_NAME,""));
+        userEmail.setText(userPref.getString(Constants.PREF_DATA_EMAIL,""));
+        userLocation.setText(userPref.getString(Constants.PREF_DATA_LOCATION, ""));
+        userPass.setText(userPref.getString(Constants.PREF_DATA_PASS,""));
+        userMob.setText(userPref.getString(Constants.PREF_DATA_MOBILE, ""));
 
 
         /**Setting images from shared Prefs**/
@@ -193,34 +207,6 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
 
 
         /**
-         * Profile Page main content and user details
-         */
-        ProfileInfoEditorAdapter profileListAdapter = new ProfileInfoEditorAdapter(getActivity().getApplicationContext(), getActivity().findViewById(R.id.left_drawer_relative), mListener);
-        basicInfoRecyclerView.setAdapter(profileListAdapter);
-        basicInfoRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
-        int height = (int) (Constants.getProfileInfoFields().size() * getResources().getDimension(R.dimen.profile_basic_info_item_height));
-        basicInfoRecyclerView.getLayoutParams().height = height;
-//        basicInfoRecyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
-//            @Override
-//            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-//                int action = e.getAction();
-//                switch (action) {
-//                    case MotionEvent.ACTION_MOVE:
-//                        rv.getParent().requestDisallowInterceptTouchEvent(true);
-//                        break;
-//                    default:
-//                        break;
-//                }
-//                return false;
-//            }
-//
-//            @Override
-//            public void onTouchEvent(RecyclerView rv, MotionEvent e) {
-//
-//            }
-//        });
-
-        /**
          * Facebook Login initialize
          * @Link https://developers.facebook.com/docs/facebook-login/android/v2.3
          */
@@ -242,6 +228,7 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
                         JSONObject cover = jsonObject.optJSONObject("cover");
                         String coverPic = cover.optString("source");
                         String userdp = "https://graph.facebook.com/" + jsonObject.optString("id") + "/picture?type=large";
+                        //TODO: signup login check
                         saveUserDetails(name, email, userdp, coverPic);
                         setCoverPic(coverPic);
                         setProfilePic(userdp);

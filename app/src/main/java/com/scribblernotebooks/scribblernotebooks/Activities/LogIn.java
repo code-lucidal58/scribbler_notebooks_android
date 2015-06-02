@@ -13,10 +13,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.CallbackManager;
@@ -55,6 +57,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
     private final static String TAG = "LogIn";
     EditText name, email, mobile, password;
+    TextView forgotPassword;
     Button signIn, signUp;
     String userName = "", userEmail = "", userPassword, userMobile;
     SignInButton signInButton;
@@ -113,9 +116,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
          */
         FacebookSdk.sdkInitialize(getApplicationContext());
 
-
         setContentView(R.layout.activity_log_in);
-
 
         /**
          * Facebook Login initialize
@@ -191,7 +192,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         mobile = (EditText) findViewById(R.id.userPhone);
         signIn = (Button) findViewById(R.id.signIn);
         signUp = (Button) findViewById(R.id.signUp);
-
+        forgotPassword=(TextView)findViewById(R.id.forgotPassword);
         signInButton = (SignInButton) findViewById(R.id.sign_in_button);
         signInButton.setOnClickListener(this);
         signInButton.setSize(SignInButton.SIZE_WIDE);
@@ -200,6 +201,35 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         sun = (ImageView) findViewById(R.id.sun);
         cloud1 = (ImageView) findViewById(R.id.cloud1);
         cloud2 = (ImageView) findViewById(R.id.cloud2);
+
+
+        /**Forgot Password**/
+        forgotPassword.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                TextView t=(TextView)v;
+                switch (event.getAction()){
+                    case MotionEvent.ACTION_DOWN:
+                        t.setTextColor(getResources().getColor(R.color.selectedText));
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        t.setTextColor(getResources().getColor(R.color.selectedText));
+                        break;
+                    default:
+                        t.setTextColor(getResources().getColor(R.color.normalText));
+                        break;
+                }
+                return false;
+            }
+        });
+        forgotPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO: ForgotPassword request
+                Toast.makeText(getApplicationContext(),"Forgot Password",Toast.LENGTH_LONG).show();
+            }
+        });
+
 
         /**
          * Setting the drawable heights for both edit texts

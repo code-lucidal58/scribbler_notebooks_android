@@ -200,7 +200,7 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
         if (mGoogleApiClient.isConnected()) {
             Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
             mGoogleApiClient.disconnect();
-            mGoogleApiClient.connect();
+//            mGoogleApiClient.connect();
         }
 
         try {

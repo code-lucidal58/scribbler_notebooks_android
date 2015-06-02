@@ -288,6 +288,7 @@ public class ManualScribblerCode extends Fragment {
             @Override
             protected String doInBackground(String... params) {
                 try {
+                    //TODO:Modify url to send token and deal id
                     URL url=new URL(Constants.parentURLForGetRequest+params[0]);
 //                    Log.e("Deal ", "URL " + params[0]);
                     HttpURLConnection connection=(HttpURLConnection)url.openConnection();

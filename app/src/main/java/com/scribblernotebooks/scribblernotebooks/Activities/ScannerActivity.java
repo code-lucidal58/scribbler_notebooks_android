@@ -8,6 +8,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.google.zxing.ResultPoint;
 import com.journeyapps.barcodescanner.BarcodeCallback;
@@ -59,11 +60,22 @@ public class ScannerActivity extends AppCompatActivity {
         back=(Button)findViewById(R.id.back);
 
 
+        /**Removing default Text*/
+        for(int i=0;i<compoundBarcodeView.getChildCount();i++){
+            View v=compoundBarcodeView.getChildAt(i);
+            if(v instanceof TextView){
+                if(((TextView) v).getText().toString().contains("inside the viewfinder")){
+                    ((TextView) v).setText("");
+                }
+            }
+        }
+
+
         compoundBarcodeView.decodeContinuous(barcodeCallback);
 
         /**
          * When user presses manual button the Navigation Drawer activity is opened and Manual Code Input fragment is loaded.
-         * Scanner stopped as it will slow the interface and consume lot of CPU
+         * Scanner stopped as it will slow the interface and consumes lot of CPU
          *
          * onTouch is used instead of onClick as Scanner slows down user interface and makes recognising click slow
          */
