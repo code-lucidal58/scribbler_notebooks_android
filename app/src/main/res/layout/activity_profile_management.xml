@@ -1,0 +1,222 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:id="@+id/sl"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <FrameLayout
+                android:id="@+id/fl"
+                android:layout_width="match_parent"
+                android:layout_height="250dp">
+
+                <ImageView
+                    android:id="@+id/profileCoverPic"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/navigation_drawer_cover_pic" />
+
+
+                <com.scribblernotebooks.scribblernotebooks.CustomViews.RoundedImageView
+                    android:id="@+id/pic"
+                    android:layout_width="@dimen/profile_profilepic_size"
+                    android:layout_height="@dimen/profile_profilepic_size"
+                    android:layout_gravity="bottom"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginStart="10dp"
+                    android:scaleType="center"
+                    android:src="@drawable/nodp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|end"
+                    android:layout_marginTop="60dp"
+                    android:background="#55ffffff"
+                    android:padding="5dp"
+                    android:text="Change"
+                    android:textColor="#FFF"
+                    android:textSize="14sp" />
+
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/t1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/fl"
+                android:background="@color/darkBlue"
+                android:gravity="center_vertical"
+                android:minHeight="25dp"
+                android:paddingLeft="10dp"
+                android:text="Basic Information"
+                android:textColor="#FFF"
+                android:textSize="18sp" />
+
+            <TableLayout
+                android:id="@+id/table"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/t1">
+
+                <TableRow android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="@dimen/tableRowHeight"
+                        android:layout_height="@dimen/tableRowHeight"
+                        android:layout_weight="1"
+                        android:padding="7dp"
+                        android:src="@drawable/userlogin" />
+
+                    <EditText
+                        android:id="@+id/et_name"
+                        android:layout_height="@dimen/tableRowHeight"
+                        android:layout_weight="10"
+                        android:background="@color/profileBackgroundColor"
+                        android:gravity="center_vertical"
+                        android:hint="Name"
+                        android:textColor="@color/profileBackgroundEditTextTextColor"
+                        android:textColorHint="@color/profileBackgroundEditTextHintColor"
+                        android:textSize="@dimen/profileEditTextFontSize" />
+
+                </TableRow>
+
+                <TableRow android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="@dimen/tableRowHeight"
+                        android:layout_height="@dimen/tableRowHeight"
+                        android:layout_weight="1"
+                        android:padding="7dp"
+                        android:src="@drawable/phonelogin" />
+
+                    <EditText
+                        android:id="@+id/et_mobile"
+                        android:layout_height="@dimen/tableRowHeight"
+                        android:inputType="phone"
+                        android:layout_weight="10"
+                        android:background="@color/profileBackgroundColor"
+                        android:gravity="center_vertical"
+                        android:hint="Contact Number"
+                        android:textColor="@color/profileBackgroundEditTextTextColor"
+                        android:textColorHint="@color/profileBackgroundEditTextHintColor"
+                        android:textSize="@dimen/profileEditTextFontSize" />
+
+                </TableRow>
+
+                <TableRow android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="@dimen/tableRowHeight"
+                        android:layout_height="@dimen/tableRowHeight"
+                        android:layout_weight="1"
+                        android:padding="7dp"
+                        android:src="@drawable/maillogin" />
+
+                    <EditText
+                        android:id="@+id/et_email"
+                        android:layout_height="@dimen/tableRowHeight"
+                        android:layout_weight="10"
+                        android:background="@color/profileBackgroundColor"
+                        android:gravity="center_vertical"
+                        android:inputType="none"
+                        android:hint="Email Address"
+                        android:focusableInTouchMode="false"
+                        android:focusable="false"
+                        android:clickable="false"
+                        android:textColor="@color/profileBackgroundEditTextTextColor"
+                        android:textColorHint="@color/profileBackgroundEditTextHintColor"
+                        android:textSize="@dimen/profileEditTextFontSize" />
+
+                </TableRow>
+
+                <TableRow android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="@dimen/tableRowHeight"
+                        android:layout_height="@dimen/tableRowHeight"
+                        android:layout_weight="1"
+                        android:padding="7dp"
+                        android:src="@drawable/passwordlogin" />
+
+                    <EditText
+                        android:id="@+id/et_password"
+                        android:layout_height="@dimen/tableRowHeight"
+                        android:layout_weight="10"
+                        android:inputType="textPassword"
+                        android:background="@color/profileBackgroundColor"
+                        android:gravity="center_vertical"
+                        android:hint="Password"
+                        android:textColor="@color/profileBackgroundEditTextTextColor"
+                        android:textColorHint="@color/profileBackgroundEditTextHintColor"
+                        android:textSize="@dimen/profileEditTextFontSize" />
+
+                </TableRow>
+
+                <TableRow android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="@dimen/tableRowHeight"
+                        android:layout_height="@dimen/tableRowHeight"
+                        android:layout_weight="1"
+                        android:padding="7dp"
+                        android:src="@drawable/location" />
+
+                    <EditText
+                        android:id="@+id/et_location"
+                        android:layout_height="@dimen/tableRowHeight"
+                        android:layout_weight="10"
+                        android:background="@color/profileBackgroundColor"
+                        android:gravity="center_vertical"
+                        android:hint="Location"
+                        android:focusable="false"
+                        android:clickable="false"
+                        android:focusableInTouchMode="false"
+                        android:textColor="@color/profileBackgroundEditTextTextColor"
+                        android:textColorHint="@color/profileBackgroundEditTextHintColor"
+                        android:textSize="@dimen/profileEditTextFontSize" />
+
+                </TableRow>
+
+
+            </TableLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/table"
+                android:layout_centerHorizontal="true"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/save"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/scanner_button"
+                    android:text="Save"
+                    android:textColor="#FFF" />
+
+
+            </LinearLayout>
+
+        </RelativeLayout>
+    </ScrollView>
+
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        style="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#5513657b"
+        android:minHeight="?attr/actionBarSize" />
+</RelativeLayout>
+

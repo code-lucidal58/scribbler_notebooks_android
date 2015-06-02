@@ -24,6 +24,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.plus.Plus;
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.DealPopup;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.LeftNavigationDrawer;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.NotificationDrawer;
@@ -34,12 +35,15 @@ import com.scribblernotebooks.scribblernotebooks.Fragments.ProfileFragment;
 import com.scribblernotebooks.scribblernotebooks.Fragments.SearchQueryFragment;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.R;
+import com.scribblernotebooks.scribblernotebooks.Services.LocationRetreiver;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.Timer;
@@ -149,6 +153,17 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        startService(new Intent(this, LocationRetreiver.class));
+        MixpanelAPI mixpanelAPI=Constants.getMixPanelInstance(this);
+        JSONObject props=new JSONObject();
+        try {
+            props.put("Location",getSharedPreferences(Constants.PREF_NAME,MODE_PRIVATE).getString(Constants.PREF_DATA_LOCATION,""));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        mixpanelAPI.track("User",props);
+
 
         /** Load Manual Code Input Fragment **/
         fragment = ManualScribblerCode.newInstance(NavigationDrawer.this, url);

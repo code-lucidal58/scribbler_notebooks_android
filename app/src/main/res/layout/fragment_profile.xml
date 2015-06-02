@@ -36,19 +36,19 @@
                     android:layout_marginBottom="10dp"
                     android:layout_marginLeft="10dp"
                     android:layout_marginStart="10dp"
-                    android:src="@mipmap/ic_launcher" />
+                    android:src="@drawable/nodp" />
+
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="top|right|end"
-                    android:background="#55ffffff"
+                    android:layout_gravity="top|end"
                     android:layout_marginTop="60dp"
-                    android:textColor="#FFF"
+                    android:background="#55ffffff"
+                    android:padding="5dp"
                     android:text="Change"
-                    android:textStyle="bold"
-                    android:padding="10dp"
-                    android:textSize="16sp"/>
+                    android:textColor="#FFF"
+                    android:textSize="14sp" />
 
             </FrameLayout>
 
