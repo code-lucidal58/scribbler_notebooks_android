@@ -2,6 +2,13 @@
 <resources>
     <style name="AppTheme" parent="AppTheme.Base">
         <item name="android:colorPrimary">@color/themeColor</item>
+<<<<<<< HEAD
         <item name="android:textColorPrimary">@color/text_color</item>
+=======
+        <item name="android:colorPrimaryDark">@color/darkBlue</item>
+        <item name="android:colorAccent">@color/colorAccent</item>
+        <item name="android:navigationBarColor">@color/darkerBlue</item>
+        <item name="android:windowBackground">@color/windowBackground</item>
+>>>>>>> 24608e2ae38056e757507a3b5605054cdd718c18
     </style>
 </resources>

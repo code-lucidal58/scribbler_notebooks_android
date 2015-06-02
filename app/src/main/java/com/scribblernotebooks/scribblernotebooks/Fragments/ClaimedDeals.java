@@ -60,6 +60,7 @@ public class ClaimedDeals extends android.support.v4.app.Fragment {
         appbar = (Toolbar) v.findViewById(R.id.app_bar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(appbar);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeButtonEnabled(true);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
         getActivity().setTitle("Claimed Deals");
 
 

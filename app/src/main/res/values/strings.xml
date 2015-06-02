@@ -72,4 +72,6 @@
 
     <string name="noNotificationText">Aawww....You do not have any notification :(</string>
     <string name="title_activity_setting">SettingActivity</string>
+    <string name="title_activity_profile_management">ProfileManagement</string>
+    <string name="title_activity_feedback">Feedback</string>
 </resources>

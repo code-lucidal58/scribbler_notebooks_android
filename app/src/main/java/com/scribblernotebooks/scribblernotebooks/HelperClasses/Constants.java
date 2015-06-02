@@ -14,6 +14,9 @@ import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.scribblernotebooks.scribblernotebooks.R;
 
 import java.util.ArrayList;
@@ -28,6 +31,7 @@ public class Constants {
 
     public static final String parentURLForGetRequest="http://someshit-akasantony.rhcloud.com/deal/";
     public static final String parentURLForCouponCode="http://someshit-akasantony.rhcloud.com/deal/";
+    public static final String USER_SIGNUP_URL="";
 
     public static final String serverURL = "http://jazzyarchitects.orgfree.com/intern58195/sn7315/request.php?table=";
     public static final String TAG_DEAL_NAME = "dealName";
@@ -52,6 +56,8 @@ public class Constants {
     public static final String PREF_DATA_MOBILE="mobileNo";
     public static final String PREF_DATA_LOCATION="location";
     public static final String PREF_DATA_PASS="password";
+    public static final String PREF_DATA_USER_TOKEN="userToken";
+    public static final String PREF_DATA_MIXPANEL_USER_ID="mixpanelUserId";
 
     public static final String PREF_NOTIFICATION_NAME="Notification";
     public static final String PREF_NOTIFICATION_ON_OFF="NotifyOnOff";
@@ -75,8 +81,34 @@ public class Constants {
     public static final String PROFILE_FIELD_INVITE="Invite Friends";
 
 
+    public static DisplayImageOptions getProfilePicDisplayImageOptions(){
+        return new DisplayImageOptions.Builder()
+                .showImageOnLoading(R.drawable.nodp)
+                .showImageForEmptyUri(R.drawable.nodp)
+                .showImageOnFail(R.drawable.nodp)
+                .cacheOnDisk(true)
+                .cacheInMemory(true)
+                .considerExifParams(true)
+                .displayer(new SimpleBitmapDisplayer()).build();
+    }
+
+    public static DisplayImageOptions getCoverPicDisplayImageOptions(){
+        return new DisplayImageOptions.Builder()
+                .showImageOnLoading(R.drawable.navigation_drawer_cover_pic)
+                .showImageForEmptyUri(R.drawable.navigation_drawer_cover_pic)
+                .showImageOnFail(R.drawable.navigation_drawer_cover_pic)
+                .cacheOnDisk(true)
+                .cacheInMemory(true)
+                .considerExifParams(true)
+                .displayer(new SimpleBitmapDisplayer()).build();
+    }
+
+
     public static MixpanelAPI getMixPanelInstance(Context context){
-        return MixpanelAPI.getInstance(context,MIXPANEL_TOKEN);
+        MixpanelAPI mixpanelAPI= MixpanelAPI.getInstance(context,MIXPANEL_TOKEN);
+        String id=context.getSharedPreferences(Constants.PREF_NAME,Context.MODE_PRIVATE).getString(Constants.PREF_DATA_MIXPANEL_USER_ID,"0");
+        mixpanelAPI.identify(id);
+        return mixpanelAPI;
     }
 
 
@@ -87,13 +119,12 @@ public class Constants {
             Constants.PREF_DATA_MOBILE,Constants.PREF_DATA_LOCATION};
     public static ArrayList<Pair<Integer,String>> getProfileInfoFields(){
         ArrayList<Pair<Integer,String>> list=new ArrayList<>();
-        list.add(Pair.create(R.drawable.user,"Name"));
-        list.add(Pair.create(R.drawable.email, "Email Id"));
-        list.add(Pair.create(R.drawable.maillogin,"Contact Number"));
-        list.add(Pair.create(R.drawable.userlogin,"Location"));
+        list.add(Pair.create(R.drawable.userlogin,"Name"));
+        list.add(Pair.create(R.drawable.maillogin, "Email Id"));
+        list.add(Pair.create(R.drawable.phonelogin,"Contact Number"));
+        list.add(Pair.create(R.drawable.location,"Location"));
         return list;
     }
-
 
     /**
      * Verify Email
@@ -212,6 +243,7 @@ public class Constants {
         //item.add(Pair.create(R.drawable.sign_out_icon,"Sign Out"));
         return item;
     }
+
 
 
     /**

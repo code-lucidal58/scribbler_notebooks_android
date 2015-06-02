@@ -7,7 +7,13 @@
 
     <style name="AppTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/themeColor</item>
+<<<<<<< HEAD
         <item name="android:textColorPrimary">@color/text_color</item>
+=======
+        <item name="colorPrimaryDark">@color/darkBlue</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColorPrimary">#222</item>
+>>>>>>> 24608e2ae38056e757507a3b5605054cdd718c18
     </style>
 
     <style name="ScannerTheme" parent="AppTheme.Base">

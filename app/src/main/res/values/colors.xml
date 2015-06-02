@@ -5,6 +5,8 @@
     <color name="themeColorLight">#ff59c7f4</color>
     <color name="themeColorDark">#ff3e86a4</color>
     <color name="darkBlue">#ff13657b</color>
+    <color name="colorAccent">#ff49a3c8</color>
+    <color name="windowBackground">#EEE</color>
 
     <color name="darkerBlue">#ff12495c</color>
     <color name="lighterBlue">#ff29b2dd</color>

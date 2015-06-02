@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -55,8 +56,7 @@ import org.json.JSONObject;
 
 public class ProfileFragment extends android.support.v4.app.Fragment implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+
     final String TAG = "ProfileFragment";
     ImageView userPic, userCoverPic;
     Context context;
@@ -112,24 +112,9 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
         imageLoaderConfiguration = new ImageLoaderConfiguration.Builder(context).build();
         ImageLoader.getInstance().init(imageLoaderConfiguration);
         imageLoadingListener = new SimpleImageLoadingListener();
-        displayImageOptions = new DisplayImageOptions.Builder()
-                .showImageOnLoading(R.mipmap.ic_launcher)
-                .showImageForEmptyUri(R.mipmap.ic_launcher)
-                .showImageOnFail(R.mipmap.ic_launcher)
-                .cacheOnDisk(true)
-                .cacheInMemory(true)
-                .considerExifParams(true)
-                .displayer(new SimpleBitmapDisplayer()).build();
 
-        displayImageOptionsCover = new DisplayImageOptions.Builder()
-                .showImageOnLoading(R.drawable.navigation_drawer_cover_pic)
-                .showImageForEmptyUri(R.drawable.navigation_drawer_cover_pic)
-                .showImageOnFail(R.drawable.navigation_drawer_cover_pic)
-                .cacheOnDisk(true)
-                .cacheInMemory(true)
-                .considerExifParams(true)
-                .displayer(new SimpleBitmapDisplayer()).build();
-
+        displayImageOptions =Constants.getProfilePicDisplayImageOptions();
+        displayImageOptionsCover = Constants.getCoverPicDisplayImageOptions();
 
     }
 
@@ -147,6 +132,8 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
         appbar = (Toolbar) v.findViewById(R.id.toolbar);
         basicInfoRecyclerView = (RecyclerView) v.findViewById(R.id.basicRecyclerView);
         signInButton = (SignInButton) v.findViewById(R.id.sign_in_button);
+
+        appbar.setTitleTextColor(Color.WHITE);
 
         progressDialog = new ProgressDialog(getActivity());
         signInButton.setOnClickListener(this);
@@ -200,7 +187,7 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
             public void onClick(View v) {
                 Intent i = new Intent(Intent.ACTION_GET_CONTENT);
                 i.setType("image/*");
-                startActivityForResult(Intent.createChooser(i, "Select Cover Pic"), PROFILE_PIC_REQUEST_CODE);
+                startActivityForResult(Intent.createChooser(i, "Select Profile Pic"), PROFILE_PIC_REQUEST_CODE);
             }
         });
 

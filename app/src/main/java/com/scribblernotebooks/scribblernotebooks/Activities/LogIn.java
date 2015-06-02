@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.graphics.drawable.ScaleDrawable;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -38,6 +39,17 @@ import com.scribblernotebooks.scribblernotebooks.Services.LocationRetreiver;
 
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.HashMap;
+
+import javax.net.ssl.HttpsURLConnection;
+
 
 public class LogIn extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
@@ -57,6 +69,8 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     int screenWidth;
     int screenHeight;
     ImageView sun, cloud1, cloud2;
+
+    Boolean fromApi = false;
 
     private static final int RC_SIGN_IN = 0;
 
@@ -78,8 +92,15 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         try {
             String userName = userPrefs.getString(Constants.PREF_DATA_NAME, "");
             if (!userName.isEmpty()) {
-                startActivity(new Intent(this, NavigationDrawer.class));
-                finish();
+                if(userPrefs.getString(Constants.PREF_DATA_PASS,"").isEmpty())
+                {
+                    startActivity(new Intent(this, ProfileManagement.class));
+                    finish();
+                }
+                else {
+                    startActivity(new Intent(this, NavigationDrawer.class));
+                    finish();
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -102,7 +123,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
          */
         callbackManager = CallbackManager.Factory.create();
         loginButton = (LoginButton) findViewById(R.id.login_button);
-        loginButton.setReadPermissions("user_friends","email");
+        loginButton.setReadPermissions("user_friends", "email");
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -117,7 +138,8 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                         JSONObject cover = jsonObject.optJSONObject("cover");
                         String coverPic = cover.optString("source");
                         String userdp = "https://graph.facebook.com/" + jsonObject.optString("id") + "/picture?type=large";
-                        saveUserDetails(name, email, userdp, coverPic,"","");
+                        fromApi = true;
+                        saveUserDetails(name, email, userdp, coverPic, "", "");
                     }
                 });
                 Bundle parameters = new Bundle();
@@ -147,7 +169,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                     .addOnConnectionFailedListener(this)
                     .addApi(Plus.API, Plus.PlusOptions.builder().build())
                     .addScope(Plus.SCOPE_PLUS_LOGIN).build();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             mGoogleApiClient.connect();
             mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -156,6 +178,10 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                     .addApi(Plus.API, Plus.PlusOptions.builder().build())
                     .addScope(Plus.SCOPE_PLUS_LOGIN).build();
         }
+
+
+        /**Get User location*/
+        startService(new Intent(this, LocationRetreiver.class));
 
 
         //View Setup
@@ -295,7 +321,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
 
         loginButton.setHeight(height);
         loginButton.setWidth(width);
-        loginButton.setPadding(signInButton.getPaddingLeft(),signInButton.getPaddingTop(),signInButton.getPaddingRight(),signInButton.getPaddingBottom());
+        loginButton.setPadding(signInButton.getPaddingLeft(), signInButton.getPaddingTop(), signInButton.getPaddingRight(), signInButton.getPaddingBottom());
 
 
         /**
@@ -322,6 +348,10 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
             userEmail = email.getText().toString();
             userPassword = password.getText().toString();
 
+            if (userEmail.equals("test@scribblernotebook.com") && userPassword.equals("password")) {
+                saveUserDetails("Test User", userEmail, "", "", "", userPassword);
+            }
+
             if (userEmail.isEmpty()) {
                 Toast.makeText(getApplicationContext(), "Oops... Looks like you forgot to enter email id", Toast.LENGTH_LONG).show();
             } else if (!validatePassword(userPassword, "SignIn")) {
@@ -338,10 +368,10 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     }
 
     public void login(String email, String password) {
-        String a=getSharedPreferences(Constants.PREF_NAME,MODE_PRIVATE).getString(Constants.PREF_DATA_NAME,"");
-        String b=getSharedPreferences(Constants.PREF_NAME,MODE_PRIVATE).getString(Constants.PREF_DATA_PASS,"");
-        if(email.equals(a) && password.equals(b)){
-            startActivity(new Intent(this,NavigationDrawer.class));
+        String a = getSharedPreferences(Constants.PREF_NAME, MODE_PRIVATE).getString(Constants.PREF_DATA_NAME, "");
+        String b = getSharedPreferences(Constants.PREF_NAME, MODE_PRIVATE).getString(Constants.PREF_DATA_PASS, "");
+        if (email.equals(a) && password.equals(b)) {
+            startActivity(new Intent(this, NavigationDrawer.class));
             finish();
         }
     }
@@ -350,9 +380,12 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         return true;
     }
 
+    /**
+     * SignUp using signup form
+     */
     public void signUpUser() {
         if (view_open == SIGNUP) {
-            signUp();
+            signUp(name.getText().toString(), email.getText().toString(), "", "", mobile.getText().toString(), password.getText().toString());
             return;
         }
         name.setVisibility(View.VISIBLE);
@@ -360,13 +393,132 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         view_open = SIGNUP;
     }
 
-    public void signUp() {
-        if(name.getText().toString().isEmpty() || email.getText().toString().isEmpty() ||
-                password.getText().toString().isEmpty() || mobile.getText().toString().isEmpty())
+    /**
+     * Actual SignUp Code
+     *
+     * @param userName      username
+     * @param userEmail     useremail
+     * @param coverImageUrl coverpic url (not sent to server)
+     * @param profilePicUrl profilepic url (not sent to server)
+     * @param userContact   mobile no.
+     * @param userPassword  password
+     */
+    public void signUp(String userName, String userEmail, final String coverImageUrl,
+                       final String profilePicUrl, final String userContact, String userPassword) {
+
+        //If username or email or password is empty then do not signup
+        if (userName.isEmpty() || userEmail.isEmpty() || userPassword.isEmpty()) {
+            Toast.makeText(getApplicationContext(), "Please check if all fields are filled and try again", Toast.LENGTH_LONG).show();
             return;
-        saveUserDetails(name.getText().toString(), email.getText().toString(), "", "", mobile.getText().toString(), password.getText().toString());
+        }
+
+        new AsyncTask<String, Void, String[]>() {
+            @Override
+            protected String[] doInBackground(String... params) {
+                String name, email, contact, password;
+                name = params[0];
+                email = params[1];
+                contact = params[2];
+                password = params[3];
+                String token, mixpanelId;
+
+                //Post request JSON object
+                HashMap<String, String> postDataParams = new HashMap<>();
+                postDataParams.put("name", name);
+                postDataParams.put("email", email);
+                postDataParams.put("contactno", contact);
+                postDataParams.put("password", password);
+
+                JSONObject jsonObject = new JSONObject(postDataParams);
+
+                try {
+                    URL url = new URL(Constants.USER_SIGNUP_URL);
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    connection.setRequestMethod("POST");
+                    connection.setReadTimeout(15000);
+                    connection.setConnectTimeout(15000);
+                    connection.setDoOutput(true);
+                    connection.setDoInput(true);
+
+                    //Writing post request data
+                    OutputStream os = connection.getOutputStream();
+                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                    writer.write(jsonObject.toString());
+                    writer.flush();
+                    writer.close();
+                    os.close();
+
+                    //Reading response
+                    int responseCode = connection.getResponseCode();
+                    if (responseCode == HttpsURLConnection.HTTP_OK) {
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                        String r = reader.readLine();
+                        JSONObject userObject = new JSONObject(r);
+                        token = userObject.optString("token");
+                        mixpanelId = userObject.optString("mixpanelid");
+                        String error;
+//                        String success,error;
+//                        success=userObject.optString("success");
+                        error = userObject.optString("error");
+
+                        /**If user clicked google or fb button then check if user exists
+                         * if exist then login
+                         * else signup
+                         */
+                        if (error.equalsIgnoreCase("USER_EXIST") && fromApi) {
+                            loginUser();
+                            return new String[]{};
+                        }
+                        if (error.equalsIgnoreCase("INVALID_CREDENTIALS")) {
+                            Toast.makeText(getApplicationContext(), "Invalid User Name or Password", Toast.LENGTH_LONG).show();
+                            return new String[]{};
+                        }
+                        return new String[]{token, mixpanelId};
+                    }
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return new String[]{};
+            }
+
+            @Override
+            protected void onPostExecute(String[] s) {
+                String token, mixpanelid;
+                super.onPostExecute(s);
+                if (s.length == 0) {
+                    saveUserDetails(name.getText().toString(), email.getText().toString(), coverImageUrl, profilePicUrl, mobile.getText().toString(), password.getText().toString());
+                    return;
+                } else {
+                    token = s[0];
+                    mixpanelid = s[1];
+                }
+                saveUserDetails(name.getText().toString(), email.getText().toString(), coverImageUrl, profilePicUrl, mobile.getText().toString(), password.getText().toString(), token, mixpanelid);
+
+            }
+        }.execute(userName, userEmail, userContact, userPassword);
 
     }
+
+
+//    private String getPostDataString(HashMap<String, String> params) throws UnsupportedEncodingException {
+//        StringBuilder result = new StringBuilder();
+//        boolean first = true;
+//        for(Map.Entry<String, String> entry : params.entrySet()){
+//            if (first)
+//                first = false;
+//            else
+//                result.append("&");
+//
+//            result.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
+//            result.append("=");
+//            result.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+//        }
+//
+//        return result.toString();
+//    }
+
 
     /**
      * Function Executed when user SignIns from Either google or facebook.
@@ -399,7 +551,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
      */
     @Override
     public void onConnected(Bundle arg0) {
-        Log.e(TAG,"Google Connected");
+        Log.e(TAG, "Google Connected");
         mSignInClicked = false;
         getProfileInformation();
     }
@@ -412,13 +564,12 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     @Override
     public void onConnectionFailed(ConnectionResult result) {
         if (!result.hasResolution()) {
-            try{
+            try {
                 GooglePlayServicesUtil.getErrorDialog(result.getErrorCode(), this,
                         0).show();
                 progressDialog.dismiss();
-//                showGoogleError(result);
                 Toast.makeText(this, "Could not connect", Toast.LENGTH_SHORT).show();
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             return;
@@ -430,17 +581,6 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
             if (mSignInClicked) {
                 resolveSignInError();
             }
-        }
-    }
-
-    public void showGoogleError(ConnectionResult result){
-        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP){
-            GooglePlayServicesUtil.getErrorDialog(result.getErrorCode(), this,
-                    0).create();
-        }
-        else{
-            GooglePlayServicesUtil.getErrorDialog(result.getErrorCode(), this,
-                    0).show();
         }
     }
 
@@ -503,14 +643,22 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         progressDialog.dismiss();
         try {
             if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
+
+                //TODO: using userId for password.
+
                 Person currentPerson = Plus.PeopleApi
                         .getCurrentPerson(mGoogleApiClient);
                 String personName = currentPerson.getDisplayName();
                 String personImageUrl = currentPerson.getImage().getUrl();
-                String s=personImageUrl.replace("photo.jpg?sz=50","photo.jpg?sz=250");
+                String userId = currentPerson.getId();
+                String s = personImageUrl.replace("photo.jpg?sz=50", "photo.jpg?sz=250");
                 String userEmail = Plus.AccountApi.getAccountName(mGoogleApiClient);
                 String userCover = currentPerson.getCover().getCoverPhoto().getUrl();
-                saveUserDetails(personName, userEmail, s, userCover,"","");
+                fromApi = true;
+
+                saveUserDetails(personName, userEmail, s, userCover, "", "");
+
+                //TODO: check if user exists. If yes then login else signup
             } else {
                 Toast.makeText(getApplicationContext(),
                         "Person information is null", Toast.LENGTH_LONG).show();
@@ -529,9 +677,34 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         editor.putString(Constants.PREF_DATA_PHOTO, userImageUrl);
         editor.putString(Constants.PREF_DATA_COVER_PIC, userCoverPic);
         editor.putString(Constants.PREF_DATA_EMAIL, userEmail);
-        editor.putString(Constants.PREF_DATA_MOBILE,mobileNo);
-        editor.putString(Constants.PREF_DATA_PASS,password);
+        editor.putString(Constants.PREF_DATA_MOBILE, mobileNo);
+        editor.putString(Constants.PREF_DATA_PASS, password);
         editor.apply();
+        if (fromApi) {
+            startActivity(new Intent(this, ProfileManagement.class));
+            finish();
+            return;
+        }
+        startActivity(new Intent(getApplicationContext(), NavigationDrawer.class));
+        finish();
+    }
+
+    private void saveUserDetails(String name, String userEmail, String userImageUrl, String userCoverPic, String mobileNo, String password, String token, String mixpanelId) {
+        SharedPreferences.Editor editor = userPrefs.edit();
+        editor.putString(Constants.PREF_DATA_NAME, name);
+        editor.putString(Constants.PREF_DATA_PHOTO, userImageUrl);
+        editor.putString(Constants.PREF_DATA_COVER_PIC, userCoverPic);
+        editor.putString(Constants.PREF_DATA_EMAIL, userEmail);
+        editor.putString(Constants.PREF_DATA_MOBILE, mobileNo);
+        editor.putString(Constants.PREF_DATA_PASS, password);
+        editor.putString(Constants.PREF_DATA_USER_TOKEN, token);
+        editor.putString(Constants.PREF_DATA_MIXPANEL_USER_ID, token);
+        editor.apply();
+        if (fromApi) {
+            startActivity(new Intent(this, ProfileManagement.class));
+            finish();
+            return;
+        }
         startActivity(new Intent(getApplicationContext(), NavigationDrawer.class));
         finish();
     }
