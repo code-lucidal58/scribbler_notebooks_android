@@ -171,7 +171,7 @@ public class DealsFragment extends android.support.v4.app.Fragment {
         recyclerView.setPadding(recyclerView.getPaddingLeft(), paddingTop, recyclerView.getPaddingRight(), recyclerView.getPaddingBottom());
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
 
-        recyclerView.setOnScrollListener(new HidingScrollListener(context) {
+        recyclerView.addOnScrollListener(new HidingScrollListener(context) {
 
             @Override
             public void onMoved(int distance) {
@@ -333,7 +333,6 @@ public class DealsFragment extends android.support.v4.app.Fragment {
         SharedPreferences sd= PreferenceManager.getDefaultSharedPreferences(context);
         boolean onoff=sd.getBoolean(Constants.PREF_NOTIFICATION_ON_OFF, true);
         boolean dealofday=sd.getBoolean(Constants.PREF_NOTIFICATION_DEAL_OF_DAY,true);
-        Toast.makeText(context,Boolean.toString(onoff)+Boolean.toString(dealofday),Toast.LENGTH_SHORT).show();
     }
 
     @Override

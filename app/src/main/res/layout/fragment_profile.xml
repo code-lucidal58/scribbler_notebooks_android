@@ -87,6 +87,9 @@
                         android:background="@color/profileBackgroundColor"
                         android:gravity="center_vertical"
                         android:hint="Name"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
+                        android:clickable="true"
                         android:textColor="@color/profileBackgroundEditTextTextColor"
                         android:textColorHint="@color/profileBackgroundEditTextHintColor"
                         android:textSize="@dimen/profileEditTextFontSize" />
@@ -107,6 +110,9 @@
                         android:layout_height="@dimen/tableRowHeight"
                         android:inputType="phone"
                         android:layout_weight="10"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
+                        android:clickable="true"
                         android:background="@color/profileBackgroundColor"
                         android:gravity="center_vertical"
                         android:hint="Contact Number"
@@ -226,7 +232,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="?attr/actionBarSize"
-        style="@style/Theme.AppCompat"
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         android:id="@+id/toolbar"
         android:background="#5513657b"/>
 </RelativeLayout>

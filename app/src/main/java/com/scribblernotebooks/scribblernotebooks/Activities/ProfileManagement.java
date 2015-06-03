@@ -273,6 +273,7 @@ public class ProfileManagement extends AppCompatActivity {
                 super.onPostExecute(s);
                 if (s.length == 0) {
                     startActivity(new Intent(getApplicationContext(), NavigationDrawer.class));
+                    finish();
                     return;
                 } else {
                     token = s[0];

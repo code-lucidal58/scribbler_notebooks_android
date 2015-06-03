@@ -15,7 +15,6 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -45,15 +44,16 @@ import com.google.android.gms.plus.model.people.Person;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
-import com.scribblernotebooks.scribblernotebooks.Adapters.ProfileInfoEditorAdapter;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.R;
 import com.scribblernotebooks.scribblernotebooks.Services.LocationRetreiver;
 
 import org.json.JSONObject;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ProfileFragment extends android.support.v4.app.Fragment implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
@@ -63,8 +63,6 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
     Context context;
     SharedPreferences sharedPreferences;
     Toolbar appbar;
-    DrawerLayout mDrawerLayout;
-    RelativeLayout mDrawer;
     SharedPreferences userPref;
     SharedPreferences.Editor userPrefEditor;
 
@@ -182,6 +180,9 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
         currentActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         currentActivity.getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
         currentActivity.getSupportActionBar().setTitle("Profile");
+
+
+        /**Changing the data in navigation drawer when data here is changed*/
 
 
         /**
@@ -510,6 +511,28 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
         editor.apply();
 
     }
+
+    /**
+     * method is used for checking valid email id format.
+     *
+     * @param email
+     * @return boolean true for valid false for invalid
+     */
+    public static boolean isEmailValid(String email) {
+        boolean isValid = false;
+
+        String expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
+        CharSequence inputStr = email;
+
+        Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(inputStr);
+        if (matcher.matches()) {
+            isValid = true;
+        }
+        return isValid;
+    }
+
+
 
 
     @Override

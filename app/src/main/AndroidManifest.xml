@@ -75,6 +75,7 @@
             android:windowSoftInputMode="adjustPan|stateHidden" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
@@ -127,17 +128,34 @@
         <activity
             android:name=".Activities.FeedbackActivity"
             android:label="@string/title_activity_feedback"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
         </activity>
 
+        <uses-library
+            android:name="com.sec.android.app.multiwindow"
+            android:required="false" />
 
+        <meta-data
+            android:name="com.sec.android.support.multiwindow"
+            android:value="true" />
+        <meta-data
+            android:name="com.sec.android.multiwindow.DEFAULT_SIZE_W"
+            android:resource="@dimen/app_defaultsize_w" />
+        <meta-data
+            android:name="com.sec.android.multiwindow.DEFAULT_SIZE_H"
+            android:resource="@dimen/app_defaultsize_h" />
+        <meta-data
+            android:name="com.sec.android.multiwindow.MINIMUM_SIZE_W"
+            android:resource="@dimen/app_minimumsize_w" />
+        <meta-data
+            android:name="com.sec.android.multiwindow.MINIMUM_SIZE_H"
+            android:resource="@dimen/app_minimumsize_h" />
 
-        <uses-library android:required="false" android:name="com.sec.android.app.multiwindow" />
-        <meta-data android:name="com.sec.android.support.multiwindow" android:value="true" />
-        <meta-data android:name="com.sec.android.multiwindow.DEFAULT_SIZE_W" android:resource="@dimen/app_defaultsize_w" />
-        <meta-data android:name="com.sec.android.multiwindow.DEFAULT_SIZE_H" android:resource="@dimen/app_defaultsize_h" />
-        <meta-data android:name="com.sec.android.multiwindow.MINIMUM_SIZE_W" android:resource="@dimen/app_minimumsize_w" />
-        <meta-data android:name="com.sec.android.multiwindow.MINIMUM_SIZE_H" android:resource="@dimen/app_minimumsize_h" />
+        <activity
+            android:name=".Activities.AboutScribblerNotebooks"
+            android:label="@string/title_activity_about_scribbler_notebooks"
+            android:screenOrientation="portrait">
+        </activity>
     </application>
 
 </manifest>

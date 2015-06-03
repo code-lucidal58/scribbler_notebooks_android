@@ -29,6 +29,7 @@ import com.scribblernotebooks.scribblernotebooks.Activities.NavigationDrawer;
 import com.scribblernotebooks.scribblernotebooks.Activities.ScannerActivity;
 import com.scribblernotebooks.scribblernotebooks.Activities.SettingsActivity;
 import com.scribblernotebooks.scribblernotebooks.Adapters.NavigationRecyclerAdapter;
+import com.scribblernotebooks.scribblernotebooks.Fragments.AboutUsFragment;
 import com.scribblernotebooks.scribblernotebooks.Fragments.ClaimedDeals;
 import com.scribblernotebooks.scribblernotebooks.Fragments.DealsFragment;
 import com.scribblernotebooks.scribblernotebooks.Fragments.ManualScribblerCode;
@@ -90,22 +91,8 @@ public class LeftNavigationDrawer {
         imageLoaderConfiguration=new ImageLoaderConfiguration.Builder(this.mContext).build();
         ImageLoader.getInstance().init(imageLoaderConfiguration);
         imageLoadingListener=new SimpleImageLoadingListener();
-        displayImageOptions=new DisplayImageOptions.Builder()
-                .showImageOnLoading(R.mipmap.ic_launcher)
-                .showImageForEmptyUri(R.mipmap.ic_launcher)
-                .showImageOnFail(R.mipmap.ic_launcher)
-                .cacheOnDisk(true)
-                .cacheInMemory(true)
-                .considerExifParams(true)
-                .displayer(new SimpleBitmapDisplayer()).build();
-        displayImageOptionsCover=new DisplayImageOptions.Builder()
-                .showImageOnLoading(R.drawable.navigation_drawer_cover_pic)
-                .showImageForEmptyUri(R.drawable.navigation_drawer_cover_pic)
-                .showImageOnFail(R.drawable.navigation_drawer_cover_pic)
-                .cacheOnDisk(true)
-                .cacheInMemory(true)
-                .considerExifParams(true)
-                .displayer(new SimpleBitmapDisplayer()).build();
+        displayImageOptions=Constants.getProfilePicDisplayImageOptions();
+        displayImageOptionsCover=Constants.getCoverPicDisplayImageOptions();
 
         sdisplayImageOptions=displayImageOptions;
         sdisplayImageOptionsCover=displayImageOptionsCover;
@@ -187,7 +174,10 @@ public class LeftNavigationDrawer {
 
             if (fragment != null) {
                 FragmentManager fragmentManager = navigationDrawerActivity.getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.content_frame, fragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
                 try {
                     //noinspection ConstantConditions
                     navigationDrawerActivity.getSupportActionBar().setTitle(mNavigationDrawerItems.get(position).second);
@@ -209,6 +199,7 @@ public class LeftNavigationDrawer {
         settings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mDrawerLayout.closeDrawers();
                 mContext.startActivity(new Intent(mContext, SettingsActivity.class));
             }
         });
@@ -216,13 +207,20 @@ public class LeftNavigationDrawer {
         aboutUs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                mDrawerLayout.closeDrawers();
+                Fragment fragment = AboutUsFragment.newInstance();
+                FragmentManager fragmentManager = navigationDrawerActivity.getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.content_frame, fragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
             }
         });
 
         signOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mDrawerLayout.closeDrawers();
                 SharedPreferences sharedPreferences = mContext.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.clear();
@@ -230,6 +228,7 @@ public class LeftNavigationDrawer {
                 navigationDrawerActivity.signOut();
                 Toast.makeText(mContext, "Successfully Logged out", Toast.LENGTH_LONG).show();
                 mContext.startActivity(new Intent(mContext, LogIn.class));
+                navigationDrawerActivity.finish();
             }
         });
     }

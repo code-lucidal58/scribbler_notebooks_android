@@ -35,6 +35,7 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
+import com.scribblernotebooks.scribblernotebooks.CustomViews.ForgotPasswordPopup;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.R;
 import com.scribblernotebooks.scribblernotebooks.Services.LocationRetreiver;
@@ -225,8 +226,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         forgotPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: ForgotPassword request
-                Toast.makeText(getApplicationContext(),"Forgot Password",Toast.LENGTH_LONG).show();
+                new ForgotPasswordPopup(LogIn.this).show();
             }
         });
 
@@ -373,6 +373,19 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         });
     }
 
+    public boolean isValidPassword(String pass) {
+        if (pass.isEmpty()) {
+            password.setError("Password cannot be empty");
+            return false;
+        }
+        if (pass.length() < 8) {
+            password.setError("Password must be at least 8 characters");
+            return false;
+        }
+        return true;
+    }
+
+
     private void loginUser() {
         if (view_open == LOGIN) {
             userEmail = email.getText().toString();
@@ -398,12 +411,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     }
 
     public void login(String email, String password) {
-        String a = getSharedPreferences(Constants.PREF_NAME, MODE_PRIVATE).getString(Constants.PREF_DATA_NAME, "");
-        String b = getSharedPreferences(Constants.PREF_NAME, MODE_PRIVATE).getString(Constants.PREF_DATA_PASS, "");
-        if (email.equals(a) && password.equals(b)) {
-            startActivity(new Intent(this, NavigationDrawer.class));
-            finish();
-        }
+        //TODO: Login User from server
     }
 
     public boolean validatePassword(String password, String tag) {
@@ -439,6 +447,9 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         //If username or email or password is empty then do not signup
         if (userName.isEmpty() || userEmail.isEmpty() || userPassword.isEmpty()) {
             Toast.makeText(getApplicationContext(), "Please check if all fields are filled and try again", Toast.LENGTH_LONG).show();
+            return;
+        }
+        if(!isValidPassword(password.getText().toString())){
             return;
         }
 
@@ -593,6 +604,14 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
 
     @Override
     public void onConnectionFailed(ConnectionResult result) {
+        try{
+            if(mGoogleApiClient.isConnected()){
+                Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
         if (!result.hasResolution()) {
             try {
                 GooglePlayServicesUtil.getErrorDialog(result.getErrorCode(), this,
@@ -674,8 +693,6 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         try {
             if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
 
-                //TODO: using userId for password.
-
                 Person currentPerson = Plus.PeopleApi
                         .getCurrentPerson(mGoogleApiClient);
                 String personName = currentPerson.getDisplayName();
@@ -683,7 +700,11 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                 String userId = currentPerson.getId();
                 String s = personImageUrl.replace("photo.jpg?sz=50", "photo.jpg?sz=250");
                 String userEmail = Plus.AccountApi.getAccountName(mGoogleApiClient);
-                String userCover = currentPerson.getCover().getCoverPhoto().getUrl();
+                String userCover="";
+                if(currentPerson.hasCover())
+                {
+                    userCover = currentPerson.getCover().getCoverPhoto().getUrl();
+                }
                 fromApi = true;
 
                 saveUserDetails(personName, userEmail, s, userCover, "", "");
