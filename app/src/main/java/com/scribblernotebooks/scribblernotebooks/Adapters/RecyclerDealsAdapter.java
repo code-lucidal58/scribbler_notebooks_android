@@ -15,6 +15,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
+import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Deal;
@@ -59,7 +60,7 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
                 .cacheOnDisk(true)
                 .cacheInMemory(true)
                 .considerExifParams(true)
-                .displayer(new RoundedBitmapDisplayer(20)).build();
+                .displayer(new SimpleBitmapDisplayer()).build();
     }
 
     /**
@@ -110,18 +111,10 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
         String details = deal.getShortDescription();
         Boolean isfavorited=deal.isFavorited();
 
+        viewHolder.favoriteIcon.setChecked(isfavorited);
         /** Setting list View item details */
         viewHolder.txtViewTitle.setText(title);
         viewHolder.txtViewCategory.setText(category);
-        if(!isClaimed) {
-            viewHolder.txtViewDealDetails.setText(details);
-            viewHolder.favoriteIcon.setChecked(isfavorited);
-        }
-        else
-        {
-            viewHolder.txtViewDealDetails.setText("Coupon Code: " + deal.getCouponCode());
-        }
-
         ImageLoader.getInstance().displayImage(deal.getImageUrl(),viewHolder.imgViewIcon,displayImageOptions,imageLoadingListener);
 
         /** Saving favorite option to the deal **/
@@ -149,6 +142,16 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
                 context.getApplicationContext().startActivity(starter);
             }
         });
+
+        if(!isClaimed) {
+            viewHolder.txtViewDealDetails.setText(details);
+        }
+        else
+        {
+            viewHolder.txtViewDealDetails.setText("Coupon Code: " + deal.getCouponCode());
+            viewHolder.shareButton.setVisibility(View.GONE);
+            viewHolder.favoriteIcon.setVisibility(View.GONE);
+        }
 
 
     }

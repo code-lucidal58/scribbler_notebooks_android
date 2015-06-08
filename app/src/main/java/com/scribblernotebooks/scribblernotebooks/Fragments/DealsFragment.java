@@ -3,6 +3,7 @@ package com.scribblernotebooks.scribblernotebooks.Fragments;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
@@ -19,17 +20,24 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.scribblernotebooks.scribblernotebooks.Adapters.HidingScrollListener;
+import com.scribblernotebooks.scribblernotebooks.Activities.ScannerActivity;
+import com.scribblernotebooks.scribblernotebooks.Adapters.SearchListAdapter;
+import com.scribblernotebooks.scribblernotebooks.CustomListeners.HidingScrollListener;
 import com.scribblernotebooks.scribblernotebooks.Adapters.RecyclerDealsAdapter;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Deal;
@@ -46,6 +54,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class DealsFragment extends android.support.v4.app.Fragment {
 
@@ -75,6 +84,13 @@ public class DealsFragment extends android.support.v4.app.Fragment {
     private OnFragmentInteractionListener mListener;
 
 
+    RecyclerView suggestions;
+    LinearLayout originalLayout,replacedLayout;
+    ImageView selectedIcon;
+    TextView selectionIconName;
+    EditText selectedIconQuery;
+    Boolean isOptionOpened=false;
+    SearchListAdapter searchListAdapter,querySearchListAdapter;
     /**
      * Setting statically the new fragment
      *
@@ -130,12 +146,69 @@ public class DealsFragment extends android.support.v4.app.Fragment {
         ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeButtonEnabled(true);
         getActivity().setTitle(title);
 
+
+        /**
+         * Option Select Animation and toggling
+         */
+        View category=searchbar.findViewById(R.id.layoutCategory);
+        View search=searchbar.findViewById(R.id.layoutSearch);
+        View sort=searchbar.findViewById(R.id.layoutSort);
+        View scan=searchbar.findViewById(R.id.layoutScan);
+
+        suggestions = (RecyclerView)searchbar.findViewById(R.id.recyclerView);
+        suggestions.setLayoutManager(new LinearLayoutManager(context));
+        originalLayout=(LinearLayout)searchbar.findViewById(R.id.originalLinearLayout);
+        replacedLayout=(LinearLayout)searchbar.findViewById(R.id.replacedLinearLayout);
+        selectedIcon=(ImageView)searchbar.findViewById(R.id.selectedIcon);
+        selectionIconName=(TextView)searchbar.findViewById(R.id.selectedIcon_name);
+        selectedIconQuery=(EditText)searchbar.findViewById(R.id.selectedQuery);
+
+        category.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hideToolbarOptions("category");
+            }
+        });
+
+        search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hideToolbarOptions("search");
+            }
+        });
+
+        sort.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hideToolbarOptions("sort");
+            }
+        });
+
+        scan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(context, ScannerActivity.class));
+            }
+        });
+
+
+
+
+
+
+
+
+
+
+
+
+
         /**
          * Calling functions for execution of the 4 functionality of search bar
          */
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        SearchBarApplication searchBarApplication = new SearchBarApplication(searchbar, container, context, fragmentManager);
-        searchBarApplication.ImplementFunctions();
+//        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+//        SearchBarApplication searchBarApplication = new SearchBarApplication(searchbar, container, context, fragmentManager);
+//        searchBarApplication.ImplementFunctions();
 
         /**
          * Navigation Drawer Hamburger Icon Setup
@@ -171,6 +244,7 @@ public class DealsFragment extends android.support.v4.app.Fragment {
         recyclerView.setPadding(recyclerView.getPaddingLeft(), paddingTop, recyclerView.getPaddingRight(), recyclerView.getPaddingBottom());
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
 
+        /**Dynamically Changing the recycler view content*/
         recyclerView.addOnScrollListener(new HidingScrollListener(context) {
 
             @Override
@@ -224,6 +298,87 @@ public class DealsFragment extends android.support.v4.app.Fragment {
         });
         return v;
     }
+
+
+    /**
+     * To show the basic option of category, search, scan and sort
+     */
+    public void showToolbarOptions(){
+        isOptionOpened=false;
+        replacedLayout.setVisibility(View.GONE);
+        originalLayout.setVisibility(View.VISIBLE);
+        suggestions.setVisibility(View.GONE);
+//        toolbarContainer.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).start();
+    }
+
+    /**
+     * Hide the category, search, scan and sort options and show the corresponding menu
+     */
+    public void hideToolbarOptions(String tag){
+        isOptionOpened=true;
+//        toolbarContainer.animate().translationY(-mToolbarHeight).setInterpolator(new AccelerateInterpolator(2)).start();
+        replacedLayout.setVisibility(View.VISIBLE);
+        originalLayout.setVisibility(View.GONE);
+        suggestions.setVisibility(View.VISIBLE);
+        selectedIconQuery.setText("");
+        ArrayList<String> suggestionList=new ArrayList<>();
+        replacedLayout.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showToolbarOptions();
+            }
+        });
+        switch (tag){
+            case "category":
+                selectedIcon.setImageDrawable(getResources().getDrawable(R.drawable.category));
+                selectionIconName.setText("Category");
+                selectedIconQuery.setHint("Enter Category...");
+                suggestionList=new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.category_list)));
+                break;
+            case "search":
+                selectedIcon.setImageDrawable(getResources().getDrawable(R.drawable.search));
+                selectionIconName.setText("Search");
+                selectedIconQuery.setHint("Name, Location, Content...");
+                suggestionList= new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.sort_list)));
+                break;
+            case "sort":
+                selectedIcon.setImageDrawable(getResources().getDrawable(R.drawable.sort));
+                selectionIconName.setText("Sort");
+                selectedIconQuery.setHint("Sort by...");
+                suggestionList= new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.search_list)));
+                break;
+            default:
+                break;
+        }
+        searchListAdapter = new SearchListAdapter(suggestionList);
+        suggestions.setAdapter(searchListAdapter);
+
+        querySearchListAdapter=new SearchListAdapter(suggestionList);
+        selectedIconQuery.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                ArrayList<String> result = querySearchListAdapter.searchResult(s);
+                searchListAdapter = new SearchListAdapter(result);
+                suggestions.setAdapter(searchListAdapter);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+    }
+
+
+
+
+
+
 
     /**
      * Returning toolbar height for implementing animation
@@ -297,14 +452,17 @@ public class DealsFragment extends android.support.v4.app.Fragment {
         }
     }
 
+
     /**
      * Auto-generated methods
      *
-     * @param uri
      */
-    public void onButtonPressed(Uri uri) {
+    public void onButtonPressed() {
         if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+            mListener.onFragmentInteraction();
+        }
+        if(isOptionOpened){
+            showToolbarOptions();
         }
     }
 
@@ -349,7 +507,7 @@ public class DealsFragment extends android.support.v4.app.Fragment {
 
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
+        public void onFragmentInteraction();
     }
 
     /**

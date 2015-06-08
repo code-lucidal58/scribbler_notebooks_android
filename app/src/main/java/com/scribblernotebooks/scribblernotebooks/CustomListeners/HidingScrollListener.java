@@ -1,4 +1,4 @@
-package com.scribblernotebooks.scribblernotebooks.Adapters;
+package com.scribblernotebooks.scribblernotebooks.CustomListeners;
 
 import android.content.Context;
 import android.content.res.TypedArray;

@@ -8,6 +8,8 @@
     <color name="colorAccent">#ff49a3c8</color>
     <color name="windowBackground">#EEE</color>
 
+    <color name="popupBackgroundColor">#ffd7ff00</color>
+
     <color name="darkerBlue">#ff12495c</color>
     <color name="lighterBlue">#ff29b2dd</color>
     <color name="notificationDrawerTitleColor">#000</color>

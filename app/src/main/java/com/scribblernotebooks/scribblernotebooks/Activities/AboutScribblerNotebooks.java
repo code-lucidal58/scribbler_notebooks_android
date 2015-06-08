@@ -3,6 +3,7 @@ package com.scribblernotebooks.scribblernotebooks.Activities;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -14,6 +15,12 @@ public class AboutScribblerNotebooks extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about_scribbler_notebooks);
+
+        Toolbar toolbar=(Toolbar)findViewById(R.id.appBar);
+        toolbar.setTitle("About Scribbler Notebooks");
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
 

@@ -8,7 +8,7 @@ import java.io.Serializable;
 public class Deal implements Serializable {
 
     private String id, title, category, shortDescription, imageUrl, longDescription;
-    private Boolean isFav,isFeatured;
+    private Boolean isFav=false,isFeatured=false;
     private String couponCode;
 
     public Deal(){

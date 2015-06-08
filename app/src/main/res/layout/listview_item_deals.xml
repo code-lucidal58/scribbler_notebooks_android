@@ -99,6 +99,7 @@
                         android:layout_toEndOf="@id/tearMark"
                         android:layout_toRightOf="@id/tearMark"
                         android:ellipsize="end"
+                        android:textColor="#333"
                         android:maxLines="2"
                         android:text="@string/lorem_ipsum"
                         android:textSize="12sp" />

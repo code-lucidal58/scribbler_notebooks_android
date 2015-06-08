@@ -4,14 +4,16 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
+
     <com.balysv.materialripple.MaterialRippleLayout
         android:id="@+id/dealRipple"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:mrl_rippleAlpha="0.1"
-        app:mrl_rippleColor="@color/darkBlueRippleColor"
+        app:mrl_rippleColor="@color/themeColor"
         app:mrl_rippleDimension="10dp"
         app:mrl_rippleDuration="250"
+        app:mrl_rippleDelayClick="true"
         app:mrl_rippleFadeDuration="200"
         app:mrl_rippleHover="true"
         app:mrl_rippleOverlay="true">
@@ -19,7 +21,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/text1"
+            android:id="@+id/t1"
             android:padding="10dp"
             android:textSize="18sp"
             android:textColor="@color/text_color"

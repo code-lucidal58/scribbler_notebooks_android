@@ -146,8 +146,24 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
         /**Get Data from the external Barcode scanner or internal Barcode Scanner */
         try {
             url = getIntent().getData().toString();
+            Log.e("Url",url+"-------------------"+getApplication().getPackageName());
+
             if(url.contains(getApplication().getPackageName())){
-                getDealDetailsAndShow(url);
+                Uri uri=getIntent().getData();
+//              market://details?id=com.scribblernotebooks.scribblernotebooks&id=4
+
+                String dealCode=uri.getQueryParameter("dealId");
+                Log.e("DealCode",dealCode);
+
+                if(!dealCode.isEmpty()) {
+                    ManualScribblerCode msc = new ManualScribblerCode();
+                    Log.e("Calling","Calling Popup");
+                    msc.getDealDetails(dealCode,this);
+                }
+                else
+                {
+                    Toast.makeText(getApplicationContext(),"Invalid Scribbler code",Toast.LENGTH_LONG).show();
+                }
             }
             else{
                 Intent i=new Intent(Intent.ACTION_VIEW);
@@ -192,7 +208,11 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
     @Override
     protected void onStart() {
         super.onStart();
-        mGoogleApiClient.connect();
+        try{
+            mGoogleApiClient.connect();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
 
@@ -227,12 +247,6 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
      */
     void setupNavigationDrawer() {
         new LeftNavigationDrawer(this, mainView, this);
-    }
-
-    public void getDealDetailsAndShow(String url) {
-        DealPopup dealPopup = new DealPopup(this);
-        dealPopup.setUrl(url);
-        dealPopup.show();
     }
 
     /**
@@ -398,7 +412,13 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
     }
 
 
+    public void onFragmentInteraction() {
+
+    }
+
+    @Override
     public void onFragmentInteraction(Uri uri) {
+
     }
 
     @Override

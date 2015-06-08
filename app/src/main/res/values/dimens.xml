@@ -28,6 +28,7 @@
 
     <dimen name="popup_width">275dp</dimen>
     <dimen name="popup_button_width">275dp</dimen>
+    <dimen name="privacy_popup_width">300dp</dimen>
 
     <dimen name="sec_activity_horizontal_margin">20dp</dimen>
     <dimen name="sec_activity_vertical_margin">20dp</dimen>

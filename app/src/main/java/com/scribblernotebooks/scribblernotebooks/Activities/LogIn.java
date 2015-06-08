@@ -57,6 +57,9 @@ import javax.net.ssl.HttpsURLConnection;
 public class LogIn extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
     private final static String TAG = "LogIn";
+
+    private final static double IMAGE_SCALE_RATIO=0.6;
+
     EditText name, email, mobile, password;
     TextView forgotPassword;
     Button signIn, signUp;
@@ -237,12 +240,12 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         final ScaleDrawable userIcon = new ScaleDrawable(getResources().getDrawable(R.drawable.userlogin), Gravity.CENTER, 1F, 1F) {
             @Override
             public int getIntrinsicHeight() {
-                return name.getHeight() * 3 / 4;
+                return (int)(name.getHeight() * IMAGE_SCALE_RATIO);
             }
 
             @Override
             public int getIntrinsicWidth() {
-                return name.getHeight() * 3 / 4;
+                return (int)(name.getHeight() * IMAGE_SCALE_RATIO);
             }
         };
         userIcon.setLevel(10000);
@@ -262,12 +265,12 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         final ScaleDrawable emailIcon = new ScaleDrawable(getResources().getDrawable(R.drawable.maillogin), Gravity.CENTER, 1F, 1F) {
             @Override
             public int getIntrinsicHeight() {
-                return email.getHeight() * 3 / 4;
+                return (int)(email.getHeight() * IMAGE_SCALE_RATIO);
             }
 
             @Override
             public int getIntrinsicWidth() {
-                return email.getHeight() * 3 / 4;
+                return (int)(email.getHeight() *IMAGE_SCALE_RATIO);
             }
         };
         emailIcon.setLevel(10000);
@@ -287,12 +290,12 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         final ScaleDrawable phoneIcon = new ScaleDrawable(getResources().getDrawable(R.drawable.phonelogin), Gravity.CENTER, 1F, 1F) {
             @Override
             public int getIntrinsicHeight() {
-                return mobile.getHeight() * 3 / 4;
+                return (int) (mobile.getHeight() * IMAGE_SCALE_RATIO);
             }
 
             @Override
             public int getIntrinsicWidth() {
-                return mobile.getHeight() * 3 / 4;
+                return (int) (mobile.getHeight() * IMAGE_SCALE_RATIO);
             }
         };
         phoneIcon.setLevel(10000);
@@ -313,12 +316,12 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         final ScaleDrawable passwordIcon = new ScaleDrawable(getResources().getDrawable(R.drawable.passwordlogin), Gravity.CENTER, 1F, 1F) {
             @Override
             public int getIntrinsicHeight() {
-                return password.getHeight() * 3 / 4;
+                return (int) (password.getHeight() * IMAGE_SCALE_RATIO);
             }
 
             @Override
             public int getIntrinsicWidth() {
-                return password.getHeight() * 3 / 4;
+                return (int) (password.getHeight() * IMAGE_SCALE_RATIO);
             }
         };
         passwordIcon.setLevel(10000);
@@ -734,6 +737,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         if (fromApi) {
             startActivity(new Intent(this, ProfileManagement.class));
             finish();
+            overridePendingTransition(R.anim.profile_slide_in,R.anim.login_slide_out);
             return;
         }
         startActivity(new Intent(getApplicationContext(), NavigationDrawer.class));
@@ -749,11 +753,12 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         editor.putString(Constants.PREF_DATA_MOBILE, mobileNo);
         editor.putString(Constants.PREF_DATA_PASS, password);
         editor.putString(Constants.PREF_DATA_USER_TOKEN, token);
-        editor.putString(Constants.PREF_DATA_MIXPANEL_USER_ID, token);
+        editor.putString(Constants.PREF_DATA_MIXPANEL_USER_ID, mixpanelId);
         editor.apply();
         if (fromApi) {
             startActivity(new Intent(this, ProfileManagement.class));
             finish();
+            overridePendingTransition(R.anim.profile_slide_in, R.anim.login_slide_out);
             return;
         }
         startActivity(new Intent(getApplicationContext(), NavigationDrawer.class));
