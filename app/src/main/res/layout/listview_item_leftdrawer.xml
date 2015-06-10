@@ -1,28 +1,52 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?android:attr/activatedBackgroundIndicator"
-    android:orientation="horizontal"
-    android:padding="10dp"
     android:layout_marginLeft="5dp"
-    android:layout_marginStart="5dp">
+    android:layout_marginStart="5dp"
+    android:background="?android:attr/activatedBackgroundIndicator"
+    android:orientation="horizontal">
 
-    <ImageView
-        android:layout_width="@dimen/navigation_drawer_icon_size"
-        android:layout_height="@dimen/navigation_drawer_icon_size"
-        android:id="@+id/itemIcon"
-        android:src="@drawable/ic_launcher" />
-
-    <TextView
-        android:id="@+id/navigationItem"
+    <com.balysv.materialripple.MaterialRippleLayout
+        android:id="@+id/dealRipple"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginLeft="20dp"
-        android:layout_marginStart="20dp"
-        android:text="Folder name here."
-        android:textAppearance="?android:attr/textAppearanceListItemSmall"
-        android:textColor="@color/navigation_drawer_list_text_color"
-        android:textSize="@dimen/navigation_drawer_item_textSize" />
+        app:mrl_rippleAlpha="0.1"
+        app:mrl_rippleColor="@color/darkBlueRippleColor"
+        app:mrl_rippleDimension="10dp"
+        app:mrl_rippleDuration="400"
+        app:mrl_rippleFadeDuration="200"
+        app:mrl_rippleHover="true"
+        app:mrl_rippleOverlay="true">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/activatedBackgroundIndicator"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+
+            <ImageView
+                android:id="@+id/itemIcon"
+                android:layout_width="@dimen/navigation_drawer_icon_size"
+                android:layout_height="@dimen/navigation_drawer_icon_size"
+                android:src="@drawable/ic_launcher" />
+
+            <TextView
+                android:id="@+id/navigationItem"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="20dp"
+                android:layout_marginStart="20dp"
+                android:text="Folder name here."
+                android:textAppearance="?android:attr/textAppearanceListItemSmall"
+                android:textColor="@color/navigation_drawer_list_text_color"
+                android:textSize="@dimen/navigation_drawer_item_textSize" />
+
+
+        </LinearLayout>
+
+    </com.balysv.materialripple.MaterialRippleLayout>
 </LinearLayout>

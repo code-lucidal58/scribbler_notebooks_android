@@ -28,6 +28,7 @@
 
     <dimen name="popup_width">275dp</dimen>
     <dimen name="popup_button_width">275dp</dimen>
+    <dimen name="privacy_popup_width">300dp</dimen>
 
     <dimen name="sec_activity_horizontal_margin">20dp</dimen>
     <dimen name="sec_activity_vertical_margin">20dp</dimen>
@@ -66,6 +67,8 @@
     <dimen name="profileEditTextFontSize">16sp</dimen>
     <dimen name="popupImageWidth">70dp</dimen>
     <dimen name="popupImageHeight">70dp</dimen>
+    <dimen name="detailsImageWidth">100dp</dimen>
+    <dimen name="detailsImageHeight">100dp</dimen>
     <dimen name="tableRowHeight">40dp</dimen>
 
 
@@ -74,4 +77,6 @@
     <dimen name="app_defaultsize_h">598.0dip</dimen>
     <dimen name="app_minimumsize_w">632.0dip</dimen>
     <dimen name="app_minimumsize_h">100.0dip</dimen>
+    <dimen name="details_marginTop">5dp</dimen>
+    <dimen name="details_marginBottom">5dp</dimen>
 </resources>

@@ -29,21 +29,27 @@ public class Constants {
 
     public static final String MIXPANEL_TOKEN="873f1995dd119bdb63b8a51bc2f4951d";
 
-    public static final String parentURLForGetRequest="http://someshit-akasantony.rhcloud.com/deal/";
-    public static final String parentURLForCouponCode="http://someshit-akasantony.rhcloud.com/deal/";
+    public static final String parentURLForGetRequest="http://192.168.1.117:3000/deal/";
+    public static final String parentURLForCouponCode="http://192.168.1.117:3000/deal/";
     public static final String USER_SIGNUP_URL="";
 
-    public static final String serverURL = "http://jazzyarchitects.orgfree.com/intern58195/sn7315/request.php?table=";
-    public static final String TAG_DEAL_NAME = "dealName";
-    public static final String TAG_IMAGE_URL = "imgurl";
-    public static final String TAG_SHORT_DESCRIPTION = "sdescription";
-    public static final String TAG_LONG_DESCRIPTION = "ldescription";
-    public static final String TAG_ID = "id";
-    public static final String TAG_CATEGORY = "category";
+    public static final String serverURL = "http://jazzyarchitects.orgfree.com/deal.php";
+    public static final String TAG_DEAL_NAME = "Title";
+    public static final String TAG_IMAGE_URL = "ImageUrl";
+    public static final String TAG_IMAGE_UUID="ImageUUID";
+    public static final String TAG_SHORT_DESCRIPTION = "ShortDescription";
+    public static final String TAG_LONG_DESCRIPTION = "Description";
+    public static final String TAG_ID = "Id";
+    public static final String TAG_CATEGORY = "Category";
     public static final String TAG_IF_FEATURED="ifFeatured";
     public static final String TAG_IF_FAVOURITE="ifFavorite";
     public static final String TAG_DETAILS="detail";
     public static final String TAG_COUPON_CODE="couponCode";
+
+    public static final String PARCELABLE_DEAL_LIST_KEY ="dealList";
+    public static final String PARCELABLE_DEAL_KEY ="dealList";
+
+    public static final String CURRENT_DEAL_INDEX="index";
 
     public static final String URL_ARGUMENT = "urlArg";
 

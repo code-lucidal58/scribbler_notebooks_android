@@ -32,13 +32,10 @@ import java.util.Arrays;
  * create an instance of this fragment.
  */
 public class SearchQueryFragment extends android.support.v4.app.Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_OPTION_IMAGE = "optionImage";
     private static final String ARG_OPTION_NAME = "optionName";
     private static final String ARG_OPTION_HINT="optionHint";
 
-    // TODO: Rename and change types of parameters
     private Integer optionImageId;
     private String optionNameId;
     private String optionHint;

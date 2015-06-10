@@ -1,114 +1,198 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="@dimen/search"
-    android:background="@color/darkBlue"
-    android:paddingTop="3dp"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/searchbar"
-    android:orientation="horizontal"
-    android:weightSum="4">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:animateLayoutChanges="true"
+    android:background="@color/darkBlue"
+    android:minHeight="@dimen/search">
 
-    <RelativeLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:layout_weight="1"
-        android:id="@+id/layoutCategory">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/search"
+        android:orientation="horizontal"
+        android:paddingTop="3dp"
+        android:id="@+id/originalLinearLayout"
+        android:weightSum="4">
 
-        <com.scribblernotebooks.scribblernotebooks.CustomViews.RoundedImageView
-            android:layout_width="@dimen/searchBarIconSize"
-            android:layout_height="@dimen/searchBarIconSize"
-            android:src="@drawable/category"
-            android:layout_centerHorizontal="true"
-            android:id="@+id/category"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:gravity="center_horizontal"
+        <RelativeLayout
+            android:id="@+id/layoutCategory"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center">
+
+            <com.scribblernotebooks.scribblernotebooks.CustomViews.RoundedImageView
+                android:id="@+id/category"
+                android:layout_width="@dimen/searchBarIconSize"
+                android:layout_height="@dimen/searchBarIconSize"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/category" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/category"
+                android:layout_centerHorizontal="true"
+                android:gravity="center_horizontal"
+                android:text="Category"
+                android:textColor="#fff"
+                android:textSize="@dimen/searchBarTextSize" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layoutScan"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center">
+
+            <com.scribblernotebooks.scribblernotebooks.CustomViews.RoundedImageView
+                android:id="@+id/scan"
+                android:layout_width="@dimen/searchBarIconSize"
+                android:layout_height="@dimen/searchBarIconSize"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/scan" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/scan"
+                android:layout_centerHorizontal="true"
+                android:gravity="center_horizontal"
+                android:text="Scan"
+                android:textColor="#fff"
+                android:textSize="@dimen/searchBarTextSize" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layoutSearch"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center">
+
+            <com.scribblernotebooks.scribblernotebooks.CustomViews.RoundedImageView
+                android:id="@+id/search"
+                android:layout_width="@dimen/searchBarIconSize"
+                android:layout_height="@dimen/searchBarIconSize"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/search" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/search"
+                android:layout_centerHorizontal="true"
+                android:gravity="center_horizontal"
+                android:text="Search"
+                android:textColor="#fff"
+                android:textSize="@dimen/searchBarTextSize" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layoutSort"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center">
+
+            <com.scribblernotebooks.scribblernotebooks.CustomViews.RoundedImageView
+                android:id="@+id/sort"
+                android:layout_width="@dimen/searchBarIconSize"
+                android:layout_height="@dimen/searchBarIconSize"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/sort" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/sort"
+                android:layout_centerHorizontal="true"
+                android:gravity="center_horizontal"
+                android:text="Sort"
+                android:textColor="#fff"
+                android:textSize="@dimen/searchBarTextSize" />
+
+        </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/search"
+        android:orientation="horizontal"
+        android:background="@color/darkBlue"
+        android:visibility="gone"
+        android:id="@+id/replacedLinearLayout">
+
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center">
+
+            <com.scribblernotebooks.scribblernotebooks.CustomViews.RoundedImageView
+                android:id="@+id/selectedIcon"
+                android:layout_width="@dimen/searchBarIconSize"
+                android:layout_height="@dimen/searchBarIconSize"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="3dp"
+                android:src="@drawable/category" />
+
+            <TextView
+                android:id="@+id/selectedIcon_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/selectedIcon"
+                android:layout_centerHorizontal="true"
+                android:gravity="center_horizontal"
+                android:minWidth="40dp"
+                android:text="Category"
+                android:textColor="#FFF"
+                android:textSize="@dimen/searchBarTextSize" />
+
+        </RelativeLayout>
+
+        <EditText
+            android:id="@+id/selectedQuery"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:layout_gravity="center"
+            android:layout_weight="3"
+            android:background="@drawable/edit_text2"
+            android:clickable="true"
+            android:enabled="true"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:gravity="center_vertical"
+            android:inputType="textAutoComplete"
+            android:paddingLeft="15dp"
+            android:hint=""
+            android:textColor="@color/loginEditText2TextColor"
+            android:textColorHint="@color/loginEditTextHintColor"
+            android:textSize="@dimen/searchBarEditTextFontSize" />
+
+        <ImageView
+            android:id="@+id/cancel"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Category"
-            android:textColor="#fff"
-            android:textSize="@dimen/searchBarTextSize"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@id/category"/>
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:padding="10dp"
+            android:src="@drawable/ic_action_cancel" />
 
-    </RelativeLayout>
+    </LinearLayout>
 
-    <RelativeLayout
-        android:layout_width="0dp"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/replacedLinearLayout"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:layout_weight="1"
-        android:id="@+id/layoutScan">
-
-        <com.scribblernotebooks.scribblernotebooks.CustomViews.RoundedImageView
-            android:layout_width="@dimen/searchBarIconSize"
-            android:layout_height="@dimen/searchBarIconSize"
-            android:src="@drawable/scan"
-            android:layout_centerHorizontal="true"
-            android:id="@+id/scan"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:textSize="@dimen/searchBarTextSize"
-            android:gravity="center_horizontal"
-            android:layout_height="wrap_content"
-            android:text="Scan"
-            android:textColor="#fff"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@id/scan"/>
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:layout_weight="1"
-        android:id="@+id/layoutSearch">
-
-        <com.scribblernotebooks.scribblernotebooks.CustomViews.RoundedImageView
-            android:layout_width="@dimen/searchBarIconSize"
-            android:layout_height="@dimen/searchBarIconSize"
-            android:src="@drawable/search"
-            android:layout_centerHorizontal="true"
-            android:id="@+id/search"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:gravity="center_horizontal"
-            android:layout_height="wrap_content"
-            android:textSize="@dimen/searchBarTextSize"
-            android:text="Search"
-            android:textColor="#fff"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@id/search"/>
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:layout_weight="1"
-        android:id="@+id/layoutSort">
-
-        <com.scribblernotebooks.scribblernotebooks.CustomViews.RoundedImageView
-            android:layout_width="@dimen/searchBarIconSize"
-            android:layout_height="@dimen/searchBarIconSize"
-            android:src="@drawable/sort"
-            android:layout_centerHorizontal="true"
-            android:id="@+id/sort"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:gravity="center_horizontal"
-            android:layout_height="wrap_content"
-            android:text="Sort"
-            android:textColor="#fff"
-            android:textSize="@dimen/searchBarTextSize"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@id/sort"/>
-
-    </RelativeLayout>
-
-
-</LinearLayout>
+        android:clipToPadding="false"
+        android:visibility="gone"/>
+</RelativeLayout>

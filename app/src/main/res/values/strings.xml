@@ -11,6 +11,9 @@
     <string name="title_activity_deal_list">DealList</string>
 
     <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
+    <string name="forgot_password">We can help you reset your password using your email address linked to your account.</string>
+    <string name="after_forgot_password">Thanks! Please check your email for a link to reset your password.</string>
+    <string name="about_scribbler">At Scribbler, we’ve taken up the challenge of providing a clutter-free product that serves as an effective advertising medium. Our notebooks contain a limited set of advertising space helping advertisers communicate directly with all students of our affiliated colleges. Advertisers can run digital promotions by embedding a unique Scribbler code within their print advertisement. These codes when scanned through the Scribbler mobile app give deals and offers to the students, thereby creating a platform which connects print to digital media.</string>
 
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>
@@ -74,4 +77,6 @@
     <string name="title_activity_setting">SettingActivity</string>
     <string name="title_activity_profile_management">ProfileManagement</string>
     <string name="title_activity_feedback">Feedback</string>
+    <string name="title_activity_about_scribbler_notebooks">About Scribbler Notebooks</string>
+    <string name="title_activity_deal_detail">Claim Your Deal</string>
 </resources>

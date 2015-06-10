@@ -273,6 +273,7 @@ public class ProfileManagement extends AppCompatActivity {
                 super.onPostExecute(s);
                 if (s.length == 0) {
                     startActivity(new Intent(getApplicationContext(), NavigationDrawer.class));
+                    finish();
                     return;
                 } else {
                     token = s[0];
@@ -284,6 +285,7 @@ public class ProfileManagement extends AppCompatActivity {
                 editor.apply();
                 startActivity(new Intent(getApplicationContext(), NavigationDrawer.class));
                 finish();
+                overridePendingTransition(R.anim.profile_slide_in, R.anim.login_slide_out);
             }
         }.execute(userName.getText().toString(), userEmail.getText().toString(), userMob.getText().toString(), userPass.getText().toString());
 
@@ -374,6 +376,7 @@ public class ProfileManagement extends AppCompatActivity {
         userPref.edit().clear().apply();
         startActivity(new Intent(this, LogIn.class));
         finish();
+        overridePendingTransition(R.anim.login_slide_in,R.anim.profile_slide_out);
     }
 
 }

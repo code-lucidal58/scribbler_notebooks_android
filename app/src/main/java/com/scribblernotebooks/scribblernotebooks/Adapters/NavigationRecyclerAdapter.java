@@ -10,6 +10,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.balysv.materialripple.MaterialRippleLayout;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.LeftNavigationDrawer;
 import com.scribblernotebooks.scribblernotebooks.R;
 
@@ -46,7 +47,7 @@ public class NavigationRecyclerAdapter extends RecyclerView.Adapter<NavigationRe
         Pair<Integer, String> d=data.get(position);
         viewHolder.navigationItem.setText(d.second);
         viewHolder.itemIcon.setImageResource(d.first);
-        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+        viewHolder.dealRipple.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 leftNavigationDrawer.clickAction(position);
@@ -62,9 +63,10 @@ public class NavigationRecyclerAdapter extends RecyclerView.Adapter<NavigationRe
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView navigationItem;
         ImageView itemIcon;
+        MaterialRippleLayout dealRipple;
         public ViewHolder(View itemLayoutView) {
             super(itemLayoutView);
-
+            dealRipple=(MaterialRippleLayout)itemLayoutView.findViewById(R.id.dealRipple);
             navigationItem = (TextView) itemLayoutView.findViewById(R.id.navigationItem);
             itemIcon=(ImageView)itemLayoutView.findViewById(R.id.itemIcon);
 

@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -59,7 +60,6 @@ public class ManualScribblerCode extends Fragment {
 
     RelativeLayout root;
 
-    ProgressDialog progressDialog;
 
     ImageView sun, cloud1, cloud2;
 
@@ -95,20 +95,6 @@ public class ManualScribblerCode extends Fragment {
         mContext = getActivity().getApplicationContext();
 
         this.mContext = sContext;
-        /**
-         * See if the url is empty
-         * If empty that means started from navigation drawer
-         * else started from scanned code
-         */
-        try {
-            url = getArguments().getString(Constants.URL_ARGUMENT);
-            if (!url.isEmpty() && !url.equals("")) {
-                getDealDetailsAndShow(url);
-            }
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
-
 
         //Initialize Google API code
         mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
@@ -129,9 +115,6 @@ public class ManualScribblerCode extends Fragment {
         //Inflate view
         View v = inflater.inflate(R.layout.fragment_manual_scribbler_code, container, false);
 
-        progressDialog=new ProgressDialog(mContext);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setMessage("Just a moment...\nWe are fetching your deal...");
         //View Setup
         root = (RelativeLayout) v.findViewById(R.id.manualRoot);
         back = (LinearLayout) v.findViewById(R.id.backToScan);
@@ -242,7 +225,6 @@ public class ManualScribblerCode extends Fragment {
                 //Show popup containing deal details
                 url = code.getText().toString();
                 if (!url.isEmpty()) {
-                    progressDialog.show();
                     getDealDetailsAndShow(url);
                 }
             }
@@ -270,7 +252,7 @@ public class ManualScribblerCode extends Fragment {
      * @param dealCode the url of the request
      */
     public void getDealDetailsAndShow(String dealCode) {
-        getDealDetails(dealCode);
+        getDealDetails(dealCode, mContext);
     }
 
 
@@ -282,15 +264,27 @@ public class ManualScribblerCode extends Fragment {
      * @param dealCode url to be decoded
      * @return the decoded strings
      */
-    public void  getDealDetails(final String dealCode) {
+    public void  getDealDetails(final String dealCode, final Context mContext) {
         response = "";
+
         new AsyncTask<String,Void,String>(){
+
+            ProgressDialog progressDialog=null;
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                progressDialog=new ProgressDialog(mContext);
+                progressDialog.setIndeterminate(true);
+                progressDialog.setMessage("Just a moment...\nWe are fetching your deal...");
+                progressDialog.show();
+            }
+
             @Override
             protected String doInBackground(String... params) {
                 try {
                     //TODO:Modify url to send token and deal id
                     URL url=new URL(Constants.parentURLForGetRequest+params[0]);
-//                    Log.e("Deal ", "URL " + params[0]);
+                    Log.e("Deal ", "URL " + params[0]);
                     HttpURLConnection connection=(HttpURLConnection)url.openConnection();
                     connection.setRequestMethod("GET");
                     connection.connect();
@@ -305,9 +299,16 @@ public class ManualScribblerCode extends Fragment {
             @Override
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
-                progressDialog.dismiss();
+                if(progressDialog!=null)
+                {
+                    if(progressDialog.isShowing())
+                        progressDialog.dismiss();
+                }
+                if(s.isEmpty()){
+                    return;
+                }
                 DealPopup dealPopup = new DealPopup(mContext);
-//                Log.e("Deal","Response "+s);
+                Log.e("Deal","Response "+s);
                 Deal deal= ParseJson.parseSingleDeal(s);
                 dealPopup.setTitle(deal.getTitle());
                 dealPopup.setCategory(deal.getCategory());

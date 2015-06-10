@@ -44,6 +44,8 @@ public class FeedbackActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.setTitleTextColor(Color.WHITE);
         getSupportActionBar().setTitle("Feedback");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
 
         userPrefs=getSharedPreferences(Constants.PREF_NAME,MODE_PRIVATE);
         userEmail.setText(Html.fromHtml("<b>"+userPrefs.getString(Constants.PREF_DATA_NAME,"")+"</b> &lt;"+userPrefs.getString(Constants.PREF_DATA_EMAIL,"")+"&gt;"));
@@ -63,6 +65,17 @@ public class FeedbackActivity extends AppCompatActivity {
         //TODO: Send feedback to server
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_log_in,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
-
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId()==android.R.id.home){
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }

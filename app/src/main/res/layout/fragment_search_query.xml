@@ -11,21 +11,20 @@
         android:layout_height="@dimen/search"
         android:background="@color/darkBlue"
         android:orientation="horizontal"
-        android:padding="0dp"
         android:weightSum="5">
 
         <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center">
+            android:paddingTop="3dp"
+            android:gravity="center|top">
 
             <com.scribblernotebooks.scribblernotebooks.CustomViews.RoundedImageView
                 android:id="@+id/option"
                 android:layout_width="@dimen/searchBarIconSize"
                 android:layout_height="@dimen/searchBarIconSize"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="10sp"
                 android:src="@drawable/category" />
 
             <TextView
