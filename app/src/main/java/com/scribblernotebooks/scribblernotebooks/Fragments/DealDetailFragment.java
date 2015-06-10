@@ -94,18 +94,18 @@ public class DealDetailFragment extends Fragment {
             }
         });
 
-        ImageLoaderConfiguration loaderConfiguration=new ImageLoaderConfiguration.Builder(mContext).build();
-        ImageLoader.getInstance().init(loaderConfiguration);
-        ImageLoadingListener imageLoadingListener=new SimpleImageLoadingListener();
-        DisplayImageOptions displayImageOptions=new DisplayImageOptions.Builder()
-                .showImageOnLoading(R.mipmap.ic_launcher)
-                .showImageForEmptyUri(R.mipmap.ic_launcher)
-                .showImageOnFail(R.mipmap.ic_launcher)
-                .cacheOnDisk(true)
-                .cacheInMemory(true)
-                .considerExifParams(true)
-                .displayer(new SimpleBitmapDisplayer()).build();
-        ImageLoader.getInstance().displayImage(deal.getImageUrl(),image,displayImageOptions,imageLoadingListener);
+//        ImageLoaderConfiguration loaderConfiguration=new ImageLoaderConfiguration.Builder(mContext).build();
+//        ImageLoader.getInstance().init(loaderConfiguration);
+//        ImageLoadingListener imageLoadingListener=new SimpleImageLoadingListener();
+//        DisplayImageOptions displayImageOptions=new DisplayImageOptions.Builder()
+//                .showImageOnLoading(R.mipmap.ic_launcher)
+//                .showImageForEmptyUri(R.mipmap.ic_launcher)
+//                .showImageOnFail(R.mipmap.ic_launcher)
+//                .cacheOnDisk(true)
+//                .cacheInMemory(true)
+//                .considerExifParams(true)
+//                .displayer(new SimpleBitmapDisplayer()).build();
+//        ImageLoader.getInstance().displayImage(deal.getImageUrl(),image,displayImageOptions,imageLoadingListener);
 
         claimDeal.setOnClickListener(new View.OnClickListener() {
             @Override

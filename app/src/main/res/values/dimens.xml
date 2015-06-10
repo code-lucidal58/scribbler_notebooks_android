@@ -67,7 +67,7 @@
     <dimen name="profileEditTextFontSize">16sp</dimen>
     <dimen name="popupImageWidth">70dp</dimen>
     <dimen name="popupImageHeight">70dp</dimen>
-    <dimen name="detailsImageWidth">100dp</dimen>
+    <dimen name="detailsImageWidth">200dp</dimen>
     <dimen name="detailsImageHeight">100dp</dimen>
     <dimen name="tableRowHeight">40dp</dimen>
 

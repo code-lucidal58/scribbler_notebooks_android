@@ -7,11 +7,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -27,7 +25,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -36,13 +33,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.scribblernotebooks.scribblernotebooks.Activities.ScannerActivity;
+import com.scribblernotebooks.scribblernotebooks.Adapters.RecyclerDealsAdapter;
 import com.scribblernotebooks.scribblernotebooks.Adapters.SearchListAdapter;
 import com.scribblernotebooks.scribblernotebooks.CustomListeners.HidingScrollListener;
-import com.scribblernotebooks.scribblernotebooks.Adapters.RecyclerDealsAdapter;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Deal;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.ParseJson;
-import com.scribblernotebooks.scribblernotebooks.HelperClasses.SearchBarApplication;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.ShakeEventManager;
 import com.scribblernotebooks.scribblernotebooks.R;
 
@@ -191,18 +187,6 @@ public class DealsFragment extends android.support.v4.app.Fragment {
             }
         });
 
-
-
-
-
-
-
-
-
-
-
-
-
         /**
          * Calling functions for execution of the 4 functionality of search bar
          */
@@ -317,6 +301,7 @@ public class DealsFragment extends android.support.v4.app.Fragment {
     public void hideToolbarOptions(String tag){
         isOptionOpened=true;
 //        toolbarContainer.animate().translationY(-mToolbarHeight).setInterpolator(new AccelerateInterpolator(2)).start();
+        toolbarContainer.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).start();
         replacedLayout.setVisibility(View.VISIBLE);
         originalLayout.setVisibility(View.GONE);
         suggestions.setVisibility(View.VISIBLE);

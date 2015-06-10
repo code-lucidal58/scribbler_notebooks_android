@@ -9,11 +9,11 @@
     android:minHeight="@dimen/search">
 
     <LinearLayout
+        android:id="@+id/originalLinearLayout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/search"
         android:orientation="horizontal"
         android:paddingTop="3dp"
-        android:id="@+id/originalLinearLayout"
         android:weightSum="4">
 
         <RelativeLayout
@@ -122,12 +122,12 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/replacedLinearLayout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/search"
-        android:orientation="horizontal"
         android:background="@color/darkBlue"
-        android:visibility="gone"
-        android:id="@+id/replacedLinearLayout">
+        android:orientation="horizontal"
+        android:visibility="gone">
 
 
         <RelativeLayout
@@ -170,9 +170,9 @@
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:gravity="center_vertical"
+            android:hint=""
             android:inputType="textAutoComplete"
             android:paddingLeft="15dp"
-            android:hint=""
             android:textColor="@color/loginEditText2TextColor"
             android:textColorHint="@color/loginEditTextHintColor"
             android:textSize="@dimen/searchBarEditTextFontSize" />
@@ -191,8 +191,8 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_below="@+id/replacedLinearLayout"
         android:layout_height="match_parent"
+        android:layout_below="@+id/replacedLinearLayout"
         android:clipToPadding="false"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 </RelativeLayout>
