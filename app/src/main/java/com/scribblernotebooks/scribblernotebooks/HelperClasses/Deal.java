@@ -1,11 +1,12 @@
 package com.scribblernotebooks.scribblernotebooks.HelperClasses;
 
-import java.io.Serializable;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 /**
  * Created by Jibin_ism on 19-May-15.
  */
-public class Deal implements Serializable {
+public class Deal implements Parcelable {
 
     private String id, title, category, shortDescription, imageUrl, longDescription;
     private Boolean isFav=false,isFeatured=false;
@@ -16,30 +17,63 @@ public class Deal implements Serializable {
     }
 
     public Deal(String id, String title, String category, String shortDescription, String imageUrl, Boolean isFav) {
-        this(id, title, category, shortDescription, imageUrl, isFav, "");
+        this(id,title,category,shortDescription,imageUrl,"",isFav,false);
     }
 
-    public Deal(String id, String title, String category, String shortDescription, String imageUrl, Boolean isFav, String longDesciption) {
-        this.title = title;
-        this.category = category;
-        this.shortDescription = shortDescription;
-        this.imageUrl = imageUrl;
-        this.isFav = isFav;
-        this.id = id;
-        this.longDescription = longDesciption;
-    }
-
-    public Deal (String id, String title, String category, String shortDescription, String imageUrl,String longDesciption, Boolean isFav,Boolean isFeatured)
+    public Deal (String id, String title, String category, String shortDescription, String imageUrl,
+                 String longDescription, Boolean isFav,Boolean isFeatured)
     {
+        this.id = id;
         this.title = title;
         this.category = category;
         this.shortDescription = shortDescription;
-        this.longDescription = longDesciption;
         this.imageUrl = imageUrl;
+        this.longDescription = longDescription;
         this.isFav = isFav;
-        this.id = id;
         this.isFeatured=isFeatured;
     }
+
+    private Deal(Parcel in){
+        id=in.readString();
+        title=in.readString();
+        category=in.readString();
+        shortDescription=in.readString();
+        imageUrl=in.readString();
+        longDescription=in.readString();
+        isFav=Boolean.parseBoolean(in.readString());
+        isFeatured=Boolean.parseBoolean(in.readString());
+    }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeString(title);
+        dest.writeString(category);
+        dest.writeString(shortDescription);
+        dest.writeString(imageUrl);
+        dest.writeString(longDescription);
+        dest.writeString(String.valueOf(isFav));
+        dest.writeString(String.valueOf(isFeatured));
+    }
+
+    public static final Parcelable.Creator<Deal> CREATOR=new Parcelable.Creator<Deal>(){
+        @Override
+        public Deal createFromParcel(Parcel source) {
+            return new Deal(source);
+        }
+
+        @Override
+        public Deal[] newArray(int size) {
+            return new Deal[size];
+        }
+    };
+
 
 
     /**

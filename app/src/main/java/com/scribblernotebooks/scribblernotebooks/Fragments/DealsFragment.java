@@ -339,13 +339,13 @@ public class DealsFragment extends android.support.v4.app.Fragment {
                 selectedIcon.setImageDrawable(getResources().getDrawable(R.drawable.search));
                 selectionIconName.setText("Search");
                 selectedIconQuery.setHint("Name, Location, Content...");
-                suggestionList= new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.sort_list)));
+                suggestionList= new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.search_list)));
                 break;
             case "sort":
                 selectedIcon.setImageDrawable(getResources().getDrawable(R.drawable.sort));
                 selectionIconName.setText("Sort");
                 selectedIconQuery.setHint("Sort by...");
-                suggestionList= new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.search_list)));
+                suggestionList= new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.sort_list)));
                 break;
             default:
                 break;

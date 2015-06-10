@@ -91,16 +91,19 @@
                 <data
                     android:host="scribblernotebooks.co.in"
                     android:scheme="http" />
+
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
             <intent-filter>
                 <data
                     android:host="details"
-                    android:scheme="market"
-                    />
+                    android:scheme="market" />
+
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
@@ -150,7 +153,11 @@
         <activity
             android:name=".Activities.AboutScribblerNotebooks"
             android:label="@string/title_activity_about_scribbler_notebooks"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".Activities.DealDetail"
+            android:label="@string/title_activity_deal_detail" >
         </activity>
     </application>
 

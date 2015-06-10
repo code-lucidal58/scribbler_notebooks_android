@@ -46,6 +46,11 @@ public class Constants {
     public static final String TAG_DETAILS="detail";
     public static final String TAG_COUPON_CODE="couponCode";
 
+    public static final String PARCELABLE_DEAL_LIST_KEY ="dealList";
+    public static final String PARCELABLE_DEAL_KEY ="dealList";
+
+    public static final String CURRENT_DEAL_INDEX="index";
+
     public static final String URL_ARGUMENT = "urlArg";
 
     /**Shared Pref Tags for USER DATA **/
