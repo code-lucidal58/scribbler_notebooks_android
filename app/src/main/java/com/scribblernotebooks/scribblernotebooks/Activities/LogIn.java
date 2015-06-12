@@ -1,11 +1,14 @@
 package com.scribblernotebooks.scribblernotebooks.Activities;
 
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.graphics.drawable.ScaleDrawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -40,16 +43,31 @@ import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.R;
 import com.scribblernotebooks.scribblernotebooks.Services.LocationRetreiver;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -61,7 +79,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     private final static double IMAGE_SCALE_RATIO=0.6;
 
     EditText name, email, mobile, password;
-    TextView forgotPassword;
+    TextView forgotPassword,tvOR;
     Button signIn, signUp;
     String userName = "", userEmail = "", userPassword, userMobile;
     SignInButton signInButton;
@@ -144,7 +162,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                         String coverPic = cover.optString("source");
                         String userdp = "https://graph.facebook.com/" + jsonObject.optString("id") + "/picture?type=large";
                         fromApi = true;
-                        saveUserDetails(name, email, userdp, coverPic, "", "");
+                        saveUserDetails(name,email,userdp,coverPic,"","");
                     }
                 });
                 Bundle parameters = new Bundle();
@@ -198,6 +216,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         signUp = (Button) findViewById(R.id.signUp);
         forgotPassword=(TextView)findViewById(R.id.forgotPassword);
         signInButton = (SignInButton) findViewById(R.id.sign_in_button);
+        tvOR=(TextView)findViewById(R.id.or);
         signInButton.setOnClickListener(this);
         signInButton.setSize(SignInButton.SIZE_WIDE);
         progressDialog = new ProgressDialog(this);
@@ -396,6 +415,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
 
             if (userEmail.equals("test@scribblernotebook.com") && userPassword.equals("password")) {
                 saveUserDetails("Test User", userEmail, "", "", "", userPassword);
+                return;
             }
 
             if (userEmail.isEmpty()) {
@@ -407,6 +427,9 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
             }
             return;
         }
+        tvOR.setVisibility(View.GONE);
+        signInButton.setVisibility(View.GONE);
+        loginButton.setVisibility(View.GONE);
         name.setVisibility(View.GONE);
         mobile.setVisibility(View.GONE);
         view_open = LOGIN;
@@ -414,10 +437,73 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     }
 
     public void login(String email, String password) {
-        //TODO: Login User from server
+        new AsyncTask<String, Void, String[]>(){
+            @Override
+            protected String[] doInBackground(String... params) {
+                final String email=params[0];
+                final String password=params[1];
+                try{
+                    URL url=new URL(Constants.WEBSITE_URL+"/login");
+                    HttpURLConnection connection=(HttpURLConnection)url.openConnection();
+                    //TODO: Send post request containing email id and password
+
+
+
+                    //Todo: assign server response here
+                    String response="";
+
+                    JSONObject jsonObject=new JSONObject(response);
+                    String success=jsonObject.optString("success");
+                    if(success.equalsIgnoreCase("false")){
+                        AlertDialog.Builder builder=new AlertDialog.Builder(getApplicationContext());
+                        builder.setMessage(getResources().getString(R.string.invalidLoginError))
+                                .setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .show();
+                        return null;
+                    }
+                    String token=jsonObject.optString("token");
+                    String mixpanelId=jsonObject.optString("mixpanelid");
+
+                    //Server Error. Dialog Box to try again or dismiss
+                    if(token.isEmpty() || mixpanelId.isEmpty()){
+                        AlertDialog.Builder builder=new AlertDialog.Builder(getApplicationContext());
+                        builder.setMessage(getResources().getString(R.string.noTokenError))
+                                .setNegativeButton("Exit", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                        finish();
+                                    }
+                                })
+                                .setPositiveButton("Try Again", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        login(email,password);
+                                    }
+                                })
+                                .setTitle("Error")
+                                .show();
+                        return null;
+                    }
+
+                    //Todo: get user details from server
+                    saveUserDetails("",email,"","","",password,token,mixpanelId);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+                return null;
+            }
+        }.execute(email,password);
     }
 
     public boolean validatePassword(String password, String tag) {
+        //TODO: Validate password (contains numbers, alphabets and symbols)
         return true;
     }
 
@@ -429,6 +515,9 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
             signUp(name.getText().toString(), email.getText().toString(), "", "", mobile.getText().toString(), password.getText().toString());
             return;
         }
+        tvOR.setVisibility(View.VISIBLE);
+        signInButton.setVisibility(View.VISIBLE);
+        loginButton.setVisibility(View.VISIBLE);
         name.setVisibility(View.VISIBLE);
         mobile.setVisibility(View.VISIBLE);
         view_open = SIGNUP;
@@ -476,27 +565,51 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                 JSONObject jsonObject = new JSONObject(postDataParams);
 
                 try {
-                    URL url = new URL(Constants.USER_SIGNUP_URL);
+                    URL url;
+                    try{
+                        url=new URL(Constants.USER_SIGNUP_URL);
+                    }catch (MalformedURLException e){
+                        e.printStackTrace();
+                        url = new URL("http","jazzyarchitects.orgfree.com","requestTest.php");
+                    }
                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                     connection.setRequestMethod("POST");
                     connection.setReadTimeout(15000);
                     connection.setConnectTimeout(15000);
                     connection.setDoOutput(true);
                     connection.setDoInput(true);
+                    connection.setRequestProperty("Content-Type", "application/json");
+                    connection.setRequestProperty("Host", Constants.HOST_NAME);
 
-                    //Writing post request data
+                    Uri.Builder builder=new Uri.Builder()
+                            .appendQueryParameter("name",name)
+                            .appendQueryParameter("email",email)
+                            .appendQueryParameter("contactno",contact)
+                            .appendQueryParameter("password",password);
+                    String query=builder.build().getEncodedQuery();
+                    Log.e("Query 1", query);
+
+
+
                     OutputStream os = connection.getOutputStream();
                     BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-                    writer.write(jsonObject.toString());
+                    writer.write(query);
                     writer.flush();
                     writer.close();
                     os.close();
+
+                    connection.connect();
+                    //Writing post request data
+
+
+
 
                     //Reading response
                     int responseCode = connection.getResponseCode();
                     if (responseCode == HttpsURLConnection.HTTP_OK) {
                         BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                         String r = reader.readLine();
+                        showToast(r);
                         JSONObject userObject = new JSONObject(r);
                         token = userObject.optString("token");
                         mixpanelId = userObject.optString("mixpanelid");
@@ -509,6 +622,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                          * if exist then login
                          * else signup
                          */
+
                         if (error.equalsIgnoreCase("USER_EXIST") && fromApi) {
                             loginUser();
                             return new String[]{};
@@ -525,6 +639,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                     e.printStackTrace();
                 }
                 return new String[]{};
+
             }
 
             @Override
@@ -532,6 +647,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                 String token, mixpanelid;
                 super.onPostExecute(s);
                 if (s.length == 0) {
+                    //TODO: Show error when no token and mixpanel id given
                     saveUserDetails(name.getText().toString(), email.getText().toString(), coverImageUrl, profilePicUrl, mobile.getText().toString(), password.getText().toString());
                     return;
                 } else {
@@ -544,25 +660,6 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         }.execute(userName, userEmail, userContact, userPassword);
 
     }
-
-
-//    private String getPostDataString(HashMap<String, String> params) throws UnsupportedEncodingException {
-//        StringBuilder result = new StringBuilder();
-//        boolean first = true;
-//        for(Map.Entry<String, String> entry : params.entrySet()){
-//            if (first)
-//                first = false;
-//            else
-//                result.append("&");
-//
-//            result.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
-//            result.append("=");
-//            result.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
-//        }
-//
-//        return result.toString();
-//    }
-
 
     /**
      * Function Executed when user SignIns from Either google or facebook.
@@ -598,6 +695,15 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         Log.e(TAG, "Google Connected");
         mSignInClicked = false;
         getProfileInformation();
+    }
+
+    void showToast(final String s) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getApplicationContext(),"Response :"+ s,Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     @Override
@@ -764,8 +870,6 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         startActivity(new Intent(getApplicationContext(), NavigationDrawer.class));
         finish();
     }
-
-
 }
 
 
