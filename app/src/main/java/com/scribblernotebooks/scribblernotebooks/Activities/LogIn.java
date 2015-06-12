@@ -39,6 +39,7 @@ import com.scribblernotebooks.scribblernotebooks.CustomViews.ForgotPasswordPopup
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.R;
 import com.scribblernotebooks.scribblernotebooks.Services.LocationRetreiver;
+import com.scribblernotebooks.scribblernotebooks.Services.SignUpService;
 
 import org.json.JSONObject;
 
@@ -416,6 +417,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
 
     public void login(String email, String password) {
         //TODO: Login User from server
+        new SignUpService(this, "login").execute("",email,"",password);
     }
 
     public boolean validatePassword(String password, String tag) {
@@ -457,114 +459,9 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
             return;
         }
 
-        new AsyncTask<String, Void, String[]>() {
-            @Override
-            protected String[] doInBackground(String... params) {
-                String name, email, contact, password;
-                name = params[0];
-                email = params[1];
-                contact = params[2];
-                password = params[3];
-                String token, mixpanelId;
-
-
-                //Post request JSON object
-                HashMap<String, String> postDataParams = new HashMap<>();
-                postDataParams.put("name", name);
-                postDataParams.put("email", email);
-                postDataParams.put("contactno", contact);
-                postDataParams.put("password", password);
-
-                JSONObject jsonObject = new JSONObject(postDataParams);
-
-                try {
-                    URL url = new URL(Constants.USER_SIGNUP_URL);
-                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                    connection.setRequestMethod("POST");
-                    connection.setReadTimeout(15000);
-                    connection.setConnectTimeout(15000);
-                    connection.setDoOutput(true);
-                    connection.setDoInput(true);
-
-                    //Writing post request data
-                    OutputStream os = connection.getOutputStream();
-                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-                    writer.write(jsonObject.toString());
-                    writer.flush();
-                    writer.close();
-                    os.close();
-
-                    //Reading response
-                    int responseCode = connection.getResponseCode();
-                    if (responseCode == HttpsURLConnection.HTTP_OK) {
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                        String r = reader.readLine();
-                        JSONObject userObject = new JSONObject(r);
-                        token = userObject.optString("token");
-                        mixpanelId = userObject.optString("mixpanelid");
-                        String error;
-//                        String success,error;
-//                        success=userObject.optString("success");
-                        error = userObject.optString("error");
-
-                        /**If user clicked google or fb button then check if user exists
-                         * if exist then login
-                         * else signup
-                         */
-                        if (error.equalsIgnoreCase("USER_EXIST") && fromApi) {
-                            loginUser();
-                            return new String[]{};
-                        }
-                        if (error.equalsIgnoreCase("INVALID_CREDENTIALS")) {
-                            Toast.makeText(getApplicationContext(), "Invalid User Name or Password", Toast.LENGTH_LONG).show();
-                            return new String[]{};
-                        }
-                        return new String[]{token, mixpanelId};
-                    }
-
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return new String[]{};
-            }
-
-            @Override
-            protected void onPostExecute(String[] s) {
-                String token, mixpanelid;
-                super.onPostExecute(s);
-                if (s.length == 0) {
-                    //TODO: Remove this line after server is hosted
-                    saveUserDetails(name.getText().toString(), email.getText().toString(), coverImageUrl, profilePicUrl, mobile.getText().toString(), password.getText().toString());
-                    return;
-                } else {
-                    token = s[0];
-                    mixpanelid = s[1];
-                }
-                saveUserDetails(name.getText().toString(), email.getText().toString(), coverImageUrl, profilePicUrl, mobile.getText().toString(), password.getText().toString(), token, mixpanelid);
-
-            }
-        }.execute(userName, userEmail, userContact, userPassword);
+        new SignUpService(this,"signup").execute(userName,userEmail,userContact,userPassword);
 
     }
-
-
-//    private String getPostDataString(HashMap<String, String> params) throws UnsupportedEncodingException {
-//        StringBuilder result = new StringBuilder();
-//        boolean first = true;
-//        for(Map.Entry<String, String> entry : params.entrySet()){
-//            if (first)
-//                first = false;
-//            else
-//                result.append("&");
-//
-//            result.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
-//            result.append("=");
-//            result.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
-//        }
-//
-//        return result.toString();
-//    }
 
 
     /**
