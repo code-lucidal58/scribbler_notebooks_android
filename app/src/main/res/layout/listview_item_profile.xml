@@ -47,7 +47,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:src="@drawable/ic_action_goright"
+                android:src="@drawable/share"
                 android:id="@+id/next"/>
             </LinearLayout>
 

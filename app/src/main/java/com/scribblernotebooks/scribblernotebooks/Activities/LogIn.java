@@ -47,8 +47,10 @@ import java.io.BufferedWriter;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.HashMap;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -338,7 +340,6 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
             }
         });
 
-
         /**
          * Setting Cloud motion animation
          */
@@ -466,6 +467,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                 password = params[3];
                 String token, mixpanelId;
 
+
                 //Post request JSON object
                 HashMap<String, String> postDataParams = new HashMap<>();
                 postDataParams.put("name", name);
@@ -532,6 +534,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                 String token, mixpanelid;
                 super.onPostExecute(s);
                 if (s.length == 0) {
+                    //TODO: Remove this line after server is hosted
                     saveUserDetails(name.getText().toString(), email.getText().toString(), coverImageUrl, profilePicUrl, mobile.getText().toString(), password.getText().toString());
                     return;
                 } else {
@@ -755,7 +758,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         editor.putString(Constants.PREF_DATA_USER_TOKEN, token);
         editor.putString(Constants.PREF_DATA_MIXPANEL_USER_ID, mixpanelId);
         editor.apply();
-        if (fromApi) {
+            if (fromApi) {
             startActivity(new Intent(this, ProfileManagement.class));
             finish();
             overridePendingTransition(R.anim.profile_slide_in, R.anim.login_slide_out);

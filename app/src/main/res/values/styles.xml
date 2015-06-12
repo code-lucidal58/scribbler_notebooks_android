@@ -31,7 +31,7 @@
         <item name="android:background">@drawable/bootstrap_edittext</item>
     </style>
 
-    <style name="ForgotPasswordAnimation">
+    <style name="ForgotPasswordAnimation" parent="AppTheme.Base">
         <item name="android:windowEnterAnimation">@android:anim/slide_in_left</item>
         <item name="android:windowExitAnimation">@android:anim/slide_out_right</item>
     </style>

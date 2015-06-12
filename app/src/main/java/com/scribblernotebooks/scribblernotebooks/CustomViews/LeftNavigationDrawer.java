@@ -166,7 +166,7 @@ public class LeftNavigationDrawer {
                     fragment = DealsFragment.newInstance(Constants.serverURL, title);
                     break;
                 case 3:
-                    fragment = ClaimedDeals.newInstance();
+                    fragment = ClaimedDeals.newInstance(title);
                     break;
                 default:
                     break;

@@ -82,8 +82,4 @@ public class DealDetail extends AppCompatActivity implements DealDetailFragment.
     public void onFragmentInteraction(Uri uri) {
 
     }
-
-
-
-
 }

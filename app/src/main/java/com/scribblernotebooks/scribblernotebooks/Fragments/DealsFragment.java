@@ -73,8 +73,6 @@ public class DealsFragment extends android.support.v4.app.Fragment {
     Boolean reload;
     ShakeEventManager shakeEventManager=null;
 
-    // TODO: Rename and change types of parameters
-
     private String url, title;
 
     private OnFragmentInteractionListener mListener;
@@ -501,6 +499,7 @@ public class DealsFragment extends android.support.v4.app.Fragment {
     public void runAsyncTask() {
         if (!Constants.isNetworkAvailable(getActivity())) {
             noConnectionText.setVisibility(View.VISIBLE);
+            swipeRefreshLayout.setRefreshing(false);
         } else {
             noConnectionText.setVisibility(View.GONE);
             //Get response from server

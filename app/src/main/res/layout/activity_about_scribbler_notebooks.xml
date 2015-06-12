@@ -2,40 +2,36 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#88FFFFFF"
     tools:context="com.scribblernotebooks.scribblernotebooks.Activities.AboutScribblerNotebooks">
 
-    <RelativeLayout
+    <include
+        android:id="@+id/appBar"
+        layout="@layout/app_bar" />
+
+
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/appBar"
-        android:background="@drawable/stjoseph">
+        android:layout_below="@+id/appBar">
 
-
-        <ScrollView
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true">
-
+            android:layout_gravity="center">
 
             <TextView
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
-                android:background="#88FFFFFF"
+                android:layout_centerInParent="true"
                 android:padding="10dp"
                 android:text="@string/about_scribbler"
-                android:textColor="#000"
+                android:textColor="@color/darkBlue"
                 android:textSize="17sp"
                 android:textStyle="bold" />
 
-
-        </ScrollView>
-
-    </RelativeLayout>
-
-    <include
-        android:id="@+id/appBar"
-        layout="@layout/app_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        </RelativeLayout>
+    </ScrollView>
 
 </RelativeLayout>
+

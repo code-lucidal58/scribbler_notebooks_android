@@ -31,7 +31,7 @@ public class Constants {
 
     public static final String parentURLForGetRequest="http://192.168.1.117:3000/deal/";
     public static final String parentURLForCouponCode="http://192.168.1.117:3000/deal/";
-    public static final String USER_SIGNUP_URL="";
+    public static final String USER_SIGNUP_URL="http://jazzyarchitects.orgfree.com/requestTest.php";
 
     public static final String serverURL = "http://jazzyarchitects.orgfree.com/deal.php";
     public static final String TAG_DEAL_NAME = "Title";
