@@ -6,9 +6,8 @@
     android:layout_marginLeft="8dp"
     android:layout_marginStart="8dp"
     android:layout_marginEnd="8dp"
-    android:layout_marginTop="2dp"
+    android:layout_marginTop="5dp"
     android:layout_marginRight="8dp"
-    android:background="#eee"
     android:orientation="vertical">
 
     <com.balysv.materialripple.MaterialRippleLayout
@@ -16,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:mrl_rippleAlpha="0.1"
-        app:mrl_rippleBackground="#FFFFFF"
+        
         app:mrl_rippleColor="@color/darkBlueRippleColor"
         app:mrl_rippleDelayClick="true"
         app:mrl_rippleDimension="10dp"
@@ -28,12 +27,14 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="start|left"
+        android:gravity="center"
         android:text="Item"
         android:padding="10dp"
         android:textColor="#000"
-        android:textSize="15sp"
+        android:textSize="17sp"
+        android:background="@drawable/style_searchquery"
         android:id="@+id/suggestion"/>
+
     </com.balysv.materialripple.MaterialRippleLayout>
 
 </LinearLayout>

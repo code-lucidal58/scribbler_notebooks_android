@@ -33,7 +33,7 @@ public class GcmIntentService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         Bundle extras = intent.getExtras();
         GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(this);
-        if(extras==null)
+        if (extras == null)
             return;
         // The getMessageType() intent parameter must be the intent you received
         // in your BroadcastReceiver.
@@ -51,10 +51,14 @@ public class GcmIntentService extends IntentService {
 
 
                 // Post notification of received message.
-                if(extras.getString("message").isEmpty())
-                    return;
-                sendNotification(extras.getString("message"));
-                Log.i(TAG, "Received: " + extras.toString());
+                try {
+                    if (extras.getString("message").isEmpty())
+                        return;
+                    sendNotification(extras.getString("message"));
+                    Log.i(TAG, "Received: " + extras.toString());
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
             }
         }
         // Release the wake lock provided by the WakefulBroadcastReceiver.
@@ -70,10 +74,9 @@ public class GcmIntentService extends IntentService {
                 new Intent(this, NavigationDrawer.class), 0);
 
 
-
-        NotificationDataHandler notifHandler=new NotificationDataHandler(this);
+        NotificationDataHandler notifHandler = new NotificationDataHandler(this);
         notifHandler.open();
-        String text="";
+        String text = "";
         try {
             JSONObject jsonObject = new JSONObject(msg);
             JSONArray jsonArray = jsonObject.optJSONArray("notification");
@@ -83,8 +86,7 @@ public class GcmIntentService extends IntentService {
             String url = jsonChild.optString("imgurl");
             notifHandler.insertData(NotificationDataHandler.TABLE_NAME_DEFAULT, id, text, url);
             notifHandler.insertData(NotificationDataHandler.TABLE_NAME_ALL, id, text, url);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         notifHandler.close();

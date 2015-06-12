@@ -6,6 +6,8 @@ import android.app.Fragment;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
 import com.scribblernotebooks.scribblernotebooks.Adapters.RecyclerDealsAdapter;
 import com.scribblernotebooks.scribblernotebooks.Handlers.DatabaseHandler;
@@ -23,9 +26,16 @@ import com.scribblernotebooks.scribblernotebooks.R;
  */
 public class ClaimedDeals extends android.support.v4.app.Fragment {
 
+    private static final String TITLE = "title";
+
     OnFragmentInteractionListener mListener;
     RecyclerView recyclerView;
     Context context;
+    Toolbar appbar;
+    DrawerLayout mDrawerLayout;
+    RelativeLayout mDrawer;
+
+    private String title;
 
 
     /**
@@ -33,8 +43,11 @@ public class ClaimedDeals extends android.support.v4.app.Fragment {
      *
      * @return the Deal list fragment
      */
-    public static ClaimedDeals newInstance() {
+    public static ClaimedDeals newInstance(String title) {
         ClaimedDeals claimedDeals=new ClaimedDeals();
+        Bundle args = new Bundle();
+        args.putString(TITLE, title);
+        claimedDeals.setArguments(args);
         return claimedDeals;
     }
 
@@ -46,6 +59,9 @@ public class ClaimedDeals extends android.support.v4.app.Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            title = getArguments().getString(TITLE);
+        }
     }
 
     @Override
@@ -55,13 +71,32 @@ public class ClaimedDeals extends android.support.v4.app.Fragment {
         context=getActivity().getApplicationContext();
         View v = inflater.inflate(R.layout.fragment_claimed_deals, container, false);
 
-
-        Toolbar appbar;
         appbar = (Toolbar) v.findViewById(R.id.app_bar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(appbar);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
-        getActivity().setTitle("Claimed Deals");
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeButtonEnabled(true);
+        getActivity().setTitle(title);
+
+        mDrawerLayout = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
+        mDrawer = (RelativeLayout) getActivity().findViewById(R.id.left_drawer_relative);
+        final ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(getActivity(), mDrawerLayout, appbar, R.string.open, R.string.close) {
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+            }
+        };
+        actionBarDrawerToggle.setDrawerIndicatorEnabled(true);
+        mDrawerLayout.setDrawerListener(actionBarDrawerToggle);
+        mDrawerLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                actionBarDrawerToggle.syncState();
+            }
+        });
 
 
         recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);

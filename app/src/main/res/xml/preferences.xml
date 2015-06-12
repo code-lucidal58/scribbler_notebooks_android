@@ -3,11 +3,11 @@
     <PreferenceCategory android:title="NOTIFICATIONS"
         android:key="notificationCategory">
 
-        <SwitchPreference
+        <CheckBoxPreference
             android:defaultValue="true"
             android:key="NotifyOnOff"
             android:title="Receive Notifications" />
-        <SwitchPreference
+        <CheckBoxPreference
             android:title="Deal of the Day"
             android:key="DealOfDay"
             android:defaultValue="true"
@@ -19,6 +19,7 @@
             android:showDefault="true"
             android:showSilent="false"
             android:defaultValue="content://settings/system/notification_sound"/>
+
 
     </PreferenceCategory>
 

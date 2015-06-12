@@ -2,6 +2,7 @@ package com.scribblernotebooks.scribblernotebooks.Fragments;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,6 +14,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +40,7 @@ public class DealDetailFragment extends Fragment {
     ImageView image;
     Button claimDeal;
     CheckBox likeBox;
+    RadioButton shareBox;
 
     public static DealDetailFragment newInstance(Deal deal){
         DealDetailFragment fragment=new DealDetailFragment();
@@ -74,6 +77,7 @@ public class DealDetailFragment extends Fragment {
         image=(ImageView)view.findViewById(R.id.dealIcon);
         claimDeal=(Button)view.findViewById(R.id.claimDeal);
         likeBox=(CheckBox)view.findViewById(R.id.likeBox);
+        shareBox=(RadioButton)view.findViewById(R.id.shareBox);
 
         title.setText(deal.getTitle());
         category.setText(deal.getCategory());
@@ -91,6 +95,21 @@ public class DealDetailFragment extends Fragment {
                     likeBox.setText("Liked");
                 else
                     likeBox.setText("Like this deal");
+            }
+        });
+
+        shareBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deal.sendShareStatus();
+                Intent sharingIntent=new Intent(Intent.ACTION_SEND);
+                sharingIntent.setType("text/plain");
+                sharingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "Scribbler Deal");
+                sharingIntent.putExtra(Intent.EXTRA_TEXT,"Hi there, Just checkout this Scribbler Deal ");
+                Intent starter=Intent.createChooser(sharingIntent,"Share Via");
+                starter.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mContext.startActivity(starter);
             }
         });
 

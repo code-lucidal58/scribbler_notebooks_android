@@ -15,6 +15,7 @@ import android.widget.ImageView;
 
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.scribblernotebooks.scribblernotebooks.R;
 
@@ -30,9 +31,8 @@ public class Constants {
 
     public static final String parentURLForGetRequest="http://192.168.1.117:3000/deal/";
     public static final String parentURLForCouponCode="http://192.168.1.117:3000/deal/";
+    public static final String parentURL="http://192.168.1.117:3000/";
     public static final String USER_SIGNUP_URL="http://jazzyarchitects.orgfree.com/requestTest.php";
-    public static final String WEBSITE_URL="";
-    public static final String HOST_NAME="jazzyarchitects.orgfree.com";
 
     public static final String serverURL = "http://jazzyarchitects.orgfree.com/deal.php";
     public static final String TAG_DEAL_NAME = "Title";
