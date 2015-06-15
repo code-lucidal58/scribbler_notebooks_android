@@ -25,6 +25,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.CallbackManager;
@@ -47,6 +48,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
+import com.scribblernotebooks.scribblernotebooks.HelperClasses.User;
 import com.scribblernotebooks.scribblernotebooks.R;
 import com.scribblernotebooks.scribblernotebooks.Services.LocationRetreiver;
 
@@ -65,6 +67,8 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
     Toolbar appbar;
     SharedPreferences userPref;
     SharedPreferences.Editor userPrefEditor;
+
+    User user;
 
     EditText userName, userEmail, userPass, userMob, userLocation;
 
@@ -133,6 +137,7 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
         userCoverPic = (ImageView) v.findViewById(R.id.profileCoverPic);
         appbar = (Toolbar) v.findViewById(R.id.toolbar);
         signInButton = (SignInButton) v.findViewById(R.id.sign_in_button);
+
         /**Setting values to the fields*/
         userName = (EditText) v.findViewById(R.id.et_name);
         userEmail = (EditText) v.findViewById(R.id.et_email);
@@ -142,20 +147,27 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
 
         appbar.setTitleTextColor(Color.WHITE);
 
-        progressDialog = new ProgressDialog(getActivity());
+        progressDialog = new ProgressDialog(getActivity(),R.style.Theme_AppCompat_Dialog);
         signInButton.setOnClickListener(this);
 
-        /**Initiating Shared Prefs and setting values*/
-        userPref = context.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
-        userName.setText(userPref.getString(Constants.PREF_DATA_NAME,""));
-        userEmail.setText(userPref.getString(Constants.PREF_DATA_EMAIL,""));
-        userLocation.setText(userPref.getString(Constants.PREF_DATA_LOCATION, ""));
-        userPass.setText(userPref.getString(Constants.PREF_DATA_PASS,""));
-        userMob.setText(userPref.getString(Constants.PREF_DATA_MOBILE, ""));
+        /** setting values*/
+        user=Constants.getUser(getActivity());
+        userName.setText(user.getName());
+        userEmail.setText(user.getEmail());
+        userLocation.setText(user.getLocation());
+        userMob.setText(user.getMobile());
 
+
+        for(int i=0;i<signInButton.getChildCount();i++){
+            View c=signInButton.getChildAt(i);
+            if(c instanceof TextView){
+                ((TextView) c).setText("Connect Google");
+                break;
+            }
+        }
 
         /**Setting images from shared Prefs**/
-        String coverUrl = userPref.getString(Constants.PREF_DATA_COVER_PIC, "");
+        String coverUrl = user.getCoverImage();
         if (!coverUrl.isEmpty()) {
             if (coverUrl.contains("http") || coverUrl.contains("ftp")) {
                 ImageLoader.getInstance().displayImage(coverUrl, userCoverPic, displayImageOptionsCover, imageLoadingListener);
@@ -163,7 +175,7 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
                 userCoverPic.setImageBitmap(Constants.getScaledBitmap(coverUrl, 267, 200));
             }
         }
-        String profileUrl = userPref.getString(Constants.PREF_DATA_PHOTO, "");
+        String profileUrl = user.getProfilePic();
         if (!profileUrl.isEmpty()) {
             if (profileUrl.contains("http") || profileUrl.contains("ftp")) {
                 ImageLoader.getInstance().displayImage(profileUrl, userPic, displayImageOptions, imageLoadingListener);
@@ -171,6 +183,14 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
                 userPic.setImageBitmap(Constants.getScaledBitmap(profileUrl, 150, 150));
             }
         }
+
+        userPass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ChangePassword dialog=new ChangePassword();
+                dialog.show(getActivity().getSupportFragmentManager(),"Change Password");
+            }
+        });
 
         /**Get User location*/
         context.startService(new Intent(context, LocationRetreiver.class));

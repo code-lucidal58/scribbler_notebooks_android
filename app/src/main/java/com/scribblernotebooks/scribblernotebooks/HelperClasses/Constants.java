@@ -1,6 +1,7 @@
 package com.scribblernotebooks.scribblernotebooks.HelperClasses;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
@@ -19,7 +20,13 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.scribblernotebooks.scribblernotebooks.R;
 
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -27,12 +34,36 @@ import java.util.Random;
  */
 public class Constants {
 
+    public static class ServerUrls{
+        public static String websiteUrl="http://192.168.178.1:3000/";
+        public static String signUp=websiteUrl+"signup";
+        public static String login=websiteUrl+"login";
+        public static String loginFacebook=websiteUrl+"login/facebook";
+        public static String loginGoogle=websiteUrl+"login/google";
+        public static String linkSocialAccount=websiteUrl+"linkSocialNetwork";
+        public static String insertGCM=websiteUrl+"insertGcm";
+        public static String regenerateToken=websiteUrl+"token";
+        public static String changePassword=websiteUrl+"changePassword";
+        public static String dealDetail=websiteUrl+"deal/";
+        public static String dealList=websiteUrl+"deal";
+    }
+
+    public static URL getDealDetailsURL(String dealId, String token){
+        try {
+            return new URL(ServerUrls.dealDetail+dealId+"?token="+token);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
     public static final String MIXPANEL_TOKEN="873f1995dd119bdb63b8a51bc2f4951d";
 
     public static final String parentURLForGetRequest="http://192.168.1.117:3000/deal/";
     public static final String parentURLForCouponCode="http://192.168.1.117:3000/deal/";
     public static final String parentURL="http://192.168.1.117:3000/";
-    public static final String USER_SIGNUP_URL="http://jazzyarchitects.orgfree.com/requestTest.php";
+
 
     public static final String serverURL = "http://jazzyarchitects.orgfree.com/deal.php";
     public static final String TAG_DEAL_NAME = "Title";
@@ -66,6 +97,18 @@ public class Constants {
     public static final String PREF_DATA_USER_TOKEN="userToken";
     public static final String PREF_DATA_MIXPANEL_USER_ID="mixpanelUserId";
 
+    public static final String INTENT_ID_NAME="idName";
+    public static final String INTENT_ID_VALUE="idValue";
+    public static final String FACEBOOKID="facebookId";
+    public static final String GOOGLEID="googleId";
+
+    public static final String POST_NAME="name";
+    public static final String POST_EMAIL="email";
+    public static final String POST_MOBILE="mobile";
+    public static final String POST_PASSWORD="password";
+    public static final String POST_GOOGLE="googleId";
+    public static final String POST_FACEBOOK="facebookId";
+
     public static final String PREF_NOTIFICATION_NAME="Notification";
     public static final String PREF_NOTIFICATION_ON_OFF="NotifyOnOff";
     public static final String PREF_NOTIFICATION_DEAL_OF_DAY="DealOfDay";
@@ -86,6 +129,70 @@ public class Constants {
     public static final String PROFILE_FIELD_FOLLOWER="Followers";
     public static final String PROFILE_FIELD_FOLLOWING="Following";
     public static final String PROFILE_FIELD_INVITE="Invite Friends";
+
+
+    public static boolean saveUserDetails(Context context, User user){
+        if(user==null)
+            return false;
+        SharedPreferences userPrefs=context.getSharedPreferences(PREF_NAME,Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = userPrefs.edit();
+        if(!user.getName().isEmpty())
+            editor.putString(PREF_DATA_NAME, user.getName());
+        if(!user.getProfilePic().isEmpty())
+            editor.putString(PREF_DATA_PHOTO, user.getProfilePic());
+        if(!user.getCoverImage().isEmpty())
+            editor.putString(PREF_DATA_COVER_PIC, user.getCoverImage());
+        if(!user.getEmail().isEmpty())
+            editor.putString(PREF_DATA_EMAIL, user.getEmail());
+        if(!user.getMobile().isEmpty())
+            editor.putString(PREF_DATA_MOBILE, user.getMobile());
+        if(!user.getToken().isEmpty())
+            editor.putString(PREF_DATA_USER_TOKEN, user.getToken());
+        if(!user.getMixpanelId().isEmpty())
+            editor.putString(PREF_DATA_MIXPANEL_USER_ID, user.getMixpanelId());
+        editor.apply();
+        return true;
+    }
+
+    public static User getUser(Context context){
+        SharedPreferences userPref;
+        userPref = context.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
+        String name=userPref.getString(Constants.PREF_DATA_NAME,"");
+        String email=userPref.getString(Constants.PREF_DATA_EMAIL,"");
+        String mobile=userPref.getString(Constants.PREF_DATA_MOBILE, "");
+        String coverPic=userPref.getString(Constants.PREF_DATA_COVER_PIC,"");
+        String profilePic=userPref.getString(Constants.PREF_DATA_PHOTO,"");
+        String mixPanelId=userPref.getString(Constants.PREF_DATA_MIXPANEL_USER_ID,"");
+        String token=userPref.getString(Constants.PREF_DATA_USER_TOKEN,"");
+        String location=userPref.getString(Constants.PREF_DATA_LOCATION,"");
+
+        return new User(name,email,mobile,coverPic,profilePic,token,mixPanelId,location);
+    }
+
+
+    /**
+     * To convert hashmap to post request for sending to server
+     * @param params the hashmap
+     * @return post request string
+     * @throws UnsupportedEncodingException
+     */
+    public static String getPostDataString(HashMap<String, String> params) throws UnsupportedEncodingException {
+        StringBuilder result = new StringBuilder();
+        boolean first = true;
+        for(Map.Entry<String, String> entry : params.entrySet()){
+            if (first)
+                first = false;
+            else
+                result.append("&");
+
+            result.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
+            result.append("=");
+            result.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+        }
+
+        return result.toString();
+    }
+
 
 
     public static DisplayImageOptions getProfilePicDisplayImageOptions(){

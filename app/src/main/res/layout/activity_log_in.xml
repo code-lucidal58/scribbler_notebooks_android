@@ -215,7 +215,6 @@
                     android:layout_width="@dimen/login_editText_width"
                     android:layout_height="@dimen/googlefbbuttonheight"
                     android:layout_below="@id/or"
-                    android:visibility="gone"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="5dp"/>
 
@@ -225,7 +224,6 @@
                     android:layout_centerHorizontal="true"
                     android:layout_below="@id/sign_in_button"
                     android:id="@+id/login_button"
-                    android:visibility="gone"
                     android:layout_marginTop="5dp" />
 
         </RelativeLayout>

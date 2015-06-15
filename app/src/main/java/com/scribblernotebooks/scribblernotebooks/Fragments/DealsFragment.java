@@ -42,19 +42,17 @@ import com.scribblernotebooks.scribblernotebooks.HelperClasses.ParseJson;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.ShakeEventManager;
 import com.scribblernotebooks.scribblernotebooks.R;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
-
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class DealsFragment extends android.support.v4.app.Fragment {
 
-    private static final String URL = "url";
+    private static final String URL_STRING = "url";
     private static final String TITLE = "title";
 
     RecyclerView recyclerView;
@@ -71,7 +69,7 @@ public class DealsFragment extends android.support.v4.app.Fragment {
     TextView noConnectionText;
     SwipeRefreshLayout swipeRefreshLayout;
     Boolean reload;
-    ShakeEventManager shakeEventManager=null;
+    ShakeEventManager shakeEventManager = null;
 
     private String url, title;
 
@@ -79,12 +77,13 @@ public class DealsFragment extends android.support.v4.app.Fragment {
 
 
     RecyclerView suggestions;
-    LinearLayout originalLayout,replacedLayout;
+    LinearLayout originalLayout, replacedLayout;
     ImageView selectedIcon;
     TextView selectionIconName;
     EditText selectedIconQuery;
-    Boolean isOptionOpened=false;
-    SearchListAdapter searchListAdapter,querySearchListAdapter;
+    Boolean isOptionOpened = false;
+    SearchListAdapter searchListAdapter, querySearchListAdapter;
+
     /**
      * Setting statically the new fragment
      *
@@ -94,7 +93,7 @@ public class DealsFragment extends android.support.v4.app.Fragment {
     public static DealsFragment newInstance(String url, String title) {
         DealsFragment fragment = new DealsFragment();
         Bundle args = new Bundle();
-        args.putString(URL, url);
+        args.putString(URL_STRING, url);
         args.putString(TITLE, title);
         fragment.setArguments(args);
         return fragment;
@@ -112,7 +111,7 @@ public class DealsFragment extends android.support.v4.app.Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            url = getArguments().getString(URL);
+            url = getArguments().getString(URL_STRING);
             title = getArguments().getString(TITLE);
         }
     }
@@ -144,18 +143,18 @@ public class DealsFragment extends android.support.v4.app.Fragment {
         /**
          * Option Select Animation and toggling
          */
-        View category=searchbar.findViewById(R.id.layoutCategory);
-        View search=searchbar.findViewById(R.id.layoutSearch);
-        View sort=searchbar.findViewById(R.id.layoutSort);
-        View scan=searchbar.findViewById(R.id.layoutScan);
+        View category = searchbar.findViewById(R.id.layoutCategory);
+        View search = searchbar.findViewById(R.id.layoutSearch);
+        View sort = searchbar.findViewById(R.id.layoutSort);
+        View scan = searchbar.findViewById(R.id.layoutScan);
 
-        suggestions = (RecyclerView)searchbar.findViewById(R.id.recyclerView);
+        suggestions = (RecyclerView) searchbar.findViewById(R.id.recyclerView);
         suggestions.setLayoutManager(new LinearLayoutManager(context));
-        originalLayout=(LinearLayout)searchbar.findViewById(R.id.originalLinearLayout);
-        replacedLayout=(LinearLayout)searchbar.findViewById(R.id.replacedLinearLayout);
-        selectedIcon=(ImageView)searchbar.findViewById(R.id.selectedIcon);
-        selectionIconName=(TextView)searchbar.findViewById(R.id.selectedIcon_name);
-        selectedIconQuery=(EditText)searchbar.findViewById(R.id.selectedQuery);
+        originalLayout = (LinearLayout) searchbar.findViewById(R.id.originalLinearLayout);
+        replacedLayout = (LinearLayout) searchbar.findViewById(R.id.replacedLinearLayout);
+        selectedIcon = (ImageView) searchbar.findViewById(R.id.selectedIcon);
+        selectionIconName = (TextView) searchbar.findViewById(R.id.selectedIcon_name);
+        selectedIconQuery = (EditText) searchbar.findViewById(R.id.selectedQuery);
 
         category.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -274,7 +273,7 @@ public class DealsFragment extends android.support.v4.app.Fragment {
             @Override
             public void onShake() {
                 Toast.makeText(context, "Shaken", Toast.LENGTH_SHORT).show();
-                reload=true;
+                reload = true;
                 runAsyncTask();
             }
         });
@@ -285,8 +284,8 @@ public class DealsFragment extends android.support.v4.app.Fragment {
     /**
      * To show the basic option of category, search, scan and sort
      */
-    public void showToolbarOptions(){
-        isOptionOpened=false;
+    public void showToolbarOptions() {
+        isOptionOpened = false;
         replacedLayout.setVisibility(View.GONE);
         originalLayout.setVisibility(View.VISIBLE);
         suggestions.setVisibility(View.GONE);
@@ -296,39 +295,39 @@ public class DealsFragment extends android.support.v4.app.Fragment {
     /**
      * Hide the category, search, scan and sort options and show the corresponding menu
      */
-    public void hideToolbarOptions(String tag){
-        isOptionOpened=true;
+    public void hideToolbarOptions(String tag) {
+        isOptionOpened = true;
 //        toolbarContainer.animate().translationY(-mToolbarHeight).setInterpolator(new AccelerateInterpolator(2)).start();
         toolbarContainer.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).start();
         replacedLayout.setVisibility(View.VISIBLE);
         originalLayout.setVisibility(View.GONE);
         suggestions.setVisibility(View.VISIBLE);
         selectedIconQuery.setText("");
-        ArrayList<String> suggestionList=new ArrayList<>();
+        ArrayList<String> suggestionList = new ArrayList<>();
         replacedLayout.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showToolbarOptions();
             }
         });
-        switch (tag){
+        switch (tag) {
             case "category":
                 selectedIcon.setImageDrawable(getResources().getDrawable(R.drawable.category));
                 selectionIconName.setText("Category");
                 selectedIconQuery.setHint("Enter Category...");
-                suggestionList=new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.category_list)));
+                suggestionList = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.category_list)));
                 break;
             case "search":
                 selectedIcon.setImageDrawable(getResources().getDrawable(R.drawable.search));
                 selectionIconName.setText("Search");
                 selectedIconQuery.setHint("Name, Location, Content...");
-                suggestionList= new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.search_list)));
+                suggestionList = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.search_list)));
                 break;
             case "sort":
                 selectedIcon.setImageDrawable(getResources().getDrawable(R.drawable.sort));
                 selectionIconName.setText("Sort");
                 selectedIconQuery.setHint("Sort by...");
-                suggestionList= new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.sort_list)));
+                suggestionList = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.sort_list)));
                 break;
             default:
                 break;
@@ -336,7 +335,7 @@ public class DealsFragment extends android.support.v4.app.Fragment {
         searchListAdapter = new SearchListAdapter(suggestionList);
         suggestions.setAdapter(searchListAdapter);
 
-        querySearchListAdapter=new SearchListAdapter(suggestionList);
+        querySearchListAdapter = new SearchListAdapter(suggestionList);
         selectedIconQuery.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -356,11 +355,6 @@ public class DealsFragment extends android.support.v4.app.Fragment {
         });
 
     }
-
-
-
-
-
 
 
     /**
@@ -413,14 +407,21 @@ public class DealsFragment extends android.support.v4.app.Fragment {
 
             String response = "";
             try {
-                HttpClient client = new DefaultHttpClient();
-                HttpGet httpGet = new HttpGet(urls[0]);
-                ResponseHandler<String> responseHandler = new BasicResponseHandler();
-                response = client.execute(httpGet, responseHandler);
-                //TODO: some codes relating to database is missing here
-            } catch (IOException e) {
+                URL url = new URL(Constants.ServerUrls.dealList);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.setReadTimeout(15000);
+                connection.setConnectTimeout(15000);
+                connection.setDoInput(true);
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                return reader.readLine();
+
+            } catch (Exception e) {
                 e.printStackTrace();
             }
+
+
             return response;
         }
 
@@ -438,13 +439,12 @@ public class DealsFragment extends android.support.v4.app.Fragment {
 
     /**
      * Auto-generated methods
-     *
      */
     public void onButtonPressed() {
         if (mListener != null) {
             mListener.onFragmentInteraction();
         }
-        if(isOptionOpened){
+        if (isOptionOpened) {
             showToolbarOptions();
         }
     }
@@ -463,17 +463,17 @@ public class DealsFragment extends android.support.v4.app.Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if(shakeEventManager!=null){
+        if (shakeEventManager != null) {
             shakeEventManager.resume();
         }
         reload = true;
         getNotificationStatus();
     }
 
-    public void getNotificationStatus(){
-        SharedPreferences sd= PreferenceManager.getDefaultSharedPreferences(context);
-        boolean onoff=sd.getBoolean(Constants.PREF_NOTIFICATION_ON_OFF, true);
-        boolean dealofday=sd.getBoolean(Constants.PREF_NOTIFICATION_DEAL_OF_DAY,true);
+    public void getNotificationStatus() {
+        SharedPreferences sd = PreferenceManager.getDefaultSharedPreferences(context);
+        boolean onoff = sd.getBoolean(Constants.PREF_NOTIFICATION_ON_OFF, true);
+        boolean dealofday = sd.getBoolean(Constants.PREF_NOTIFICATION_DEAL_OF_DAY, true);
     }
 
     @Override

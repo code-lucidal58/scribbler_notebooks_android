@@ -2,8 +2,10 @@
 package com.scribblernotebooks.scribblernotebooks.Activities;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -35,6 +37,7 @@ import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
+import com.scribblernotebooks.scribblernotebooks.HelperClasses.User;
 import com.scribblernotebooks.scribblernotebooks.R;
 import com.scribblernotebooks.scribblernotebooks.Services.LocationRetreiver;
 
@@ -48,6 +51,7 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.concurrent.CompletionService;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -62,16 +66,22 @@ public class ProfileManagement extends AppCompatActivity {
     public ImageLoaderConfiguration imageLoaderConfiguration;
     ImageView userPic, userCoverPic;
     Toolbar appbar;
+    User user;
     SharedPreferences userPref;
     SharedPreferences.Editor userPrefEditor;
     EditText userName, userEmail, userPass, userMob, userLocation;
     ScrollView scrollView;
     Button saveButton;
+    String idName, idValue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_management);
+
+        idName=getIntent().getStringExtra(Constants.INTENT_ID_NAME);
+        idValue=getIntent().getStringExtra(Constants.INTENT_ID_VALUE);
+
         userPic = (ImageView) findViewById(R.id.pic);
         userCoverPic = (ImageView) findViewById(R.id.profileCoverPic);
         appbar = (Toolbar) findViewById(R.id.toolbar);
@@ -107,15 +117,14 @@ public class ProfileManagement extends AppCompatActivity {
 
 
         /**Initiating Shared Prefs and setting values*/
-        userPref = getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
-        userName.setText(userPref.getString(Constants.PREF_DATA_NAME, ""));
-        userEmail.setText(userPref.getString(Constants.PREF_DATA_EMAIL, ""));
-        userLocation.setText(userPref.getString(Constants.PREF_DATA_LOCATION, ""));
-        userPass.setText(userPref.getString(Constants.PREF_DATA_PASS, ""));
-        userMob.setText(userPref.getString(Constants.PREF_DATA_MOBILE, ""));
+        user=Constants.getUser(this);
+        userName.setText(user.getName());
+        userEmail.setText(user.getEmail());
+        userLocation.setText(user.getLocation());
+        userMob.setText(user.getMobile());
 
         /**Setting images from shared Prefs**/
-        String coverUrl = userPref.getString(Constants.PREF_DATA_COVER_PIC, "");
+        String coverUrl = user.getCoverImage();
         if (!coverUrl.isEmpty()) {
             if (coverUrl.contains("http") || coverUrl.contains("ftp")) {
                 ImageLoader.getInstance().displayImage(coverUrl, userCoverPic, displayImageOptionsCover, imageLoadingListener);
@@ -123,7 +132,7 @@ public class ProfileManagement extends AppCompatActivity {
                 userCoverPic.setImageBitmap(Constants.getScaledBitmap(coverUrl, 267, 200));
             }
         }
-        String profileUrl = userPref.getString(Constants.PREF_DATA_PHOTO, "");
+        String profileUrl = user.getProfilePic();
         if (!profileUrl.isEmpty()) {
             if (profileUrl.contains("http") || profileUrl.contains("ftp")) {
                 ImageLoader.getInstance().displayImage(profileUrl, userPic, displayImageOptions, imageLoadingListener);
@@ -180,12 +189,12 @@ public class ProfileManagement extends AppCompatActivity {
             return;
         }
         final SharedPreferences userPref = getSharedPreferences(Constants.PREF_NAME, MODE_PRIVATE);
-        SharedPreferences.Editor editor = userPref.edit();
-        editor.putString(Constants.PREF_DATA_NAME, userName.getText().toString());
-        editor.putString(Constants.PREF_DATA_MOBILE, userMob.getText().toString());
-        editor.putString(Constants.PREF_DATA_EMAIL, userEmail.getText().toString());
-        editor.putString(Constants.PREF_DATA_PASS, userPass.getText().toString());
-        editor.apply();
+
+        final User user=new User();
+        user.setName(userName.getText().toString());
+        user.setMobile(userMob.getText().toString());
+        user.setEmail(userEmail.getText().toString());
+        Constants.saveUserDetails(this,user);
 
         new AsyncTask<String, Void, String[]>() {
 
@@ -211,15 +220,14 @@ public class ProfileManagement extends AppCompatActivity {
 
                 //Post request JSON object
                 HashMap<String, String> postDataParams = new HashMap<>();
-                postDataParams.put("name", name);
-                postDataParams.put("email", email);
-                postDataParams.put("contactno", contact);
-                postDataParams.put("password", password);
-
-                JSONObject jsonObject = new JSONObject(postDataParams);
+                postDataParams.put(Constants.POST_NAME, name);
+                postDataParams.put(Constants.POST_EMAIL, email);
+                postDataParams.put(Constants.POST_MOBILE, contact);
+                postDataParams.put(Constants.POST_PASSWORD, password);
+                postDataParams.put(idName,idValue);
 
                 try {
-                    URL url = new URL(Constants.USER_SIGNUP_URL);
+                    URL url = new URL(Constants.ServerUrls.signUp);
                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                     connection.setRequestMethod("POST");
                     connection.setReadTimeout(15000);
@@ -230,7 +238,7 @@ public class ProfileManagement extends AppCompatActivity {
                     //Writing post request data
                     OutputStream os = connection.getOutputStream();
                     BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-                    writer.write(jsonObject.toString());
+                    writer.write(Constants.getPostDataString(postDataParams));
                     writer.flush();
                     writer.close();
                     os.close();
@@ -253,7 +261,23 @@ public class ProfileManagement extends AppCompatActivity {
                          * else signup
                          */
                         if (error.equalsIgnoreCase("USER_EXIST")) {
-                            //loginUser();
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    AlertDialog.Builder builder=new AlertDialog.Builder(getApplicationContext());
+                                    builder.setTitle("User Exists")
+                                            .setMessage("An account already exists with this email id. Please Log In to continue")
+                                            .setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    startActivity(new Intent(getApplicationContext(), LogIn.class));
+                                                    finish();
+                                                }
+                                            })
+                                            .show();
+
+                                }
+                            });
                             return new String[]{};
                         }
                         return new String[]{token, mixpanelId};
@@ -279,12 +303,14 @@ public class ProfileManagement extends AppCompatActivity {
                     token = s[0];
                     mixpanelid = s[1];
                 }
-                SharedPreferences.Editor editor = userPref.edit();
-                editor.putString(Constants.PREF_DATA_USER_TOKEN, token);
-                editor.putString(Constants.PREF_DATA_MIXPANEL_USER_ID, mixpanelid);
-                editor.apply();
+                User user1=new User();
+                user.setToken(token);
+                user.setMixpanelId(mixpanelid);
+                Constants.saveUserDetails(getApplicationContext(), user1);
+
                 startActivity(new Intent(getApplicationContext(), NavigationDrawer.class));
                 finish();
+
                 overridePendingTransition(R.anim.profile_slide_in, R.anim.login_slide_out);
             }
         }.execute(userName.getText().toString(), userEmail.getText().toString(), userMob.getText().toString(), userPass.getText().toString());

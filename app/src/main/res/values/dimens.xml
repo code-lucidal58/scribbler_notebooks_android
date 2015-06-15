@@ -81,4 +81,5 @@
     <dimen name="app_minimumsize_h">100.0dip</dimen>
     <dimen name="details_marginTop">5dp</dimen>
     <dimen name="details_marginBottom">5dp</dimen>
+    <dimen name="changePasswordTextFontSize">15sp</dimen>
 </resources>

@@ -34,16 +34,23 @@ import com.scribblernotebooks.scribblernotebooks.CustomViews.DealPopup;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Deal;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.ParseJson;
+import com.scribblernotebooks.scribblernotebooks.HelperClasses.User;
 import com.scribblernotebooks.scribblernotebooks.R;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
 
 
 public class ManualScribblerCode extends Fragment {
 
+
+    User user;
     LinearLayout back;
     TextView textView;
     ImageView image;
@@ -93,6 +100,7 @@ public class ManualScribblerCode extends Fragment {
         super.onCreate(savedInstanceState);
 
         mContext = getActivity().getApplicationContext();
+        user=Constants.getUser(mContext);
 
         this.mContext = sContext;
 
@@ -283,11 +291,32 @@ public class ManualScribblerCode extends Fragment {
             protected String doInBackground(String... params) {
                 try {
                     //TODO:Modify url to send token and deal id
-                    URL url=new URL(Constants.parentURLForGetRequest+params[0]);
-                    Log.e("Deal ", "URL " + params[0]);
+//                    URL url=Constants.getDealDetailsURL(params[0]);
+                    URL url=Constants.getDealDetailsURL(params[0],user.getToken());
+                    Log.e("Url ",url.toString());
+                    if(url==null)
+                        return null;
+                    Log.e("Deal Url", url.toString());
+
+//                    HashMap<String, String> data=new HashMap<String, String>();
+//                    data.put("token",user.getToken());
+//                    data.put("id",params[0]);
+
                     HttpURLConnection connection=(HttpURLConnection)url.openConnection();
                     connection.setRequestMethod("GET");
-                    connection.connect();
+                    connection.setReadTimeout(15000);
+                    connection.setConnectTimeout(15000);
+                    connection.setDoInput(true);
+
+//                    connection.connect();
+
+//                    OutputStream os=connection.getOutputStream();
+//                    BufferedWriter writer=new BufferedWriter(new OutputStreamWriter(os,"UTF-8"));
+//                    writer.write(Constants.getPostDataString(data));
+//                    writer.flush();
+//                    writer.close();
+//                    os.close();
+
                     BufferedReader in=new BufferedReader(new InputStreamReader(connection.getInputStream()));
                     return in.readLine();
                 } catch (Exception e) {
@@ -309,13 +338,17 @@ public class ManualScribblerCode extends Fragment {
                 }
                 DealPopup dealPopup = new DealPopup(mContext);
                 Log.e("Deal","Response "+s);
-                Deal deal= ParseJson.parseSingleDeal(s);
+
+                Deal deal= ParseJson.parseSingleDealDetail(s);
+
+                Log.e("Deals 2",deal.getId()+deal.getTitle()+deal.getCategory()+deal.getLongDescription()+deal.getShortDescription());
                 dealPopup.setTitle(deal.getTitle());
                 dealPopup.setCategory(deal.getCategory());
                 dealPopup.setDescription(deal.getLongDescription());
                 dealPopup.setImage(deal.getImageUrl());
                 dealPopup.setCurrentDeal(deal);
                 dealPopup.show();
+
                 currentDeal=deal;
             }
         }.execute(dealCode);
