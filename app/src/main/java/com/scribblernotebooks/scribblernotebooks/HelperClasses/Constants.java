@@ -46,6 +46,7 @@ public class Constants {
         public static String changePassword=websiteUrl+"changePassword";
         public static String dealDetail=websiteUrl+"deal/";
         public static String dealList=websiteUrl+"deal";
+        public static String likeDeal=websiteUrl+"likeDeal";
     }
 
     public static URL getDealDetailsURL(String dealId, String token) {

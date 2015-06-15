@@ -40,6 +40,7 @@ import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Deal;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.ParseJson;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.ShakeEventManager;
+import com.scribblernotebooks.scribblernotebooks.HelperClasses.User;
 import com.scribblernotebooks.scribblernotebooks.R;
 
 import java.io.BufferedReader;
@@ -49,6 +50,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 public class DealsFragment extends android.support.v4.app.Fragment {
 
@@ -407,7 +409,8 @@ public class DealsFragment extends android.support.v4.app.Fragment {
 
             String response = "";
             try {
-                URL url = new URL(Constants.ServerUrls.dealList);
+                User user=Constants.getUser(context);
+                URL url = new URL(Constants.ServerUrls.dealList+"?token="+user.getToken());
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
                 connection.setReadTimeout(15000);

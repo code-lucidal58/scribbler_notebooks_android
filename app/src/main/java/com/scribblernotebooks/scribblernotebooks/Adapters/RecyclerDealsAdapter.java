@@ -19,6 +19,7 @@ import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.scribblernotebooks.scribblernotebooks.Activities.DealDetail;
+import com.scribblernotebooks.scribblernotebooks.Handlers.UserHandler;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Deal;
 import com.scribblernotebooks.scribblernotebooks.R;
@@ -32,6 +33,7 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
 
     ArrayList<Deal> dealsList;
     Context context;
+    UserHandler handler;
     public DisplayImageOptions displayImageOptions;
     public ImageLoadingListener imageLoadingListener;
     public ImageLoaderConfiguration imageLoaderConfiguration;
@@ -52,6 +54,7 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
 
     public void init(){
 
+        handler = new UserHandler(context);
         imageLoaderConfiguration=new ImageLoaderConfiguration.Builder(this.context).build();
         ImageLoader.getInstance().init(imageLoaderConfiguration);
         imageLoadingListener=new SimpleImageLoadingListener();
@@ -113,6 +116,11 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
         String title = deal.getTitle();
         String category = deal.getCategory();
         String details = deal.getShortDescription();
+
+        if(handler.findDeal(id)){
+            deal.setIsFav(true);
+        }
+
         Boolean isfavorited=deal.isFavorited();
 
         viewHolder.favoriteIcon.setChecked(isfavorited);
@@ -126,7 +134,7 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
             @Override
             public void onClick(View v) {
                 Boolean isChecked = ((CheckBox) v).isChecked();
-                deal.setIsFav(isChecked);
+                deal.setIsFav(context,isChecked);
             }
         });
 
