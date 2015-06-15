@@ -250,7 +250,12 @@ public class ManualScribblerCode extends Fragment {
         shakeEventManager.setOnShakeListener(new ShakeEventManager.OnShakeListener() {
             @Override
             public void onShake() {
-                new LeftNavigationDrawer(new NavigationDrawer(),new NavigationDrawer().mainView,sContext).clickAction(2);
+                Fragment fragment=DealsFragment.newInstance(Constants.serverURL, "Deals");
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.content_frame, fragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
             }
         });
         return v;

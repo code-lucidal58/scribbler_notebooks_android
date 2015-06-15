@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Pair;
 import android.util.Patterns;
 import android.view.animation.Animation;
@@ -131,6 +132,8 @@ public class Constants {
             return false;
         SharedPreferences userPrefs=context.getSharedPreferences(PREF_NAME,Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = userPrefs.edit();
+        Log.e("User object ",user.toString());
+        Log.e("User  ", String.valueOf(user.getName() + ""));
         if(!user.getName().isEmpty())
             editor.putString(PREF_DATA_NAME, user.getName());
         if(!user.getProfilePic().isEmpty())

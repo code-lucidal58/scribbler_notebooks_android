@@ -435,7 +435,10 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     }
 
     public void login(String email, String password) {
-        new SignUpService(Constants.ServerUrls.login, this).execute("", email, "", password);
+        HashMap<String, String> data = new HashMap<>();
+        data.put("email", email);
+        data.put("password", password);
+        new SignUpService(Constants.ServerUrls.login, this).execute(data);
     }
 
     public boolean validatePassword(String password, String tag) {
@@ -479,8 +482,12 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         if (!Constants.isValidEmailId(email.getText().toString())) {
             return;
         }
-        new SignUpService(Constants.ServerUrls.signUp, this).execute(userName, userEmail, userContact, userPassword);
-
+        HashMap<String, String> data = new HashMap<>();
+        data.put("name", userName);
+        data.put("email", userEmail);
+        data.put("mobile", userContact);
+        data.put("password", userPassword);
+        new SignUpService(Constants.ServerUrls.signUp, this).execute(data);
     }
 
 
