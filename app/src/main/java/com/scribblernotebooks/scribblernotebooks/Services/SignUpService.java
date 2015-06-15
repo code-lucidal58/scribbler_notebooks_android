@@ -32,7 +32,7 @@ import javax.net.ssl.HttpsURLConnection;
 /**
  * Created by Aanisha on 12-Jun-15.
  */
-public class SignUpService extends AsyncTask<String, Void, User> {
+public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User> {
     String urlExtension;
     Activity activity;
     HashMap<String, String> parsedData;
@@ -48,18 +48,9 @@ public class SignUpService extends AsyncTask<String, Void, User> {
         super.onPreExecute();
     }
 
+    @SafeVarargs
     @Override
-    protected User doInBackground(String... params) {
-        String name, email, mobile, password;
-        name = params[0];
-        email = params[1];
-        mobile = params[2];
-        password = params[3];
-        HashMap<String, String> data = new HashMap<>();
-        data.put("name", name);
-        data.put("email", email);
-        data.put("mobile", mobile);
-        data.put("password", password);
+    protected final User doInBackground(HashMap<String, String>... params) {
 
         try {
             URL url = new URL(urlExtension);
@@ -70,11 +61,10 @@ public class SignUpService extends AsyncTask<String, Void, User> {
             conn.setDoInput(true);
             conn.setDoOutput(true);
 
-
             OutputStream os = conn.getOutputStream();
             BufferedWriter writer = new BufferedWriter(
                     new OutputStreamWriter(os, "UTF-8"));
-            writer.write(Constants.getPostDataString(data));
+            writer.write(Constants.getPostDataString(params[0]));
 
             writer.flush();
             writer.close();
@@ -89,8 +79,10 @@ public class SignUpService extends AsyncTask<String, Void, User> {
                     parsedData = ParseJson.parseLoginResponse(response);
                     if (parsedData != null) {
                         if (Boolean.parseBoolean(parsedData.get(Constants.POST_SUCCESS))) {
-                            return new User(parsedData.get(Constants.POST_NAME), parsedData.get(Constants.POST_EMAIL),
+                            User user = new User(parsedData.get(Constants.POST_NAME), parsedData.get(Constants.POST_EMAIL),
                                     parsedData.get(Constants.POST_MOBILE), parsedData.get(Constants.POST_TOKEN), parsedData.get(Constants.POST_MIXPANELID));
+                            activity.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE).edit().putString(Constants.PREF_DATA_PASS, "OK").apply();
+                            return user;
                         } else {
                             activity.runOnUiThread(new Runnable() {
                                 public void run() {
@@ -103,7 +95,9 @@ public class SignUpService extends AsyncTask<String, Void, User> {
                     parsedData = ParseJson.parseSignupResponse(response);
                     if (parsedData != null) {
                         if (Boolean.parseBoolean(parsedData.get(Constants.POST_SUCCESS))) {
-                            return new User(name, email, mobile, parsedData.get(Constants.POST_TOKEN), parsedData.get(Constants.POST_MIXPANELID));
+                            activity.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE).edit().putString(Constants.PREF_DATA_PASS, "OK").apply();
+                            return new User(params[0].get(Constants.POST_NAME), params[0].get(Constants.POST_EMAIL),
+                                    params[0].get(Constants.POST_MOBILE), parsedData.get(Constants.POST_TOKEN), parsedData.get(Constants.POST_MIXPANELID));
                         } else {
                             activity.runOnUiThread(new Runnable() {
                                 public void run() {
