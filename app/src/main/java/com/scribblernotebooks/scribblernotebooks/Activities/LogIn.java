@@ -420,10 +420,6 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
             userEmail = email.getText().toString();
             userPassword = password.getText().toString();
 
-            if (userEmail.equals("test@scribblernotebook.com") && userPassword.equals("password")) {
-                saveUserDetails("Test User", userEmail, "", "", "", userPassword);
-            }
-
             if (userEmail.isEmpty()) {
                 Toast.makeText(getApplicationContext(), "Oops... Looks like you forgot to enter email id", Toast.LENGTH_LONG).show();
             } else if (!validatePassword(userPassword, "SignIn")) {
@@ -717,7 +713,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                     if (connection.getResponseCode() == HttpsURLConnection.HTTP_OK) {
                         BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                         String response = br.readLine();
-                        User user = ParseJson.parseLoginResponse(response,getBaseContext());
+                        User user = ParseJson.parseLoginResponse(response, getBaseContext());
                         if (user != null) {
                             user.setCoverImage(coverPic);
                             user.setProfilePic(profilePic);

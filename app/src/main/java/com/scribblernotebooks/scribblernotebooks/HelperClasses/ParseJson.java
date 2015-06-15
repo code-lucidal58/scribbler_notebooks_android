@@ -147,11 +147,11 @@ public class ParseJson {
             String token, name, email, mobile, mixpanelId;
             if (success) {
                 token = object.optString("token");
-                mixpanelId = object.optString("mixpanelId");
                 JSONObject userDetails = object.getJSONObject("details");
                 name = userDetails.optString("name");
                 email = userDetails.optString("email");
                 mobile = userDetails.optString("mobile");
+                mixpanelId = userDetails.optString("mixpanelId");
 
                 return new User(name, email, mobile, token, mixpanelId);
             } else if (object.optString("error").equalsIgnoreCase("INVALID_CREDENTIALS")) {

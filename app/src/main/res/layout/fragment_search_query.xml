@@ -76,6 +76,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/during_searchbar"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="0dp"
         android:clipToPadding="false" />
 
 
