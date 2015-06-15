@@ -10,6 +10,8 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -25,15 +27,19 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
+import com.scribblernotebooks.scribblernotebooks.Activities.NavigationDrawer;
 import com.scribblernotebooks.scribblernotebooks.Activities.ScannerActivity;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.CyclicTransitionDrawable;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.DealPopup;
+import com.scribblernotebooks.scribblernotebooks.CustomViews.LeftNavigationDrawer;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Deal;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.ParseJson;
+import com.scribblernotebooks.scribblernotebooks.HelperClasses.ShakeEventManager;
 import com.scribblernotebooks.scribblernotebooks.R;
 
 import java.io.BufferedReader;
@@ -113,7 +119,7 @@ public class ManualScribblerCode extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //Inflate view
-        View v = inflater.inflate(R.layout.fragment_manual_scribbler_code, container, false);
+        final View v = inflater.inflate(R.layout.fragment_manual_scribbler_code, container, false);
 
         //View Setup
         root = (RelativeLayout) v.findViewById(R.id.manualRoot);
@@ -227,6 +233,16 @@ public class ManualScribblerCode extends Fragment {
                 if (!url.isEmpty()) {
                     getDealDetailsAndShow(url);
                 }
+            }
+        });
+        /**
+         * Shake to refresh
+         */
+        final ShakeEventManager shakeEventManager=new ShakeEventManager(sContext);
+        shakeEventManager.setOnShakeListener(new ShakeEventManager.OnShakeListener() {
+            @Override
+            public void onShake() {
+                new LeftNavigationDrawer(new NavigationDrawer(),new NavigationDrawer().mainView,sContext).clickAction(2);
             }
         });
         return v;

@@ -2,8 +2,10 @@
 package com.scribblernotebooks.scribblernotebooks.Activities;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -48,6 +50,7 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.concurrent.CompletionService;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -67,11 +70,16 @@ public class ProfileManagement extends AppCompatActivity {
     EditText userName, userEmail, userPass, userMob, userLocation;
     ScrollView scrollView;
     Button saveButton;
+    String idName, idValue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_management);
+
+        idName=getIntent().getStringExtra(Constants.INTENT_ID_NAME);
+        idValue=getIntent().getStringExtra(Constants.INTENT_ID_VALUE);
+
         userPic = (ImageView) findViewById(R.id.pic);
         userCoverPic = (ImageView) findViewById(R.id.profileCoverPic);
         appbar = (Toolbar) findViewById(R.id.toolbar);
@@ -211,15 +219,16 @@ public class ProfileManagement extends AppCompatActivity {
 
                 //Post request JSON object
                 HashMap<String, String> postDataParams = new HashMap<>();
-                postDataParams.put("name", name);
-                postDataParams.put("email", email);
-                postDataParams.put("contactno", contact);
-                postDataParams.put("password", password);
+                postDataParams.put(Constants.POST_NAME, name);
+                postDataParams.put(Constants.POST_EMAIL, email);
+                postDataParams.put(Constants.POST_MOBILE, contact);
+                postDataParams.put(Constants.POST_PASSWORD, password);
+                postDataParams.put(idName,idValue);
 
                 JSONObject jsonObject = new JSONObject(postDataParams);
 
                 try {
-                    URL url = new URL(Constants.USER_SIGNUP_URL);
+                    URL url = new URL(Constants.ServerUrls.signUp);
                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                     connection.setRequestMethod("POST");
                     connection.setReadTimeout(15000);
@@ -230,7 +239,7 @@ public class ProfileManagement extends AppCompatActivity {
                     //Writing post request data
                     OutputStream os = connection.getOutputStream();
                     BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-                    writer.write(jsonObject.toString());
+                    writer.write(Constants.getPostDataString(postDataParams));
                     writer.flush();
                     writer.close();
                     os.close();
@@ -253,7 +262,23 @@ public class ProfileManagement extends AppCompatActivity {
                          * else signup
                          */
                         if (error.equalsIgnoreCase("USER_EXIST")) {
-                            //loginUser();
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    AlertDialog.Builder builder=new AlertDialog.Builder(getApplicationContext());
+                                    builder.setTitle("User Exists")
+                                            .setMessage("An account already exists with this email id. Please Log In to continue")
+                                            .setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    startActivity(new Intent(getApplicationContext(), LogIn.class));
+                                                    finish();
+                                                }
+                                            })
+                                            .show();
+
+                                }
+                            });
                             return new String[]{};
                         }
                         return new String[]{token, mixpanelId};

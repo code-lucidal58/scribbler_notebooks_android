@@ -358,11 +358,6 @@ public class DealsFragment extends android.support.v4.app.Fragment {
     }
 
 
-
-
-
-
-
     /**
      * Returning toolbar height for implementing animation
      *

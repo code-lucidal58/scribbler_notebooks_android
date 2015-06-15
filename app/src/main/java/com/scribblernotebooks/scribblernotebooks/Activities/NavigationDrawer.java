@@ -65,7 +65,7 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
     private final static String TAG="NavigationActivity";
     public DrawerLayout mDrawerLayout;
     public static GoogleApiClient mGoogleApiClient;
-    View mainView;
+    public View mainView;
     View decorView;
 
     String url = "";

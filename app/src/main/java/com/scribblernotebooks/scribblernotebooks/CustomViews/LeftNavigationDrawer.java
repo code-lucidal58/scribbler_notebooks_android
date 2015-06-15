@@ -52,7 +52,7 @@ public class LeftNavigationDrawer {
 
     RecyclerView mDrawerList;
     TextView uName, userEmail;
-    ImageView uPhoto,uCoverPic;
+    ImageView uPhoto, uCoverPic;
     RelativeLayout mDrawer;
     NavigationRecyclerAdapter navigationRecyclerAdapter;
     SharedPreferences sharedPreferences;
@@ -61,7 +61,7 @@ public class LeftNavigationDrawer {
     DrawerLayout mDrawerLayout;
     RelativeLayout settings, aboutUs, signOut;
 
-    ArrayList<Pair<Integer,String>> mNavigationDrawerItems;
+    ArrayList<Pair<Integer, String>> mNavigationDrawerItems;
     NavigationDrawer navigationDrawerActivity;
     public DisplayImageOptions displayImageOptions;
     public DisplayImageOptions displayImageOptionsCover;
@@ -75,29 +75,30 @@ public class LeftNavigationDrawer {
 
     /**
      * Default constructor
+     *
      * @param navigationDrawerActivity the calling activity
-     * @param activityView the root view
-     * @param context context of application
+     * @param activityView             the root view
+     * @param context                  context of application
      */
-    public LeftNavigationDrawer(NavigationDrawer navigationDrawerActivity,View activityView, Context context) {
+    public LeftNavigationDrawer(NavigationDrawer navigationDrawerActivity, View activityView, Context context) {
         super();
-        this.navigationDrawerActivity=navigationDrawerActivity;
+        this.navigationDrawerActivity = navigationDrawerActivity;
         this.mainView = activityView;
         this.mContext = context;
-        sContext=context;
-        sMainView=activityView;
+        sContext = context;
+        sMainView = activityView;
 
         /**Configurations for image caching library */
-        imageLoaderConfiguration=new ImageLoaderConfiguration.Builder(this.mContext).build();
+        imageLoaderConfiguration = new ImageLoaderConfiguration.Builder(this.mContext).build();
         ImageLoader.getInstance().init(imageLoaderConfiguration);
-        imageLoadingListener=new SimpleImageLoadingListener();
-        displayImageOptions=Constants.getProfilePicDisplayImageOptions();
-        displayImageOptionsCover=Constants.getCoverPicDisplayImageOptions();
+        imageLoadingListener = new SimpleImageLoadingListener();
+        displayImageOptions = Constants.getProfilePicDisplayImageOptions();
+        displayImageOptionsCover = Constants.getCoverPicDisplayImageOptions();
 
-        sdisplayImageOptions=displayImageOptions;
-        sdisplayImageOptionsCover=displayImageOptionsCover;
-        simageLoadingListener=imageLoadingListener;
-        simageLoaderConfiguration=imageLoaderConfiguration;
+        sdisplayImageOptions = displayImageOptions;
+        sdisplayImageOptionsCover = displayImageOptionsCover;
+        simageLoadingListener = imageLoadingListener;
+        simageLoaderConfiguration = imageLoaderConfiguration;
 
         instantiate();
     }
@@ -114,9 +115,9 @@ public class LeftNavigationDrawer {
         userEmail = (TextView) mainView.findViewById(R.id.userEmail);
         userDetailsHolder = (FrameLayout) mainView.findViewById(R.id.userHolder);
         mDrawerLayout = (DrawerLayout) mainView.findViewById(R.id.drawer_layout);
-        settings=(RelativeLayout)mainView.findViewById(R.id.settings);
-        aboutUs=(RelativeLayout)mainView.findViewById(R.id.aboutUs);
-        signOut=(RelativeLayout)mainView.findViewById(R.id.signout);
+        settings = (RelativeLayout) mainView.findViewById(R.id.settings);
+        aboutUs = (RelativeLayout) mainView.findViewById(R.id.aboutUs);
+        signOut = (RelativeLayout) mainView.findViewById(R.id.signout);
 
         /**
          * Open Profile management when user clicks section of navigation drawer
@@ -143,7 +144,7 @@ public class LeftNavigationDrawer {
 
         /**Setting navigation Drawer**/
         mNavigationDrawerItems = Constants.getNavigationDrawerItems();
-        navigationRecyclerAdapter = new NavigationRecyclerAdapter(mContext, mNavigationDrawerItems,this);
+        navigationRecyclerAdapter = new NavigationRecyclerAdapter(mContext, mNavigationDrawerItems, this);
         mDrawerList.setLayoutManager(new LinearLayoutManager(mContext));
         mDrawerList.setAdapter(navigationRecyclerAdapter);
 
@@ -151,51 +152,52 @@ public class LeftNavigationDrawer {
         secondNavFunctions();
     }
 
-        /**Handling clicks on navigation drawer**/
-        public void clickAction(int position){
-            String title = mNavigationDrawerItems.get(position).second;
-            switch (position) {
-                case 0:
-                    mContext.startActivity(new Intent(mContext, ScannerActivity.class));
-                    mDrawerLayout.closeDrawers();
-                    break;
-                case 1:
-                    fragment = ManualScribblerCode.newInstance(mContext, "");
-                    break;
-                case 2:
-                    fragment = DealsFragment.newInstance(Constants.serverURL, title);
-                    break;
-                case 3:
-                    fragment = ClaimedDeals.newInstance(title);
-                    break;
-                default:
-                    break;
-            }
-
-            if (fragment != null) {
-                FragmentManager fragmentManager = navigationDrawerActivity.getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.content_frame, fragment);
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
-                try {
-                    //noinspection ConstantConditions
-                    navigationDrawerActivity.getSupportActionBar().setTitle(mNavigationDrawerItems.get(position).second);
-                } catch (Exception e) {
-                    Log.e("Navigation Drawer", "No Action Bar");
-                }
-                navigationDrawerActivity.mDrawerLayout.closeDrawer(mDrawer);
-
-            } else {
-                Log.e("MainActivity", "Error in creating fragment");
-            }
+    /**
+     * Handling clicks on navigation drawer*
+     */
+    public void clickAction(int position) {
+        String title = mNavigationDrawerItems.get(position).second;
+        switch (position) {
+            case 0:
+                mContext.startActivity(new Intent(mContext, ScannerActivity.class));
+                mDrawerLayout.closeDrawers();
+                break;
+            case 1:
+                fragment = ManualScribblerCode.newInstance(mContext, "");
+                break;
+            case 2:
+                fragment = DealsFragment.newInstance(Constants.serverURL, title);
+                break;
+            case 3:
+                fragment = ClaimedDeals.newInstance(title);
+                break;
+            default:
+                break;
         }
+
+        if (fragment != null) {
+            FragmentManager fragmentManager = navigationDrawerActivity.getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.content_frame, fragment);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+            try {
+                //noinspection ConstantConditions
+                navigationDrawerActivity.getSupportActionBar().setTitle(mNavigationDrawerItems.get(position).second);
+            } catch (Exception e) {
+                Log.e("Navigation Drawer", "No Action Bar");
+            }
+            navigationDrawerActivity.mDrawerLayout.closeDrawer(mDrawer);
+
+        } else {
+            Log.e("MainActivity", "Error in creating fragment");
+        }
+    }
 
     /**
      * handling second part of navigation Drawer i.e. settings, feedback and signOut
      */
-    public void secondNavFunctions()
-    {
+    public void secondNavFunctions() {
         settings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -233,46 +235,43 @@ public class LeftNavigationDrawer {
         });
     }
 
-    public static void setUserName(){
+    public static void setUserName() {
         SharedPreferences sharedPreferences = sContext.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
-        ((TextView)sMainView.findViewById(R.id.userName)).setText(sharedPreferences.getString(Constants.PREF_DATA_NAME, "Name"));
+        ((TextView) sMainView.findViewById(R.id.userName)).setText(sharedPreferences.getString(Constants.PREF_DATA_NAME, "Name"));
     }
 
-    public static void setUserEmail(){
+    public static void setUserEmail() {
         SharedPreferences sharedPreferences = sContext.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
-        ((TextView)sMainView.findViewById(R.id.userEmail)).setText(sharedPreferences.getString(Constants.PREF_DATA_EMAIL, "user@domain.com"));
+        ((TextView) sMainView.findViewById(R.id.userEmail)).setText(sharedPreferences.getString(Constants.PREF_DATA_EMAIL, "user@domain.com"));
     }
 
-    public static void setUserCover(){
+    public static void setUserCover() {
         SharedPreferences sharedPreferences = sContext.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
         /**Loading and caching image from url*/
-        String coverUrl=sharedPreferences.getString(Constants.PREF_DATA_COVER_PIC, "");
-        ImageView uCoverPic=(ImageView)sMainView.findViewById(R.id.userCover);
-        if(!coverUrl.isEmpty()){
-            if(coverUrl.contains("http") || coverUrl.contains("ftp")){
-                ImageLoader.getInstance().displayImage(coverUrl,uCoverPic,sdisplayImageOptionsCover,simageLoadingListener);
-            }else {
+        String coverUrl = sharedPreferences.getString(Constants.PREF_DATA_COVER_PIC, "");
+        ImageView uCoverPic = (ImageView) sMainView.findViewById(R.id.userCover);
+        if (!coverUrl.isEmpty()) {
+            if (coverUrl.contains("http") || coverUrl.contains("ftp")) {
+                ImageLoader.getInstance().displayImage(coverUrl, uCoverPic, sdisplayImageOptionsCover, simageLoadingListener);
+            } else {
                 uCoverPic.setImageBitmap(Constants.getScaledBitmap(coverUrl, 267, 200));
             }
         }
     }
 
-    public static void setUserProfilePic(){
+    public static void setUserProfilePic() {
         SharedPreferences sharedPreferences = sContext.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
         /**Loading and caching image from url*/
-        String picUrl=sharedPreferences.getString(Constants.PREF_DATA_PHOTO, "");
-        ImageView uPic=(ImageView)sMainView.findViewById(R.id.userPhoto);
-        if(!picUrl.isEmpty()){
-            if(picUrl.contains("http") || picUrl.contains("ftp")){
-                ImageLoader.getInstance().displayImage(picUrl,uPic,sdisplayImageOptions,simageLoadingListener);
-            }else {
+        String picUrl = sharedPreferences.getString(Constants.PREF_DATA_PHOTO, "");
+        ImageView uPic = (ImageView) sMainView.findViewById(R.id.userPhoto);
+        if (!picUrl.isEmpty()) {
+            if (picUrl.contains("http") || picUrl.contains("ftp")) {
+                ImageLoader.getInstance().displayImage(picUrl, uPic, sdisplayImageOptions, simageLoadingListener);
+            } else {
                 uPic.setImageBitmap(Constants.getScaledBitmap(picUrl, 267, 200));
             }
         }
     }
-
-
-
 
 
 }

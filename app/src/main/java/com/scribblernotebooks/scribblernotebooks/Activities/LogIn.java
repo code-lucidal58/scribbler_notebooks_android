@@ -37,6 +37,8 @@ import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.ForgotPasswordPopup;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
+import com.scribblernotebooks.scribblernotebooks.HelperClasses.ParseJson;
+import com.scribblernotebooks.scribblernotebooks.HelperClasses.User;
 import com.scribblernotebooks.scribblernotebooks.R;
 import com.scribblernotebooks.scribblernotebooks.Services.LocationRetreiver;
 import com.scribblernotebooks.scribblernotebooks.Services.SignUpService;
@@ -61,7 +63,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
     private final static String TAG = "LogIn";
 
-    private final static double IMAGE_SCALE_RATIO=0.6;
+    private final static double IMAGE_SCALE_RATIO = 0.6;
 
     EditText name, email, mobile, password;
     TextView forgotPassword;
@@ -102,12 +104,10 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         try {
             String userName = userPrefs.getString(Constants.PREF_DATA_NAME, "");
             if (!userName.isEmpty()) {
-                if(userPrefs.getString(Constants.PREF_DATA_PASS,"").isEmpty())
-                {
+                if (userPrefs.getString(Constants.PREF_DATA_PASS, "").isEmpty()) {
                     startActivity(new Intent(this, ProfileManagement.class));
                     finish();
-                }
-                else {
+                } else {
                     startActivity(new Intent(this, NavigationDrawer.class));
                     finish();
                 }
@@ -145,9 +145,14 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                         String email = jsonObject.optString("email");
                         JSONObject cover = jsonObject.optJSONObject("cover");
                         String coverPic = cover.optString("source");
-                        String userdp = "https://graph.facebook.com/" + jsonObject.optString("id") + "/picture?type=large";
+                        String id = jsonObject.optString("id");
+                        String userdp = "https://graph.facebook.com/" + id + "/picture?type=large";
                         fromApi = true;
-                        saveUserDetails(name, email, userdp, coverPic, "", "");
+                        if (view_open == SIGNUP) {
+                            saveUserDetails(name, email, userdp, coverPic, "", "", Constants.FACEBOOKID, id);
+                        } else {
+                            loginSocial(email, id, Constants.FACEBOOKID, Constants.ServerUrls.loginFacebook, coverPic, userdp);
+                        }
                     }
                 });
                 Bundle parameters = new Bundle();
@@ -199,7 +204,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         mobile = (EditText) findViewById(R.id.userPhone);
         signIn = (Button) findViewById(R.id.signIn);
         signUp = (Button) findViewById(R.id.signUp);
-        forgotPassword=(TextView)findViewById(R.id.forgotPassword);
+        forgotPassword = (TextView) findViewById(R.id.forgotPassword);
         signInButton = (SignInButton) findViewById(R.id.sign_in_button);
         signInButton.setOnClickListener(this);
         signInButton.setSize(SignInButton.SIZE_WIDE);
@@ -214,8 +219,8 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         forgotPassword.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                TextView t=(TextView)v;
-                switch (event.getAction()){
+                TextView t = (TextView) v;
+                switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         t.setTextColor(getResources().getColor(R.color.selectedText));
                         break;
@@ -243,12 +248,12 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         final ScaleDrawable userIcon = new ScaleDrawable(getResources().getDrawable(R.drawable.userlogin), Gravity.CENTER, 1F, 1F) {
             @Override
             public int getIntrinsicHeight() {
-                return (int)(name.getHeight() * IMAGE_SCALE_RATIO);
+                return (int) (name.getHeight() * IMAGE_SCALE_RATIO);
             }
 
             @Override
             public int getIntrinsicWidth() {
-                return (int)(name.getHeight() * IMAGE_SCALE_RATIO);
+                return (int) (name.getHeight() * IMAGE_SCALE_RATIO);
             }
         };
         userIcon.setLevel(10000);
@@ -268,12 +273,12 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         final ScaleDrawable emailIcon = new ScaleDrawable(getResources().getDrawable(R.drawable.maillogin), Gravity.CENTER, 1F, 1F) {
             @Override
             public int getIntrinsicHeight() {
-                return (int)(email.getHeight() * IMAGE_SCALE_RATIO);
+                return (int) (email.getHeight() * IMAGE_SCALE_RATIO);
             }
 
             @Override
             public int getIntrinsicWidth() {
-                return (int)(email.getHeight() *IMAGE_SCALE_RATIO);
+                return (int) (email.getHeight() * IMAGE_SCALE_RATIO);
             }
         };
         emailIcon.setLevel(10000);
@@ -412,12 +417,10 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         name.setVisibility(View.GONE);
         mobile.setVisibility(View.GONE);
         view_open = LOGIN;
-
     }
 
     public void login(String email, String password) {
-        //TODO: Login User from server
-        new SignUpService(this, "login").execute("",email,"",password);
+        new SignUpService(this, Constants.ServerUrls.login).execute("", email, "", password);
     }
 
     public boolean validatePassword(String password, String tag) {
@@ -455,11 +458,13 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
             Toast.makeText(getApplicationContext(), "Please check if all fields are filled and try again", Toast.LENGTH_LONG).show();
             return;
         }
-        if(!isValidPassword(password.getText().toString())){
+        if (!isValidPassword(password.getText().toString())) {
             return;
         }
-
-        new SignUpService(this,"signup").execute(userName,userEmail,userContact,userPassword);
+        if (!Constants.isValidEmailId(email.getText().toString())) {
+            return;
+        }
+        new SignUpService(this, Constants.ServerUrls.signUp).execute(userName, userEmail, userContact, userPassword);
 
     }
 
@@ -507,11 +512,11 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
 
     @Override
     public void onConnectionFailed(ConnectionResult result) {
-        try{
-            if(mGoogleApiClient.isConnected()){
+        try {
+            if (mGoogleApiClient.isConnected()) {
                 Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -603,14 +608,17 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                 String userId = currentPerson.getId();
                 String s = personImageUrl.replace("photo.jpg?sz=50", "photo.jpg?sz=250");
                 String userEmail = Plus.AccountApi.getAccountName(mGoogleApiClient);
-                String userCover="";
-                if(currentPerson.hasCover())
-                {
+                String userCover = "";
+                if (currentPerson.hasCover()) {
                     userCover = currentPerson.getCover().getCoverPhoto().getUrl();
                 }
                 fromApi = true;
+                if (view_open == SIGNUP) {
+                    saveUserDetails(personName, userEmail, s, userCover, "", "", Constants.GOOGLEID, userId);
+                } else {
+                    loginSocial(userEmail, userId, Constants.GOOGLEID, Constants.ServerUrls.loginGoogle, userCover, personImageUrl);
+                }
 
-                saveUserDetails(personName, userEmail, s, userCover, "", "");
 
                 //TODO: check if user exists. If yes then login else signup
             } else {
@@ -637,14 +645,14 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         if (fromApi) {
             startActivity(new Intent(this, ProfileManagement.class));
             finish();
-            overridePendingTransition(R.anim.profile_slide_in,R.anim.login_slide_out);
+            overridePendingTransition(R.anim.profile_slide_in, R.anim.login_slide_out);
             return;
         }
         startActivity(new Intent(getApplicationContext(), NavigationDrawer.class));
         finish();
     }
 
-    private void saveUserDetails(String name, String userEmail, String userImageUrl, String userCoverPic, String mobileNo, String password, String token, String mixpanelId) {
+    private void saveUserDetails(String name, String userEmail, String userImageUrl, String userCoverPic, String mobileNo, String password, String idName, String id) {
         SharedPreferences.Editor editor = userPrefs.edit();
         editor.putString(Constants.PREF_DATA_NAME, name);
         editor.putString(Constants.PREF_DATA_PHOTO, userImageUrl);
@@ -652,17 +660,93 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         editor.putString(Constants.PREF_DATA_EMAIL, userEmail);
         editor.putString(Constants.PREF_DATA_MOBILE, mobileNo);
         editor.putString(Constants.PREF_DATA_PASS, password);
-        editor.putString(Constants.PREF_DATA_USER_TOKEN, token);
-        editor.putString(Constants.PREF_DATA_MIXPANEL_USER_ID, mixpanelId);
         editor.apply();
-            if (fromApi) {
-            startActivity(new Intent(this, ProfileManagement.class));
+        if (fromApi) {
+            Intent i = new Intent(this, ProfileManagement.class);
+            i.putExtra(Constants.INTENT_ID_NAME, idName);
+            i.putExtra(Constants.INTENT_ID_VALUE, id);
+            startActivity(i);
             finish();
             overridePendingTransition(R.anim.profile_slide_in, R.anim.login_slide_out);
             return;
         }
         startActivity(new Intent(getApplicationContext(), NavigationDrawer.class));
         finish();
+    }
+
+    /**
+     * Login Through Social Network
+     *
+     * @param email
+     * @param id
+     * @param idName
+     * @param url
+     * @param coverPic
+     * @param profilePic
+     */
+    void loginSocial(String email, String id, String idName, String url, String coverPic, String profilePic) {
+        new AsyncTask<String, Void, User>() {
+            @Override
+            protected User doInBackground(String... params) {
+                String email = params[0];
+                String id = params[1];
+                String idName = params[2];
+                String url1 = params[3];
+                String coverPic = params[4];
+                String profilePic = params[5];
+
+                HashMap<String, String> data = new HashMap<String, String>();
+                data.put(Constants.POST_EMAIL, email);
+                data.put(idName, id);
+
+                try {
+                    URL url = new URL(url1);
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    connection.setRequestMethod("POST");
+                    connection.setConnectTimeout(15000);
+                    connection.setReadTimeout(15000);
+                    connection.setDoInput(true);
+                    connection.setDoOutput(true);
+
+                    OutputStream os = connection.getOutputStream();
+                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                    writer.write(Constants.getPostDataString(data));
+                    writer.flush();
+                    writer.close();
+                    os.close();
+
+                    if (connection.getResponseCode() == HttpsURLConnection.HTTP_OK) {
+                        BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                        String response = br.readLine();
+                        User user = ParseJson.parseLoginResponse(response,getBaseContext());
+                        if (user != null) {
+                            user.setCoverImage(coverPic);
+                            user.setProfilePic(profilePic);
+                            return user;
+                        }
+                    } else {
+                        return null;
+
+                    }
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(User user) {
+                if (user == null) {
+                    return;
+                }
+                Constants.saveUserDetails(getApplicationContext(), user);
+                startActivity(new Intent(getApplicationContext(), NavigationDrawer.class));
+                finish();
+                super.onPostExecute(user);
+            }
+        }.execute(email, id, idName, url, coverPic, profilePic);
     }
 
 
