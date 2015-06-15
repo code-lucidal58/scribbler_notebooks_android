@@ -49,8 +49,10 @@ public class UserHandler extends SQLiteOpenHelper {
     }
 
     public boolean findDeal(String dealId){
-        Cursor cursor=db.query(TABLE_NAME, new String[]{DEAL_ID},null,null,null,null,null);
-        return cursor.moveToFirst();
+        Cursor cursor=db.query(TABLE_NAME, new String[]{DEAL_ID},DEAL_ID+"=?",new String[]{dealId},null,null,null);
+        Boolean b=cursor.moveToFirst();
+        cursor.close();
+        return b;
     }
 
 }

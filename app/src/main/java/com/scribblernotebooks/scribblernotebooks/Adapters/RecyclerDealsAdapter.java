@@ -3,6 +3,7 @@ package com.scribblernotebooks.scribblernotebooks.Adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -118,6 +119,7 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
         String details = deal.getShortDescription();
 
         if(handler.findDeal(id)){
+            Log.e("Deal Likes",id+"  "+deal.getTitle()+"   "+deal.isFavorited());
             deal.setIsFav(true);
         }
 
