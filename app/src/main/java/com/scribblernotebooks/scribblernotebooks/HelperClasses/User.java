@@ -48,7 +48,7 @@ public class User {
     }
 
     public String getName() {
-        return name;
+        return name ;
     }
 
     public String getEmail() {

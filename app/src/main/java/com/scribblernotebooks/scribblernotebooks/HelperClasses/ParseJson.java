@@ -125,8 +125,10 @@ public class ParseJson {
             parsedData.put(Constants.POST_ERROR, object.optString(Constants.POST_ERROR));
             parsedData.put(Constants.POST_TOKEN, object.optString(Constants.POST_TOKEN));
             JSONObject details = object.optJSONObject("details");
+            Log.e("Login Check ",""+details.toString());
             if(details!=null) {
                 parsedData.put(Constants.POST_NAME, details.optString(Constants.POST_NAME));
+                Log.e("Login Check 2",details.optString("name")+"");
                 parsedData.put(Constants.POST_EMAIL, details.optString(Constants.POST_EMAIL));
                 parsedData.put(Constants.POST_MOBILE, details.optString(Constants.POST_MOBILE));
                 parsedData.put(Constants.POST_MIXPANELID, details.optString(Constants.POST_MIXPANELID));

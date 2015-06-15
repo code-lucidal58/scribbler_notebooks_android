@@ -306,6 +306,7 @@ public class ProfileManagement extends AppCompatActivity {
                 User user1=new User();
                 user.setToken(token);
                 user.setMixpanelId(mixpanelid);
+                getSharedPreferences(Constants.PREF_NAME,Context.MODE_PRIVATE).edit().putString(Constants.PREF_DATA_PASS,"OK").apply();
                 Constants.saveUserDetails(getApplicationContext(), user1);
 
                 startActivity(new Intent(getApplicationContext(), NavigationDrawer.class));
