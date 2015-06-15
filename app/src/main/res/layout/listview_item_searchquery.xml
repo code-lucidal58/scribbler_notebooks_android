@@ -15,7 +15,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:mrl_rippleAlpha="0.1"
-        
         app:mrl_rippleColor="@color/darkBlueRippleColor"
         app:mrl_rippleDelayClick="true"
         app:mrl_rippleDimension="10dp"
@@ -32,7 +31,7 @@
         android:padding="10dp"
         android:textColor="#000"
         android:textSize="17sp"
-        android:background="@drawable/style_searchquery"
+        android:textAllCaps="true"
         android:id="@+id/suggestion"/>
 
     </com.balysv.materialripple.MaterialRippleLayout>

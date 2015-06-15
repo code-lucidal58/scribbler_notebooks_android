@@ -48,6 +48,7 @@ public class SignUpService extends AsyncTask<String, Void, User>
 
     @Override
     protected User doInBackground(String... params) {
+        Log.e("check","do in background");
         String name, email, mobile, password;
         name=params[0];
         email=params[1];
