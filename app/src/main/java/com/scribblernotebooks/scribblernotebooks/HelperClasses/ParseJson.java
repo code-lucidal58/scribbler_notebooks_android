@@ -15,6 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by Aanisha on 11-May-15.
@@ -72,32 +73,33 @@ public class ParseJson {
             deal.setImageUrl(imgurl);
             deal.setShortDescription(sdesp);
             deal.setLongDescription(ldesp);
-            Log.e("Done","Done");
+            Log.e("Done", "Done");
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        Log.e("Deal Object",deal.getId()+deal.getTitle()+deal.getCategory()+deal.getLongDescription()+deal.getShortDescription());
+        Log.e("Deal Object", deal.getId() + deal.getTitle() + deal.getCategory() + deal.getLongDescription() + deal.getShortDescription());
         return deal;
     }
-    public static Deal parseSingleDealDetail(String jsonResponse){
-        Deal deal=new Deal();
-        Log.e("JSON","jsonResponse "+jsonResponse);
+
+    public static Deal parseSingleDealDetail(String jsonResponse) {
+        Deal deal = new Deal();
+        Log.e("JSON", "jsonResponse " + jsonResponse);
         try {
-            JSONObject jsonObject=new JSONObject(jsonResponse);
-            JSONObject jsonChild=jsonObject.optJSONObject("message");
-            String success=jsonObject.optString("success");
+            JSONObject jsonObject = new JSONObject(jsonResponse);
+            JSONObject jsonChild = jsonObject.optJSONObject("message");
+            String success = jsonObject.optString("success");
 
-            String id,title,category,sdesp,ldesp,imgurl;
+            String id, title, category, sdesp, ldesp, imgurl;
 
-            id=jsonChild.optString(Constants.TAG_ID);
-            title=jsonChild.optString(Constants.TAG_DEAL_NAME);
-            category=jsonChild.optString(Constants.TAG_CATEGORY);
-            sdesp=jsonChild.optString(Constants.TAG_SHORT_DESCRIPTION);
-            ldesp=jsonChild.optString(Constants.TAG_LONG_DESCRIPTION);
+            id = jsonChild.optString(Constants.TAG_ID);
+            title = jsonChild.optString(Constants.TAG_DEAL_NAME);
+            category = jsonChild.optString(Constants.TAG_CATEGORY);
+            sdesp = jsonChild.optString(Constants.TAG_SHORT_DESCRIPTION);
+            ldesp = jsonChild.optString(Constants.TAG_LONG_DESCRIPTION);
             // Image url http://www.ucarecdn.com/<image UUID>/image.png
-            imgurl="http://www.ucarecdn.com/"+jsonChild.optString(Constants.TAG_IMAGE_UUID)+"/image.png";
+            imgurl = "http://www.ucarecdn.com/" + jsonChild.optString(Constants.TAG_IMAGE_UUID) + "/image.png";
 
             deal.setId(id);
             deal.setTitle(title);
@@ -105,102 +107,50 @@ public class ParseJson {
             deal.setImageUrl(imgurl);
             deal.setShortDescription(sdesp);
             deal.setLongDescription(ldesp);
-            Log.e("Done","Done");
+            Log.e("Done", "Done");
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        Log.e("Deal Object",deal.getId()+deal.getTitle()+deal.getCategory()+deal.getLongDescription()+deal.getShortDescription());
+        Log.e("Deal Object", deal.getId() + deal.getTitle() + deal.getCategory() + deal.getLongDescription() + deal.getShortDescription());
         return deal;
     }
 
-    public static User parseLoginResponse(String response){
-        try {
-            JSONObject object=new JSONObject(response);
-            Boolean success=Boolean.parseBoolean(object.optString("success"));
-            String token,name,email,mobile,mixpanelId;
-            if(success){
-                token=object.optString("token");
-                mixpanelId=object.optString("mixpanelId");
-                JSONObject userDetails=object.getJSONObject("details");
-                name=userDetails.optString("name");
-                email=userDetails.optString("email");
-                mobile=userDetails.optString("mobile");
-
-                return new User(name,email,mobile,token,mixpanelId);
-            }
-            else{
-                return null;
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-    public static User parseLoginResponse(String response, Context context) {
+    public static HashMap<String, String> parseLoginResponse(String response) {
         try {
             JSONObject object = new JSONObject(response);
-            Boolean success = Boolean.parseBoolean(object.optString("success"));
-            String token, name, email, mobile, mixpanelId;
-            if (success) {
-                token = object.optString("token");
-                JSONObject userDetails = object.getJSONObject("details");
-                name = userDetails.optString("name");
-                email = userDetails.optString("email");
-                mobile = userDetails.optString("mobile");
-                mixpanelId = userDetails.optString("mixpanelId");
-
-                return new User(name, email, mobile, token, mixpanelId);
-            } else if (object.optString("error").equalsIgnoreCase("INVALID_CREDENTIALS")) {
-                Toast.makeText(context, "Wrong username or password", Toast.LENGTH_LONG).show();
-            } else {
-                return null;
+            HashMap<String, String> parsedData = new HashMap<>();
+            parsedData.put(Constants.POST_SUCCESS, object.optString(Constants.POST_SUCCESS));
+            parsedData.put(Constants.POST_ERROR, object.optString(Constants.POST_ERROR));
+            parsedData.put(Constants.POST_TOKEN, object.optString(Constants.POST_TOKEN));
+            JSONObject details = object.optJSONObject("details");
+            if(details!=null) {
+                parsedData.put(Constants.POST_NAME, details.optString(Constants.POST_NAME));
+                parsedData.put(Constants.POST_EMAIL, details.optString(Constants.POST_EMAIL));
+                parsedData.put(Constants.POST_MOBILE, details.optString(Constants.POST_MOBILE));
+                parsedData.put(Constants.POST_MIXPANELID, details.optString(Constants.POST_MIXPANELID));
             }
+            return parsedData;
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
         return null;
     }
 
-    public static String[] parseSignupResponse(String response, final Activity activity) {
+    public static HashMap<String, String> parseSignupResponse(String response) {
         try {
             JSONObject object = new JSONObject(response);
-            Boolean success = Boolean.parseBoolean(object.optString("success"));
-            String[] token = {};
-            if (success) {
-                token[0] = object.optString("token");
-                token[1] = object.optString("mixpanelid");
-                return token;
-            } else if (object.optString("error").equalsIgnoreCase("USER_EXIST")) {
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-                        builder.setTitle("User Exists")
-                                .setMessage("An account already exists with this email id. Please Log In to continue")
-                                .setNeutralButton("OK", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        activity.startActivity(new Intent(activity, LogIn.class));
-                                        activity.finish();
-                                    }
-                                })
-                                .show();
+            HashMap<String, String> parsedData = new HashMap<>();
+            parsedData.put(Constants.POST_SUCCESS, object.optString(Constants.POST_SUCCESS));
+            parsedData.put(Constants.POST_ERROR, object.optString(Constants.POST_ERROR));
+            parsedData.put(Constants.POST_TOKEN, object.optString(Constants.POST_TOKEN));
+            parsedData.put(Constants.POST_MIXPANELID, object.optString(Constants.POST_MIXPANELID));
 
-                    }
-                });
-                return new String[]{};
-            } else {
-                return null;
-            }
+            return parsedData;
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return null;
     }
-
 }

@@ -32,13 +32,15 @@ import javax.net.ssl.HttpsURLConnection;
 /**
  * Created by Aanisha on 12-Jun-15.
  */
-public class SignUpService extends AsyncTask<String, Void, User>
-{
-    Activity activity;
+public class SignUpService extends AsyncTask<String, Void, User> {
     String urlExtension;
-    public SignUpService(Activity a,String s) {
-        activity=a;
-        urlExtension=s;
+    Activity activity;
+    HashMap<String, String> parsedData;
+
+    public SignUpService(String s, Activity a) {
+        urlExtension = s;
+        activity = a;
+        parsedData = new HashMap<>();
     }
 
     @Override
@@ -48,21 +50,19 @@ public class SignUpService extends AsyncTask<String, Void, User>
 
     @Override
     protected User doInBackground(String... params) {
-        Log.e("check","do in background");
         String name, email, mobile, password;
-        name=params[0];
-        email=params[1];
-        mobile=params[2];
-        password=params[3];
-        HashMap<String,String> data=new HashMap<>();
-        data.put("name",name);
-        data.put("email",email);
-        data.put("mobile",mobile);
-        data.put("password",password);
+        name = params[0];
+        email = params[1];
+        mobile = params[2];
+        password = params[3];
+        HashMap<String, String> data = new HashMap<>();
+        data.put("name", name);
+        data.put("email", email);
+        data.put("mobile", mobile);
+        data.put("password", password);
 
         try {
             URL url = new URL(urlExtension);
-
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setReadTimeout(15000);
             conn.setConnectTimeout(15000);
@@ -79,27 +79,42 @@ public class SignUpService extends AsyncTask<String, Void, User>
             writer.flush();
             writer.close();
             os.close();
-            int responseCode=conn.getResponseCode();
+            int responseCode = conn.getResponseCode();
 
             if (responseCode == HttpsURLConnection.HTTP_OK) {
                 BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                 String response = br.readLine();
-                if(urlExtension.equalsIgnoreCase(Constants.ServerUrls.login))
-                {
-                    User user = ParseJson.parseLoginResponse(response, activity);
-                    if (user != null) {
-                        return user;
+                Log.e("check", response);
+                if (urlExtension.equalsIgnoreCase(Constants.ServerUrls.login)) {
+                    parsedData = ParseJson.parseLoginResponse(response);
+                    if (parsedData != null) {
+                        if (Boolean.parseBoolean(parsedData.get(Constants.POST_SUCCESS))) {
+                            return new User(parsedData.get(Constants.POST_NAME), parsedData.get(Constants.POST_EMAIL),
+                                    parsedData.get(Constants.POST_MOBILE), parsedData.get(Constants.POST_TOKEN), parsedData.get(Constants.POST_MIXPANELID));
+                        } else {
+                            activity.runOnUiThread(new Runnable() {
+                                public void run() {
+                                    Toast.makeText(activity, "Wrong username or password", Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
                     }
-                }
-                else if(urlExtension.equalsIgnoreCase(Constants.ServerUrls.signUp)){
-                    String[] token=ParseJson.parseSignupResponse(response,activity);
-                    if (token != null) {
-                        return new User(name,email,mobile,token[0],token[1]);
+                } else if (urlExtension.equalsIgnoreCase(Constants.ServerUrls.signUp)) {
+                    parsedData = ParseJson.parseSignupResponse(response);
+                    if (parsedData != null) {
+                        if (Boolean.parseBoolean(parsedData.get(Constants.POST_SUCCESS))) {
+                            return new User(name, email, mobile, parsedData.get(Constants.POST_TOKEN), parsedData.get(Constants.POST_MIXPANELID));
+                        } else {
+                            activity.runOnUiThread(new Runnable() {
+                                public void run() {
+                                    Toast.makeText(activity, "User already exists", Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
                     }
                 }
             } else {
                 return null;
-
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -435,7 +435,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     }
 
     public void login(String email, String password) {
-        new SignUpService(this, Constants.ServerUrls.login).execute("", email, "", password);
+        new SignUpService(Constants.ServerUrls.login, this).execute("", email, "", password);
     }
 
     public boolean validatePassword(String password, String tag) {
@@ -479,7 +479,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         if (!Constants.isValidEmailId(email.getText().toString())) {
             return;
         }
-        new SignUpService(this, Constants.ServerUrls.signUp).execute(userName, userEmail, userContact, userPassword);
+        new SignUpService(Constants.ServerUrls.signUp, this).execute(userName, userEmail, userContact, userPassword);
 
     }
 
@@ -629,7 +629,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
      * Saving User Details to check next time if already logged in
      */
     private void saveUserDetails(String name, String userEmail, String userImageUrl, String userCoverPic, String mobileNo, String password) {
-        User user=new User();
+        User user = new User();
         user.setName(name);
         user.setEmail(userEmail);
         user.setCoverImage(userCoverPic);
@@ -672,6 +672,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
 
     /**
      * Login Through Social Network
+     *
      * @param email
      * @param id
      * @param idName
@@ -713,7 +714,13 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                     if (connection.getResponseCode() == HttpsURLConnection.HTTP_OK) {
                         BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                         String response = br.readLine();
-                        User user = ParseJson.parseLoginResponse(response, getBaseContext());
+                        HashMap<String, String> parsedData;
+                        parsedData = ParseJson.parseLoginResponse(response);
+                        User user = null;
+                        if (parsedData != null) {
+                            user = new User(parsedData.get(Constants.POST_NAME), parsedData.get(Constants.POST_EMAIL), parsedData.get(Constants.POST_MOBILE),
+                                    parsedData.get(Constants.POST_TOKEN), parsedData.get(Constants.POST_MIXPANELID));
+                        }
                         if (user != null) {
                             user.setCoverImage(coverPic);
                             user.setProfilePic(profilePic);
@@ -744,7 +751,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         }.execute(email, id, idName, url, coverPic, profilePic);
     }
 
-    public void startApp(){
+    public void startApp() {
         startActivity(new Intent(this, NavigationDrawer.class));
     }
 

@@ -21,11 +21,8 @@ import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.scribblernotebooks.scribblernotebooks.R;
 
 import java.io.UnsupportedEncodingException;
-<<<<<<< HEAD
 import java.net.MalformedURLException;
 import java.net.URL;
-=======
->>>>>>> 8e3354607dc85acd6079cedb3cc4b189720d612c
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,11 +35,7 @@ import java.util.Random;
 public class Constants {
 
     public static class ServerUrls{
-<<<<<<< HEAD
-        public static String websiteUrl="http://192.168.178.1:3000/";
-=======
         public static String websiteUrl="http://192.168.1.117:3000/";
->>>>>>> 8e3354607dc85acd6079cedb3cc4b189720d612c
         public static String signUp=websiteUrl+"signup";
         public static String login=websiteUrl+"login";
         public static String loginFacebook=websiteUrl+"login/facebook";
@@ -50,23 +43,19 @@ public class Constants {
         public static String linkSocialAccount=websiteUrl+"linkSocialNetwork";
         public static String insertGCM=websiteUrl+"insertGcm";
         public static String regenerateToken=websiteUrl+"token";
-<<<<<<< HEAD
         public static String changePassword=websiteUrl+"changePassword";
         public static String dealDetail=websiteUrl+"deal/";
         public static String dealList=websiteUrl+"deal";
     }
 
-    public static URL getDealDetailsURL(String dealId, String token){
+    public static URL getDealDetailsURL(String dealId, String token) {
         try {
-            return new URL(ServerUrls.dealDetail+dealId+"?token="+token);
+            return new URL(ServerUrls.dealDetail + dealId + "?token=" + token);
         } catch (MalformedURLException e) {
             e.printStackTrace();
             return null;
         }
-=======
->>>>>>> 8e3354607dc85acd6079cedb3cc4b189720d612c
     }
-
 
     public static final String MIXPANEL_TOKEN="873f1995dd119bdb63b8a51bc2f4951d";
 
@@ -112,10 +101,14 @@ public class Constants {
     public static final String FACEBOOKID="facebookId";
     public static final String GOOGLEID="googleId";
 
+    public static final String POST_SUCCESS="success";
+    public static final String POST_ERROR="error";
+    public static final String POST_TOKEN="token";
     public static final String POST_NAME="name";
     public static final String POST_EMAIL="email";
     public static final String POST_MOBILE="mobile";
     public static final String POST_PASSWORD="password";
+    public static final String POST_MIXPANELID="mixpanelId";
     public static final String POST_GOOGLE="googleId";
     public static final String POST_FACEBOOK="facebookId";
 
@@ -130,48 +123,6 @@ public class Constants {
     public static final String PREF_GCM_NAME="gcmSharedPreferences";
     public static final String GCM_REG_ID="registrationId";
     public static final String GCM_APP_VERSION="appVersion";
-
-
-    public static boolean saveUserDetails(Context context, User user){
-        if(user==null)
-            return false;
-        SharedPreferences userPrefs=context.getSharedPreferences(PREF_NAME,Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = userPrefs.edit();
-        editor.putString(PREF_DATA_NAME, user.getName());
-        editor.putString(PREF_DATA_PHOTO, user.getProfilePic());
-        editor.putString(PREF_DATA_COVER_PIC, user.getCoverImage());
-        editor.putString(PREF_DATA_EMAIL, user.getEmail());
-        editor.putString(PREF_DATA_MOBILE, user.getMobile());
-        editor.putString(PREF_DATA_PASS, user.getPassword());
-        editor.putString(PREF_DATA_USER_TOKEN, user.getToken());
-        editor.putString(PREF_DATA_MIXPANEL_USER_ID, user.getMixpanelId());
-        editor.apply();
-        return true;
-    };
-
-    /**
-     * To convert hashmap to post request for sending to server
-     * @param params the hashmap
-     * @return post request string
-     * @throws UnsupportedEncodingException
-     */
-    public static String getPostDataString(HashMap<String, String> params) throws UnsupportedEncodingException {
-        StringBuilder result = new StringBuilder();
-        boolean first = true;
-        for(Map.Entry<String, String> entry : params.entrySet()){
-            if (first)
-                first = false;
-            else
-                result.append("&");
-
-            result.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
-            result.append("=");
-            result.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
-        }
-
-        return result.toString();
-    }
-
 
 
     public static boolean saveUserDetails(Context context, User user){
