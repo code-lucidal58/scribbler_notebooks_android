@@ -10,17 +10,17 @@
 
     <LinearLayout
         android:id="@+id/originalLinearLayout"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="@dimen/search"
+        android:layout_centerHorizontal="true"
         android:orientation="horizontal"
         android:paddingTop="3dp"
         android:weightSum="4">
 
         <RelativeLayout
             android:id="@+id/layoutCategory"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="1"
             android:gravity="center">
 
             <com.scribblernotebooks.scribblernotebooks.CustomViews.RoundedImageView
@@ -31,7 +31,7 @@
                 android:src="@drawable/category" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/category"
                 android:layout_centerHorizontal="true"
@@ -44,9 +44,10 @@
 
         <RelativeLayout
             android:id="@+id/layoutScan"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
+            android:layout_marginLeft="@dimen/searchBarIconLeftMargin"
+            android:layout_marginStart="@dimen/searchBarIconLeftMargin"
             android:layout_height="match_parent"
-            android:layout_weight="1"
             android:gravity="center">
 
             <com.scribblernotebooks.scribblernotebooks.CustomViews.RoundedImageView
@@ -57,7 +58,7 @@
                 android:src="@drawable/scan" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/scan"
                 android:layout_centerHorizontal="true"
@@ -70,9 +71,11 @@
 
         <RelativeLayout
             android:id="@+id/layoutSearch"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:layout_marginLeft="@dimen/searchBarIconLeftMargin"
+            android:layout_marginStart="@dimen/searchBarIconLeftMargin"
             android:gravity="center">
 
             <com.scribblernotebooks.scribblernotebooks.CustomViews.RoundedImageView
@@ -83,7 +86,7 @@
                 android:src="@drawable/search" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/search"
                 android:layout_centerHorizontal="true"
@@ -96,9 +99,10 @@
 
         <RelativeLayout
             android:id="@+id/layoutSort"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_marginLeft="@dimen/searchBarIconLeftMargin"
+            android:layout_marginStart="@dimen/searchBarIconLeftMargin"
             android:gravity="center">
 
             <com.scribblernotebooks.scribblernotebooks.CustomViews.RoundedImageView
@@ -109,7 +113,7 @@
                 android:src="@drawable/sort" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/sort"
                 android:layout_centerHorizontal="true"

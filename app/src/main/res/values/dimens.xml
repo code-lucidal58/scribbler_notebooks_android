@@ -39,8 +39,6 @@
 
     <dimen name="navigation_drawer_font_size">18sp</dimen>
     <dimen name="navigation_drawer_item_height">48dp</dimen>
-    <dimen name="search">60dp</dimen>
-
 
 
     <dimen name="manualCodeSunSize">60dp</dimen>
@@ -50,9 +48,13 @@
     <dimen name="manualCodeCloud2H">30dp</dimen>
 
 
-    <dimen name="searchBarTextSize">13sp</dimen>
-    <dimen name="searchBarEditTextFontSize">15sp</dimen>
-    <dimen name="searchBarIconSize">35dp</dimen>
+    <dimen name="search">55dp</dimen>
+    <dimen name="searchBarTextSize">11sp</dimen>
+    <dimen name="searchBarEditTextFontSize">13sp</dimen>
+    <dimen name="searchBarIconSize">33dp</dimen>
+    <dimen name="searchBarIconLeftMargin">20dp</dimen>
+
+
     <dimen name="navigation_drawer_icon_size">30dp</dimen>
     <dimen name="navigation_drawer_item_textSize">16sp</dimen>
     <dimen name="navigation_drawer_cover_pic_height">210dp</dimen>

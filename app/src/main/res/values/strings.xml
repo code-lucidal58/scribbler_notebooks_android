@@ -15,6 +15,10 @@
     <string name="after_forgot_password">Thanks! Please check your email for a link to reset your password.</string>
     <string name="about_scribbler">At Scribbler, we’ve taken up the challenge of providing a clutter-free product that serves as an effective advertising medium. Our notebooks contain a limited set of advertising space helping advertisers communicate directly with all students of our affiliated colleges. Advertisers can run digital promotions by embedding a unique Scribbler code within their print advertisement. These codes when scanned through the Scribbler mobile app give deals and offers to the students, thereby creating a platform which connects print to digital media.</string>
 
+    <string name="noTokenError">This is very unfortunate but some error has occurred. Our engineers are working to fix this error.\nPlease try again later</string>
+    <string name="invalidLoginError">It seems like you have entered an invalid Email-ID Password combination. Please check and try again.</string>
+
+
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>
     <string name="title_section3">Section 3</string>
