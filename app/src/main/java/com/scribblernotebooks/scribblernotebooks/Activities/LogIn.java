@@ -145,14 +145,13 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                         String email = jsonObject.optString("email");
                         JSONObject cover = jsonObject.optJSONObject("cover");
                         String coverPic = cover.optString("source");
-                        String id=jsonObject.optString("id");
+                        String id = jsonObject.optString("id");
                         String userdp = "https://graph.facebook.com/" + id + "/picture?type=large";
                         fromApi = true;
-                        if(view_open==SIGNUP)
-                        {
+                        if (view_open == SIGNUP) {
                             saveUserDetails(name, email, userdp, coverPic, "", "", Constants.FACEBOOKID, id);
-                        }else{
-                            loginSocial(email, id, Constants.FACEBOOKID, Constants.ServerUrls.loginFacebook,coverPic,userdp);
+                        } else {
+                            loginSocial(email, id, Constants.FACEBOOKID, Constants.ServerUrls.loginFacebook, coverPic, userdp);
                         }
                     }
                 });
@@ -440,8 +439,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     }
 
     public void login(String email, String password) {
-        //TODO: Login User from server
-        new SignUpService(this, "login",this).execute("", email, "", password);
+        new SignUpService(this, Constants.ServerUrls.login).execute("", email, "", password);
     }
 
     public boolean validatePassword(String password, String tag) {
@@ -482,8 +480,10 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         if (!isValidPassword(password.getText().toString())) {
             return;
         }
-
-        new SignUpService(this, "signup",this).execute(userName, userEmail, userContact, userPassword);
+        if (!Constants.isValidEmailId(email.getText().toString())) {
+            return;
+        }
+        new SignUpService(this, Constants.ServerUrls.signUp).execute(userName, userEmail, userContact, userPassword);
 
     }
 
@@ -612,10 +612,10 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                     userCover = currentPerson.getCover().getCoverPhoto().getUrl();
                 }
                 fromApi = true;
-                if(view_open==SIGNUP) {
+                if (view_open == SIGNUP) {
                     saveUserDetails(personName, userEmail, s, userCover, "", "", Constants.GOOGLEID, userId);
-                }else {
-                    loginSocial(userEmail,userId,Constants.GOOGLEID, Constants.ServerUrls.loginGoogle, userCover, personImageUrl);
+                } else {
+                    loginSocial(userEmail, userId, Constants.GOOGLEID, Constants.ServerUrls.loginGoogle, userCover, personImageUrl);
                 }
 
 
@@ -683,54 +683,53 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
      * @param coverPic
      * @param profilePic
      */
-    void loginSocial(String email, String id, String idName, String url, String coverPic, String profilePic){
-        new AsyncTask<String, Void, User>(){
+    void loginSocial(String email, String id, String idName, String url, String coverPic, String profilePic) {
+        new AsyncTask<String, Void, User>() {
             @Override
             protected User doInBackground(String... params) {
-                String email=params[0];
-                String id=params[1];
-                String idName=params[2];
-                String url1=params[3];
-                String coverPic=params[4];
-                String profilePic=params[5];
+                String email = params[0];
+                String id = params[1];
+                String idName = params[2];
+                String url1 = params[3];
+                String coverPic = params[4];
+                String profilePic = params[5];
 
-                HashMap<String, String> data=new HashMap<String, String>();
+                HashMap<String, String> data = new HashMap<String, String>();
                 data.put(Constants.POST_EMAIL, email);
-                data.put(idName,id);
+                data.put(idName, id);
 
                 try {
                     URL url = new URL(url1);
-                    HttpURLConnection connection =(HttpURLConnection)url.openConnection();
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                     connection.setRequestMethod("POST");
                     connection.setConnectTimeout(15000);
                     connection.setReadTimeout(15000);
                     connection.setDoInput(true);
                     connection.setDoOutput(true);
 
-                    OutputStream os=connection.getOutputStream();
-                    BufferedWriter writer=new BufferedWriter(new OutputStreamWriter(os,"UTF-8"));
+                    OutputStream os = connection.getOutputStream();
+                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
                     writer.write(Constants.getPostDataString(data));
                     writer.flush();
                     writer.close();
                     os.close();
 
                     if (connection.getResponseCode() == HttpsURLConnection.HTTP_OK) {
-                        BufferedReader br=new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                        String response=br.readLine();
-                        User user= ParseJson.parseLoginResponse(response);
-                        if(user!=null){
+                        BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                        String response = br.readLine();
+                        User user = ParseJson.parseLoginResponse(response,getBaseContext());
+                        if (user != null) {
                             user.setCoverImage(coverPic);
                             user.setProfilePic(profilePic);
                             return user;
                         }
-                    }
-                    else {
+                    } else {
                         return null;
 
                     }
 
 
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 return null;
@@ -738,7 +737,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
 
             @Override
             protected void onPostExecute(User user) {
-                if(user==null){
+                if (user == null) {
                     return;
                 }
                 Constants.saveUserDetails(getApplicationContext(), user);

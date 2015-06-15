@@ -38,6 +38,18 @@ public class User {
         this.mixpanelId = mixpanelId;
         this.location=location;
 
+    String name="", email="", mobile="", facebookId="",
+            googleId="", coverImage="", profilePic="", password="", token="", mixpanelId="";
+
+    public User(String name, String facebookId, String googleId, String coverImage, String profilePic, String password, String token, String mixpanelId) {
+        this.name = name;
+        this.facebookId = facebookId;
+        this.googleId = googleId;
+        this.coverImage = coverImage;
+        this.profilePic = profilePic;
+        this.password = password;
+        this.token = token;
+        this.mixpanelId = mixpanelId;
     }
 
     public User(String name, String email, String mobile, String token, String mixpanelId) {
@@ -72,6 +84,22 @@ public class User {
         this.name = name;
     }
 
+    public String getFacebookId() {
+        return facebookId;
+    }
+
+    public void setFacebookId(String facebookId) {
+        this.facebookId = facebookId;
+    }
+
+    public String getGoogleId() {
+        return googleId;
+    }
+
+    public void setGoogleId(String googleId) {
+        this.googleId = googleId;
+    }
+
     public String getCoverImage() {
         return coverImage;
     }
@@ -87,7 +115,6 @@ public class User {
     public void setProfilePic(String profilePic) {
         this.profilePic = profilePic;
     }
-
 
     public String getToken() {
         return token;
