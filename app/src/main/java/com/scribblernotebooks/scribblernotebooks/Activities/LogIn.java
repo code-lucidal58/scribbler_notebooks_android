@@ -151,7 +151,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                         if (view_open == SIGNUP) {
                             saveUserDetails(name, email, userdp, coverPic, "", "", Constants.FACEBOOKID, id);
                         } else {
-                            loginSocial(email, id, Constants.FACEBOOKID, Constants.ServerUrls.loginFacebook, coverPic, userdp);
+                            loginSocial(name,email, id, Constants.FACEBOOKID, Constants.ServerUrls.loginFacebook, coverPic, userdp);
                         }
                     }
                 });
@@ -387,9 +387,11 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sign_in_button:
+                Log.e("check","button clicked");
                 if (Constants.isNetworkAvailable(getApplicationContext())) {
                     if (!mGoogleApiClient.isConnecting()) {
                         progressDialog.setMessage("Connecting...");
+                        progressDialog.setCancelable(false);
                         progressDialog.show();
                         mSignInClicked = true;
                         resolveSignInError();
@@ -602,32 +604,28 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         progressDialog.dismiss();
         try {
             if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
+                Log.e("profile info","inside if");
 
                 Person currentPerson = Plus.PeopleApi
                         .getCurrentPerson(mGoogleApiClient);
                 String personName = currentPerson.getDisplayName();
                 String personImageUrl = currentPerson.getImage().getUrl();
                 String userId = currentPerson.getId();
-                String s = personImageUrl.replace("photo.jpg?sz=50", "photo.jpg?sz=250");
+                String resizedImageUrl = personImageUrl.replace("photo.jpg?sz=50", "photo.jpg?sz=250");
                 String userEmail = Plus.AccountApi.getAccountName(mGoogleApiClient);
                 String userCover = "";
                 if (currentPerson.hasCover()) {
                     userCover = currentPerson.getCover().getCoverPhoto().getUrl();
                 }
                 fromApi = true;
-                if (view_open == SIGNUP) {
-                    saveUserDetails(personName, userEmail, s, userCover, "", "", Constants.GOOGLEID, userId);
-                } else {
-                    loginSocial(userEmail, userId, Constants.GOOGLEID, Constants.ServerUrls.loginGoogle, userCover, personImageUrl);
-                }
-
-
-                //TODO: check if user exists. If yes then login else signup
+                loginSocial(personName,userEmail, userId,resizedImageUrl, Constants.ServerUrls.loginGoogle, userCover, personImageUrl);
             } else {
+                Log.e("profile info","person null");
                 Toast.makeText(getApplicationContext(),
                         "Person information is null", Toast.LENGTH_LONG).show();
             }
         } catch (Exception e) {
+            Log.e("profile info","inside catch");
             e.printStackTrace();
         }
     }
@@ -680,82 +678,100 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     /**
      * Login Through Social Network
      *
+     * @param name
      * @param email
+     * @param resizedImage
      * @param id
-     * @param idName
      * @param url
      * @param coverPic
      * @param profilePic
      */
-    void loginSocial(String email, String id, String idName, String url, String coverPic, String profilePic) {
-        new AsyncTask<String, Void, User>() {
-            @Override
-            protected User doInBackground(String... params) {
-                String email = params[0];
-                String id = params[1];
-                String idName = params[2];
-                String url1 = params[3];
-                String coverPic = params[4];
-                String profilePic = params[5];
+    void loginSocial(String name,String email, String id,String resizedImage, String url, String coverPic, String profilePic) {
 
-                HashMap<String, String> data = new HashMap<String, String>();
-                data.put(Constants.POST_EMAIL, email);
-                data.put(idName, id);
-
-                try {
-                    URL url = new URL(url1);
-                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                    connection.setRequestMethod("POST");
-                    connection.setConnectTimeout(15000);
-                    connection.setReadTimeout(15000);
-                    connection.setDoInput(true);
-                    connection.setDoOutput(true);
-
-                    OutputStream os = connection.getOutputStream();
-                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-                    writer.write(Constants.getPostDataString(data));
-                    writer.flush();
-                    writer.close();
-                    os.close();
-
-                    if (connection.getResponseCode() == HttpsURLConnection.HTTP_OK) {
-                        BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                        String response = br.readLine();
-                        HashMap<String, String> parsedData;
-                        parsedData = ParseJson.parseLoginResponse(response);
-                        User user = null;
-                        if (parsedData != null) {
-                            user = new User(parsedData.get(Constants.POST_NAME), parsedData.get(Constants.POST_EMAIL), parsedData.get(Constants.POST_MOBILE),
-                                    parsedData.get(Constants.POST_TOKEN), parsedData.get(Constants.POST_MIXPANELID));
-                        }
-                        if (user != null) {
-                            user.setCoverImage(coverPic);
-                            user.setProfilePic(profilePic);
-                            return user;
-                        }
-                    } else {
-                        return null;
-
-                    }
-
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(User user) {
-                if (user == null) {
-                    return;
-                }
-                Constants.saveUserDetails(getApplicationContext(), user);
-                startActivity(new Intent(getApplicationContext(), NavigationDrawer.class));
-                finish();
-                super.onPostExecute(user);
-            }
-        }.execute(email, id, idName, url, coverPic, profilePic);
+        HashMap<String, String> data = new HashMap<>();
+        if(url.equalsIgnoreCase(Constants.ServerUrls.loginGoogle)){
+            data.put(Constants.POST_NAME,name);
+            data.put(Constants.POST_EMAIL, email);
+            data.put(Constants.POST_GOOGLE,id );
+            data.put("resizedImage",resizedImage);
+            data.put("coverPic",coverPic);
+            data.put("profilePic", profilePic);
+        }
+        else if(url.equalsIgnoreCase(Constants.ServerUrls.loginFacebook)){
+            data.put(Constants.POST_EMAIL, email);
+            data.put(Constants.POST_FACEBOOK,id );
+            data.put("coverPic",coverPic);
+            data.put("profilePic", profilePic);
+        }
+        new SignUpService(url,this).execute(data);
+//        new AsyncTask<String, Void, User>() {
+//            @Override
+//            protected User doInBackground(String... params) {
+//                String email = params[0];
+//                String id = params[1];
+//                String idName = params[2];
+//                String url1 = params[3];
+//                String coverPic = params[4];
+//                String profilePic = params[5];
+//
+//                HashMap<String, String> data = new HashMap<String, String>();
+//                data.put(Constants.POST_EMAIL, email);
+//                data.put(idName, id);
+//
+//                try {
+//                    URL url = new URL(url1);
+//                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+//                    connection.setRequestMethod("POST");
+//                    connection.setConnectTimeout(15000);
+//                    connection.setReadTimeout(15000);
+//                    connection.setDoInput(true);
+//                    connection.setDoOutput(true);
+//
+//                    OutputStream os = connection.getOutputStream();
+//                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+//                    writer.write(Constants.getPostDataString(data));
+//                    writer.flush();
+//                    writer.close();
+//                    os.close();
+//
+//                    if (connection.getResponseCode() == HttpsURLConnection.HTTP_OK) {
+//                        BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+//                        String response = br.readLine();
+//                        HashMap<String, String> parsedData;
+//                        parsedData = ParseJson.parseLoginResponse(response);
+//                        User user = null;
+//                        if (parsedData != null) {
+//                            user = new User(parsedData.get(Constants.POST_NAME), parsedData.get(Constants.POST_EMAIL), parsedData.get(Constants.POST_MOBILE),
+//                                    parsedData.get(Constants.POST_TOKEN), parsedData.get(Constants.POST_MIXPANELID));
+//                        }
+//                        if (user != null) {
+//                            user.setCoverImage(coverPic);
+//                            user.setProfilePic(profilePic);
+//                            return user;
+//                        }
+//                    } else {
+//                        return null;
+//
+//                    }
+//
+//
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//                return null;
+//            }
+//
+//            @Override
+//            protected void onPostExecute(User user) {
+//                if (user == null) {
+//                    return;
+//                }
+//                Constants.saveUserDetails(getApplicationContext(), user);
+//                startActivity(new Intent(getApplicationContext(), NavigationDrawer.class));
+//                finish();
+//                super.onPostExecute(user);
+//            }
+//        }.execute(email, id, idName, url, coverPic, profilePic);
     }
 
     public void startApp() {

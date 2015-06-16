@@ -36,7 +36,7 @@ import java.util.Random;
 public class Constants {
 
     public static class ServerUrls{
-        public static String websiteUrl="http://192.168.1.117:3000/";
+        public static String websiteUrl="http://192.168.1.114:3000/";
         public static String signUp=websiteUrl+"signup";
         public static String login=websiteUrl+"login";
         public static String loginFacebook=websiteUrl+"login/facebook";
@@ -61,8 +61,7 @@ public class Constants {
     public static final String MIXPANEL_TOKEN="873f1995dd119bdb63b8a51bc2f4951d";
 
     public static final String parentURLForGetRequest="http://192.168.1.117:3000/deal/";
-    public static final String parentURLForCouponCode="http://192.168.1.117:3000/deal/";
-    public static final String parentURL="http://192.168.1.117:3000/";
+    public static final String parentURLForCouponCode="http://192.168.1.114:3000/deal/";
 
 
     public static final String serverURL = "http://jazzyarchitects.orgfree.com/deal.php";
@@ -75,7 +74,7 @@ public class Constants {
     public static final String TAG_CATEGORY = "Category";
     public static final String TAG_IF_FEATURED="ifFeatured";
     public static final String TAG_IF_FAVOURITE="ifFavorite";
-    public static final String TAG_DETAILS="detail";
+    public static final String TAG_DETAILS="details";
     public static final String TAG_COUPON_CODE="couponCode";
 
     public static final String PARCELABLE_DEAL_LIST_KEY ="dealList";
@@ -131,8 +130,6 @@ public class Constants {
             return false;
         SharedPreferences userPrefs=context.getSharedPreferences(PREF_NAME,Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = userPrefs.edit();
-        Log.e("User object ",user.toString());
-        Log.e("User  ", String.valueOf(user.getName() + ""));
         if(!user.getName().isEmpty())
             editor.putString(PREF_DATA_NAME, user.getName());
         if(!user.getProfilePic().isEmpty())

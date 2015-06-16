@@ -37,4 +37,7 @@ dependencies {
     compile 'com.journeyapps:zxing-android-embedded:3.0.0@aar'
     compile 'com.google.zxing:core:3.2.0'
     compile 'com.mixpanel.android:mixpanel-android:4.5.3'
+    compile('com.segment.analytics.android:analytics:+@aar') {
+        transitive = true
+    }
 }
