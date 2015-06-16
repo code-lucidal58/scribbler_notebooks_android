@@ -3,6 +3,7 @@ package com.scribblernotebooks.scribblernotebooks.Adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.scribblernotebooks.scribblernotebooks.Activities.DealDetail;
+import com.scribblernotebooks.scribblernotebooks.Handlers.UserHandler;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Deal;
 import com.scribblernotebooks.scribblernotebooks.R;
@@ -32,6 +34,7 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
 
     ArrayList<Deal> dealsList;
     Context context;
+    UserHandler handler;
     public DisplayImageOptions displayImageOptions;
     public ImageLoadingListener imageLoadingListener;
     public ImageLoaderConfiguration imageLoaderConfiguration;
@@ -52,6 +55,7 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
 
     public void init(){
 
+        handler = new UserHandler(context);
         imageLoaderConfiguration=new ImageLoaderConfiguration.Builder(this.context).build();
         ImageLoader.getInstance().init(imageLoaderConfiguration);
         imageLoadingListener=new SimpleImageLoadingListener();
@@ -113,6 +117,12 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
         String title = deal.getTitle();
         String category = deal.getCategory();
         String details = deal.getShortDescription();
+
+        if(handler.findDeal(id)){
+            Log.e("Deal Likes",id+"  "+deal.getTitle()+"   "+deal.isFavorited());
+            deal.setIsFav(true);
+        }
+
         Boolean isfavorited=deal.isFavorited();
 
         viewHolder.favoriteIcon.setChecked(isfavorited);
@@ -126,7 +136,7 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
             @Override
             public void onClick(View v) {
                 Boolean isChecked = ((CheckBox) v).isChecked();
-                deal.setIsFav(isChecked);
+                deal.setIsFav(context,isChecked);
             }
         });
 

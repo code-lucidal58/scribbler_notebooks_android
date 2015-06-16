@@ -1,7 +1,24 @@
 package com.scribblernotebooks.scribblernotebooks.HelperClasses;
 
+import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
+
+import com.scribblernotebooks.scribblernotebooks.Handlers.UserHandler;
+
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.security.CodeSigner;
+import java.util.HashMap;
 
 /**
  * Created by Jibin_ism on 19-May-15.
@@ -79,8 +96,62 @@ public class Deal implements Parcelable {
     /**
      * Sending statistics to the server about like and share
      */
-    public void sendLikeStatus(Boolean isFav){
+    public void sendLikeStatus(final Context context,Boolean isFav){
         //Code to synchronise with server
+        User user= Constants.getUser(context);
+        String email=user.getEmail();
+        String token=user.getToken();
+        String id=this.getId();
+        String liked=String.valueOf(isFav);
+
+        new AsyncTask<String, Void, String>(){
+            @Override
+            protected String doInBackground(String... params) {
+                HashMap<String, String> data=new HashMap<String, String>();
+                data.put(Constants.POST_EMAIL,params[0]);
+                data.put(Constants.POST_TOKEN,params[1]);
+                data.put("dealId",params[2]);
+                data.put("liked",params[3]);
+
+                try{
+                    URL url=new URL(Constants.ServerUrls.likeDeal);
+                    HttpURLConnection connection=(HttpURLConnection)url.openConnection();
+                    connection.setConnectTimeout(15000);
+                    connection.setReadTimeout(15000);
+                    connection.setDoInput(true);
+                    connection.setDoOutput(true);
+                    connection.setRequestMethod("GET");
+
+                    OutputStream os=connection.getOutputStream();
+                    BufferedWriter writer=new BufferedWriter(new OutputStreamWriter(os,"UTF-8"));
+                    writer.write(Constants.getPostDataString(data));
+                    writer.flush();
+                    writer.close();
+                    os.close();
+
+                    BufferedReader reader=new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                    String response=reader.readLine();
+                    JSONObject object=new JSONObject(response);
+                    if(Boolean.parseBoolean(object.optString("success"))){
+                        UserHandler handler=new UserHandler(context);
+                        if(Boolean.parseBoolean(params[3]))
+                            handler.addDeal(params[2]);
+                        else
+                        handler.removeDeal(params[2]);
+                        Log.e("Deal Favorite", "Deal Favorited");
+                        handler.close();
+                    }
+
+
+
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
+
+                return null;
+            }
+        }.execute(email,token,id,liked);
     }
 
     public void sendShareStatus(){
@@ -106,9 +177,12 @@ public class Deal implements Parcelable {
         this.imageUrl = imageUrl;
     }
 
+    public void setIsFav(Context context, Boolean isFav) {
+        this.isFav = isFav;
+        sendLikeStatus(context,isFav);
+    }
     public void setIsFav(Boolean isFav) {
         this.isFav = isFav;
-        sendLikeStatus(isFav);
     }
 
     public void setIsFeatured(Boolean isFeatured){
