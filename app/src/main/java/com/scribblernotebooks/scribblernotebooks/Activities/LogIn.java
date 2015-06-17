@@ -148,11 +148,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                         String id = jsonObject.optString("id");
                         String userdp = "https://graph.facebook.com/" + id + "/picture?type=large";
                         fromApi = true;
-                        if (view_open == SIGNUP) {
-                            saveUserDetails(name, email, userdp, coverPic, "", "", Constants.FACEBOOKID, id);
-                        } else {
-                            loginSocial(name,email, id, Constants.FACEBOOKID, Constants.ServerUrls.loginFacebook, coverPic, userdp);
-                        }
+                        loginSocial(name, email, id, Constants.ServerUrls.loginFacebook, coverPic, userdp);
                     }
                 });
                 Bundle parameters = new Bundle();
@@ -387,7 +383,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sign_in_button:
-                Log.e("check","button clicked");
+                Log.e("check", "button clicked");
                 if (Constants.isNetworkAvailable(getApplicationContext())) {
                     if (!mGoogleApiClient.isConnecting()) {
                         progressDialog.setMessage("Connecting...");
@@ -604,7 +600,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         progressDialog.dismiss();
         try {
             if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
-                Log.e("profile info","inside if");
+                Log.e("profile info", "inside if");
 
                 Person currentPerson = Plus.PeopleApi
                         .getCurrentPerson(mGoogleApiClient);
@@ -618,160 +614,45 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                     userCover = currentPerson.getCover().getCoverPhoto().getUrl();
                 }
                 fromApi = true;
-                loginSocial(personName,userEmail, userId,resizedImageUrl, Constants.ServerUrls.loginGoogle, userCover, personImageUrl);
+                loginSocial(personName, userEmail, userId, Constants.ServerUrls.loginGoogle, userCover, resizedImageUrl);
             } else {
-                Log.e("profile info","person null");
+                Log.e("profile info", "person null");
                 Toast.makeText(getApplicationContext(),
                         "Person information is null", Toast.LENGTH_LONG).show();
             }
         } catch (Exception e) {
-            Log.e("profile info","inside catch");
+            Log.e("profile info", "inside catch");
             e.printStackTrace();
         }
     }
 
-    /**
-     * Saving User Details to check next time if already logged in
-     */
-    private void saveUserDetails(String name, String userEmail, String userImageUrl, String userCoverPic, String mobileNo, String password) {
-        User user = new User();
-        user.setName(name);
-        user.setEmail(userEmail);
-        user.setCoverImage(userCoverPic);
-        user.setProfilePic(userImageUrl);
-        user.setMobile(mobileNo);
-        Constants.saveUserDetails(getApplicationContext(), user);
-
-        if (fromApi) {
-            startActivity(new Intent(this, ProfileManagement.class));
-            finish();
-            overridePendingTransition(R.anim.profile_slide_in, R.anim.login_slide_out);
-            return;
-        }
-
-        startActivity(new Intent(getApplicationContext(), NavigationDrawer.class));
-        finish();
-    }
-
-    private void saveUserDetails(String name, String userEmail, String userImageUrl, String userCoverPic, String mobileNo, String password, String idName, String id) {
-        SharedPreferences.Editor editor = userPrefs.edit();
-        editor.putString(Constants.PREF_DATA_NAME, name);
-        editor.putString(Constants.PREF_DATA_PHOTO, userImageUrl);
-        editor.putString(Constants.PREF_DATA_COVER_PIC, userCoverPic);
-        editor.putString(Constants.PREF_DATA_EMAIL, userEmail);
-        editor.putString(Constants.PREF_DATA_MOBILE, mobileNo);
-        editor.putString(Constants.PREF_DATA_PASS, password);
-        editor.apply();
-        if (fromApi) {
-            Intent i = new Intent(this, ProfileManagement.class);
-            i.putExtra(Constants.INTENT_ID_NAME, idName);
-            i.putExtra(Constants.INTENT_ID_VALUE, id);
-            startActivity(i);
-            finish();
-            overridePendingTransition(R.anim.profile_slide_in, R.anim.login_slide_out);
-            return;
-        }
-        startActivity(new Intent(getApplicationContext(), NavigationDrawer.class));
-        finish();
-    }
 
     /**
      * Login Through Social Network
      *
      * @param name
      * @param email
-     * @param resizedImage
      * @param id
      * @param url
      * @param coverPic
      * @param profilePic
      */
-    void loginSocial(String name,String email, String id,String resizedImage, String url, String coverPic, String profilePic) {
+    void loginSocial(String name, String email, String id, String url, String coverPic, String profilePic) {
 
         HashMap<String, String> data = new HashMap<>();
-        if(url.equalsIgnoreCase(Constants.ServerUrls.loginGoogle)){
-            data.put(Constants.POST_NAME,name);
+        if (url.equalsIgnoreCase(Constants.ServerUrls.loginGoogle)) {
+            data.put(Constants.POST_NAME, name);
             data.put(Constants.POST_EMAIL, email);
-            data.put(Constants.POST_GOOGLE,id );
-            data.put("resizedImage",resizedImage);
-            data.put("coverPic",coverPic);
+            data.put(Constants.POST_GOOGLE, id);
+            data.put("coverPic", coverPic);
+            data.put("profilePic", profilePic);
+        } else if (url.equalsIgnoreCase(Constants.ServerUrls.loginFacebook)) {
+            data.put(Constants.POST_EMAIL, email);
+            data.put(Constants.POST_FACEBOOK, id);
+            data.put("coverPic", coverPic);
             data.put("profilePic", profilePic);
         }
-        else if(url.equalsIgnoreCase(Constants.ServerUrls.loginFacebook)){
-            data.put(Constants.POST_EMAIL, email);
-            data.put(Constants.POST_FACEBOOK,id );
-            data.put("coverPic",coverPic);
-            data.put("profilePic", profilePic);
-        }
-        new SignUpService(url,this).execute(data);
-//        new AsyncTask<String, Void, User>() {
-//            @Override
-//            protected User doInBackground(String... params) {
-//                String email = params[0];
-//                String id = params[1];
-//                String idName = params[2];
-//                String url1 = params[3];
-//                String coverPic = params[4];
-//                String profilePic = params[5];
-//
-//                HashMap<String, String> data = new HashMap<String, String>();
-//                data.put(Constants.POST_EMAIL, email);
-//                data.put(idName, id);
-//
-//                try {
-//                    URL url = new URL(url1);
-//                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-//                    connection.setRequestMethod("POST");
-//                    connection.setConnectTimeout(15000);
-//                    connection.setReadTimeout(15000);
-//                    connection.setDoInput(true);
-//                    connection.setDoOutput(true);
-//
-//                    OutputStream os = connection.getOutputStream();
-//                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-//                    writer.write(Constants.getPostDataString(data));
-//                    writer.flush();
-//                    writer.close();
-//                    os.close();
-//
-//                    if (connection.getResponseCode() == HttpsURLConnection.HTTP_OK) {
-//                        BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-//                        String response = br.readLine();
-//                        HashMap<String, String> parsedData;
-//                        parsedData = ParseJson.parseLoginResponse(response);
-//                        User user = null;
-//                        if (parsedData != null) {
-//                            user = new User(parsedData.get(Constants.POST_NAME), parsedData.get(Constants.POST_EMAIL), parsedData.get(Constants.POST_MOBILE),
-//                                    parsedData.get(Constants.POST_TOKEN), parsedData.get(Constants.POST_MIXPANELID));
-//                        }
-//                        if (user != null) {
-//                            user.setCoverImage(coverPic);
-//                            user.setProfilePic(profilePic);
-//                            return user;
-//                        }
-//                    } else {
-//                        return null;
-//
-//                    }
-//
-//
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//                return null;
-//            }
-//
-//            @Override
-//            protected void onPostExecute(User user) {
-//                if (user == null) {
-//                    return;
-//                }
-//                Constants.saveUserDetails(getApplicationContext(), user);
-//                startActivity(new Intent(getApplicationContext(), NavigationDrawer.class));
-//                finish();
-//                super.onPostExecute(user);
-//            }
-//        }.execute(email, id, idName, url, coverPic, profilePic);
+        new SignUpService(url, this).execute(data);
     }
 
     public void startApp() {

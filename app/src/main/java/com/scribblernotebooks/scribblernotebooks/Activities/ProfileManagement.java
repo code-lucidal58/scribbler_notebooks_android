@@ -19,6 +19,7 @@ import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
@@ -219,6 +220,7 @@ public class ProfileManagement extends AppCompatActivity {
                 String token, mixpanelId;
 
                 //Post request JSON object
+                Log.e("profile management",params.toString());
                 HashMap<String, String> postDataParams = new HashMap<>();
                 postDataParams.put(Constants.POST_NAME, name);
                 postDataParams.put(Constants.POST_EMAIL, email);

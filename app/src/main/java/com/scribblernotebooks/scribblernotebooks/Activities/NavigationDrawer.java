@@ -38,6 +38,7 @@ import com.scribblernotebooks.scribblernotebooks.Fragments.ManualScribblerCode;
 import com.scribblernotebooks.scribblernotebooks.Fragments.ProfileFragment;
 import com.scribblernotebooks.scribblernotebooks.Fragments.SearchQueryFragment;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
+import com.scribblernotebooks.scribblernotebooks.HelperClasses.User;
 import com.scribblernotebooks.scribblernotebooks.R;
 import com.scribblernotebooks.scribblernotebooks.Services.LocationRetreiver;
 
@@ -50,7 +51,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -92,6 +92,8 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
         mainView = View.inflate(getApplicationContext(), R.layout.activity_navigation_drawer, null);
         setContentView(mainView);
 
+        /**Analytics part**/
+        User user =Constants.getUser(this);
 
         /**Registering user with GCM service**/
         if(!checkPlayServices()){
