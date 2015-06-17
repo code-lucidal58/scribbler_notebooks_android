@@ -83,11 +83,11 @@ public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User
                 BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                 String response = br.readLine();
                 if (urlExtension.equalsIgnoreCase(Constants.ServerUrls.login)) {
-                    loginHandle(response);
+                    return loginHandle(response);
                 } else if (urlExtension.equalsIgnoreCase(Constants.ServerUrls.signUp)) {
-                    signupHandle(response, params[0]);
+                    return signupHandle(response, params[0]);
                 } else if (urlExtension.equalsIgnoreCase(Constants.ServerUrls.loginGoogle) || urlExtension.equalsIgnoreCase(Constants.ServerUrls.loginFacebook)) {
-                    loginSocialHandle(response, params[0]);
+                    return loginSocialHandle(response, params[0]);
                 }
             }
         } catch (Exception e) {

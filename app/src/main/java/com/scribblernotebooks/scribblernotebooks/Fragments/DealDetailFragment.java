@@ -91,17 +91,20 @@ public class DealDetailFragment extends Fragment {
         likeBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked)
+                if(isChecked) {
                     likeBox.setText("Liked");
-                else
+                }
+                else {
                     likeBox.setText("Like this deal");
+                }
+                deal.setIsFav(mContext,isChecked);
             }
         });
 
         shareBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                deal.sendShareStatus();
+                deal.sendShareStatus(getActivity().getApplicationContext());
                 Intent sharingIntent=new Intent(Intent.ACTION_SEND);
                 sharingIntent.setType("text/plain");
                 sharingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -140,6 +143,7 @@ public class DealDetailFragment extends Fragment {
     private void claimThisDeal(){
         Toast.makeText(mContext,"Deal Claimed "+deal.getTitle(),Toast.LENGTH_LONG).show();
     }
+
 
 
     /**

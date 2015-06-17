@@ -4,12 +4,10 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -20,6 +18,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,10 +31,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.scribblernotebooks.scribblernotebooks.Activities.DealDetail;
 import com.scribblernotebooks.scribblernotebooks.Activities.ScannerActivity;
 import com.scribblernotebooks.scribblernotebooks.Adapters.RecyclerDealsAdapter;
 import com.scribblernotebooks.scribblernotebooks.Adapters.SearchListAdapter;
 import com.scribblernotebooks.scribblernotebooks.CustomListeners.HidingScrollListener;
+import com.scribblernotebooks.scribblernotebooks.CustomListeners.RecyclerItemClickListener;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Deal;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.ParseJson;
@@ -43,19 +44,26 @@ import com.scribblernotebooks.scribblernotebooks.HelperClasses.ShakeEventManager
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.User;
 import com.scribblernotebooks.scribblernotebooks.R;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
-import java.io.IOException;
+import java.io.BufferedWriter;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 public class DealsFragment extends android.support.v4.app.Fragment {
 
     private static final String URL_STRING = "url";
     private static final String TITLE = "title";
+    int PAGE_LIMIT=5;
 
     RecyclerView recyclerView;
     ArrayList<Deal> dealsList = new ArrayList<>();
@@ -73,7 +81,16 @@ public class DealsFragment extends android.support.v4.app.Fragment {
     Boolean reload;
     ShakeEventManager shakeEventManager = null;
 
+    Boolean finished=false;
+    Boolean isFirst=true;
+
+    String category = "", searchQuery = "";
+
     private String url, title;
+
+    final int DEAL_DETAIL_REQUEST_CODE=50;
+
+    Boolean parametersChanged=false;
 
     private OnFragmentInteractionListener mListener;
 
@@ -85,6 +102,10 @@ public class DealsFragment extends android.support.v4.app.Fragment {
     EditText selectedIconQuery;
     Boolean isOptionOpened = false;
     SearchListAdapter searchListAdapter, querySearchListAdapter;
+
+    private boolean loading = true;
+    int pastVisibleItems, visibleItemCount, totalItemCount;
+    String page = "1";
 
     /**
      * Setting statically the new fragment
@@ -186,12 +207,6 @@ public class DealsFragment extends android.support.v4.app.Fragment {
             }
         });
 
-        /**
-         * Calling functions for execution of the 4 functionality of search bar
-         */
-//        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-//        SearchBarApplication searchBarApplication = new SearchBarApplication(searchbar, container, context, fragmentManager);
-//        searchBarApplication.ImplementFunctions();
 
         /**
          * Navigation Drawer Hamburger Icon Setup
@@ -227,6 +242,8 @@ public class DealsFragment extends android.support.v4.app.Fragment {
         recyclerView.setPadding(recyclerView.getPaddingLeft(), paddingTop, recyclerView.getPaddingRight(), recyclerView.getPaddingBottom());
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
 
+
+
         /**Dynamically Changing the recycler view content*/
         recyclerView.addOnScrollListener(new HidingScrollListener(context) {
 
@@ -247,13 +264,14 @@ public class DealsFragment extends android.support.v4.app.Fragment {
 
         });
 
+        recyclerView.computeScroll();
+
         //Get response from server
 
         runAsyncTask();
 
         //recyclerView setup
         recyclerView.setLayoutManager(new GridLayoutManager(context, getResources().getInteger(R.integer.dealListColoumnCount)));
-
         /**
          * Swipe to refresh call
          */
@@ -270,24 +288,50 @@ public class DealsFragment extends android.support.v4.app.Fragment {
         /**
          * Shake to refresh
          */
-        shakeEventManager = new ShakeEventManager(context);
-        shakeEventManager.setOnShakeListener(new ShakeEventManager.OnShakeListener() {
-            @Override
-            public void onShake() {
-                Toast.makeText(context, "Shaken", Toast.LENGTH_SHORT).show();
-                reload = true;
-                runAsyncTask();
-            }
-        });
+        try {
+            shakeEventManager = new ShakeEventManager(context);
+            shakeEventManager.setOnShakeListener(new ShakeEventManager.OnShakeListener() {
+                @Override
+                public void onShake() {
+                    try {
+                        Toast.makeText(context, "Shaken", Toast.LENGTH_SHORT).show();
+                        reload = true;
+                        runAsyncTask();
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         return v;
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        try {
+            if(requestCode==DEAL_DETAIL_REQUEST_CODE) {
+                adapter = new RecyclerDealsAdapter(dealsList, context);
+                setAdapterHolder();
+                recyclerView.setAdapter(adapter);
+                Log.e("DealFragment", "In Activity Result");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
 
     /**
      * To show the basic option of category, search, scan and sort
      */
     public void showToolbarOptions() {
         isOptionOpened = false;
+        if(parametersChanged){
+            new LongOperation().execute(page, category, searchQuery);
+        }
         replacedLayout.setVisibility(View.GONE);
         originalLayout.setVisibility(View.VISIBLE);
         suggestions.setVisibility(View.GONE);
@@ -297,7 +341,7 @@ public class DealsFragment extends android.support.v4.app.Fragment {
     /**
      * Hide the category, search, scan and sort options and show the corresponding menu
      */
-    public void hideToolbarOptions(String tag) {
+    public void hideToolbarOptions(final String tag) {
         isOptionOpened = true;
 //        toolbarContainer.animate().translationY(-mToolbarHeight).setInterpolator(new AccelerateInterpolator(2)).start();
         toolbarContainer.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).start();
@@ -334,10 +378,10 @@ public class DealsFragment extends android.support.v4.app.Fragment {
             default:
                 break;
         }
-        searchListAdapter = new SearchListAdapter(suggestionList);
+        searchListAdapter = new SearchListAdapter(suggestionList,tag);
         suggestions.setAdapter(searchListAdapter);
 
-        querySearchListAdapter = new SearchListAdapter(suggestionList);
+        querySearchListAdapter = new SearchListAdapter(suggestionList,tag);
         selectedIconQuery.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -346,7 +390,7 @@ public class DealsFragment extends android.support.v4.app.Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 ArrayList<String> result = querySearchListAdapter.searchResult(s);
-                searchListAdapter = new SearchListAdapter(result);
+                searchListAdapter = new SearchListAdapter(result,tag);
                 suggestions.setAdapter(searchListAdapter);
             }
 
@@ -355,6 +399,37 @@ public class DealsFragment extends android.support.v4.app.Fragment {
 
             }
         });
+
+
+
+        suggestions.addOnItemTouchListener(new RecyclerItemClickListener(context, new RecyclerItemClickListener.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                List<String> list;
+                switch (tag) {
+                    case "category":
+                        list = Arrays.asList(getResources().getStringArray(R.array.category_list));
+                        category = list.get(position);
+                        parametersChanged=true;
+                        Log.e("DealFragment","Category set to "+category);
+                        showToolbarOptions();
+                        break;
+                    case "search":
+                        list = Arrays.asList(getResources().getStringArray(R.array.search_list));
+                        searchQuery = list.get(position);
+                        parametersChanged=true;
+                        Log.e("DealFragment","SearchQuery set to "+searchQuery);
+                        showToolbarOptions();
+                        break;
+                    case "sort":
+                        parametersChanged=true;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }));
+
 
     }
 
@@ -389,6 +464,11 @@ public class DealsFragment extends android.support.v4.app.Fragment {
         recyclerView.setLayoutManager(new GridLayoutManager(context, getResources().getInteger(R.integer.dealListColoumnCount)));
     }
 
+    public void LoadNextPage() {
+        new LongOperation().execute(page, category, searchQuery);
+    }
+
+
     /**
      * Async task to get the data from the server and process it
      */
@@ -405,12 +485,30 @@ public class DealsFragment extends android.support.v4.app.Fragment {
         }
 
         @Override
-        protected String doInBackground(String... urls) {
+        protected String doInBackground(String... queries) {
 
             String response = "";
             try {
-                User user=Constants.getUser(context);
-                URL url = new URL(Constants.ServerUrls.dealList+"?token="+user.getToken());
+                String page = queries[0];
+                String searchQuery = queries[2];
+                String category = queries[1];
+
+                User user = Constants.getUser(context);
+
+                HashMap<String, String> data = new HashMap<>();
+                data.put("page", page);
+                if(category!=null) {
+                    if (!category.isEmpty())
+                        data.put("category", category);
+                }
+                if(searchQuery!=null) {
+                    if (!searchQuery.isEmpty())
+                        data.put("searchQuery", searchQuery);
+                }
+                data.put("token", user.getToken());
+
+                URL url = new URL(Constants.ServerUrls.dealList+"?token="+user.getToken()+"&page="+page+"&category="+category+"&searchQuery="+searchQuery);
+                Log.e("DealFragment","Url: "+url.toString());
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
                 connection.setReadTimeout(15000);
@@ -424,17 +522,55 @@ public class DealsFragment extends android.support.v4.app.Fragment {
                 e.printStackTrace();
             }
 
-
             return response;
         }
 
         @Override
         protected void onPostExecute(String s) {
+            Log.e("DealFragment","Response "+s);
             progressDialog.dismiss();
             swipeRefreshLayout.setRefreshing(false);
-            dealsList.clear();
-            dealsList = ParseJson.getParsedData(s, context, isFeatured);
-            adapter = new RecyclerDealsAdapter(dealsList, context);
+            JSONObject object = null;
+            ArrayList<Deal> dealsList1=null;
+
+            if(page.equals("1")){
+                Log.e("DealFragment","Running for first time. Clearing original list");
+                dealsList.clear();
+            }
+
+            try {
+                object = new JSONObject(s);
+                dealsList1 = ParseJson.getParsedData(s, context, isFeatured);
+                if(dealsList1==null){
+                    finished=true;
+                    Log.e("DealFragment","Finished = true");
+                }
+                if(!finished) {
+                    page = String.valueOf(Integer.parseInt(object.optString("page")) + 1);
+                    Log.e("DealFragment","Finished =false, Page="+page);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                dealsList.addAll(dealsList1);
+                Log.e("DealFragment","Deal list added to original" );
+            }catch (Exception e){
+                Log.e("DealFragment","Error adding deals to original list");
+                e.printStackTrace();
+            }
+
+            if(page.equals("1")) {
+                Log.e("Running","First Time");
+                adapter = new RecyclerDealsAdapter(dealsList, context);
+            }else {
+                Log.e("Running","Not First Time");
+                adapter = new RecyclerDealsAdapter(dealsList, context);
+//                recyclerView.scrollToPosition(Integer.parseInt(page)*PAGE_LIMIT);
+                adapter.notifyDataSetChanged();
+            }
+            setAdapterHolder();
             recyclerView.setAdapter(adapter);
         }
     }
@@ -466,23 +602,26 @@ public class DealsFragment extends android.support.v4.app.Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (shakeEventManager != null) {
-            shakeEventManager.resume();
+        try {
+            if (shakeEventManager != null) {
+                shakeEventManager.resume();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
         reload = true;
-        getNotificationStatus();
     }
 
-    public void getNotificationStatus() {
-        SharedPreferences sd = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean onoff = sd.getBoolean(Constants.PREF_NOTIFICATION_ON_OFF, true);
-        boolean dealofday = sd.getBoolean(Constants.PREF_NOTIFICATION_DEAL_OF_DAY, true);
-    }
 
     @Override
     public void onPause() {
         super.onPause();
-        shakeEventManager.pause();
+
+        try {
+            shakeEventManager.pause();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -506,9 +645,35 @@ public class DealsFragment extends android.support.v4.app.Fragment {
         } else {
             noConnectionText.setVisibility(View.GONE);
             //Get response from server
-            new LongOperation().execute(url);
+            new LongOperation().execute(page, category, searchQuery);
         }
     }
+    void setAdapterHolder(){
+        adapter.setViewHolderListener(new RecyclerDealsAdapter.onViewHolderListener() {
+            @Override
+            public void onRequestedLastItem() {
+                if (!finished) {
+                    Log.e("DealFragment","Loading Next Page "+page);
+                    LoadNextPage();
 
+                }
+            }
+        });
+        adapter.setItemClickListener(new RecyclerDealsAdapter.onItemClickListener() {
+            @Override
+            public void onItemClick(int position, ArrayList<Deal> deals) {
+                showDealDetail(position, deals);
+            }
+        });
+    }
+
+
+
+    public void showDealDetail(int position, ArrayList<Deal> deals){
+        Intent i=new Intent(context, DealDetail.class);
+        i.putParcelableArrayListExtra(Constants.PARCELABLE_DEAL_LIST_KEY, deals);
+        i.putExtra(Constants.CURRENT_DEAL_INDEX, position);
+        startActivityForResult(i,DEAL_DETAIL_REQUEST_CODE);
+    }
 
 }

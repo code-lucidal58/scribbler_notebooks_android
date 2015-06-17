@@ -5,21 +5,17 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.graphics.Paint;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.util.Pair;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.facebook.login.LoginManager;
@@ -28,37 +24,35 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.plus.Plus;
-import com.mixpanel.android.mpmetrics.MixpanelAPI;
-import com.scribblernotebooks.scribblernotebooks.CustomViews.DealPopup;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.LeftNavigationDrawer;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.NotificationDrawer;
 import com.scribblernotebooks.scribblernotebooks.Fragments.ClaimedDeals;
 import com.scribblernotebooks.scribblernotebooks.Fragments.DealsFragment;
 import com.scribblernotebooks.scribblernotebooks.Fragments.ManualScribblerCode;
 import com.scribblernotebooks.scribblernotebooks.Fragments.ProfileFragment;
-import com.scribblernotebooks.scribblernotebooks.Fragments.SearchQueryFragment;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
+import com.scribblernotebooks.scribblernotebooks.HelperClasses.User;
 import com.scribblernotebooks.scribblernotebooks.R;
 import com.scribblernotebooks.scribblernotebooks.Services.LocationRetreiver;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class NavigationDrawer extends AppCompatActivity implements ProfileFragment.OnFragmentInteractionListener,
-        DealsFragment.OnFragmentInteractionListener,ManualScribblerCode.OnFragmentInteractionListener,
-        SearchQueryFragment.OnFragmentInteractionListener,ClaimedDeals.OnFragmentInteractionListener {
+        DealsFragment.OnFragmentInteractionListener,ManualScribblerCode.OnFragmentInteractionListener, ClaimedDeals.OnFragmentInteractionListener{
 
 
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
@@ -135,7 +129,7 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
         mDrawerLayout = (DrawerLayout) mainView.findViewById(R.id.drawer_layout);
 
         /** Setting Up Navigation Drawer and Right Notification Drawer */
-//        setupNotificationDrawer();
+        setupNotificationDrawer();
         setupNavigationDrawer();
 
         /** Initializing Google+API incase user wants to logOut */
@@ -175,14 +169,14 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
         }
 
         startService(new Intent(this, LocationRetreiver.class));
-        MixpanelAPI mixpanelAPI=Constants.getMixPanelInstance(this);
+//        MixpanelAPI mixpanelAPI=Constants.getMixPanelInstance(this);
         JSONObject props=new JSONObject();
         try {
             props.put("Location",getSharedPreferences(Constants.PREF_NAME,MODE_PRIVATE).getString(Constants.PREF_DATA_LOCATION,""));
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        mixpanelAPI.track("User",props);
+//        mixpanelAPI.track("User",props);
 
 
         /** Load Manual Code Input Fragment **/
@@ -341,13 +335,12 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
 
     /**
      * Store user reg id on server
-     * @param msg
      */
-    public void sendToServer(String msg){
-        String name=getSharedPreferences(Constants.PREF_NAME,MODE_PRIVATE).getString(Constants.PREF_DATA_NAME,"").replace(" ", "_");
-        String url="http://jazzyarchitects.orgfree.com/register_user.php?name="+name+"&id="+msg;
-//        Log.e("Url",url);
-        new LongOperation().execute(url);
+    public void sendToServer(String gcmkey){
+
+        User user=Constants.getUser(this);
+        Log.e("User Email for GCM",user.getEmail());
+        new LongOperation().execute(user.getEmail(), gcmkey);
     }
 
     public class LongOperation extends AsyncTask<String, Void, Void> {
@@ -355,11 +348,34 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
         @Override
         protected Void doInBackground(String... strings) {
             try {
-                HttpClient client = new DefaultHttpClient();
-                HttpGet httpGet = new HttpGet(strings[0]);
-                ResponseHandler<String> responseHandler = new BasicResponseHandler();
-                client.execute(httpGet, responseHandler);
-            } catch (IOException e) {
+                HashMap<String, String> data=new HashMap<>();
+                data.put("email",strings[0]);
+                data.put("gcmkey",strings[1]);
+
+                URL url=new URL(Constants.ServerUrls.insertGCM);
+                HttpURLConnection connection=(HttpURLConnection)url.openConnection();
+                connection.setRequestMethod("POST");
+                connection.setDoOutput(true);
+                connection.setDoInput(true);
+                connection.setConnectTimeout(15000);
+                connection.setReadTimeout(15000);
+
+                OutputStream os=connection.getOutputStream();
+                BufferedWriter writer=new BufferedWriter(new OutputStreamWriter(os,"UTF-8"));
+                writer.write(Constants.getPostDataString(data));
+                writer.flush();
+                writer.close();
+                os.close();
+
+                BufferedReader reader=new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String response=reader.readLine();
+                JSONObject object=new JSONObject(response);
+                Boolean success=Boolean.parseBoolean(object.optString("success"));
+                if(success){
+                    Log.e("GCM","Gcm key sent "+strings[1]);
+                }
+
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             return null;

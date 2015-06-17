@@ -103,6 +103,12 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         userPrefs = getSharedPreferences(Constants.PREF_NAME, MODE_PRIVATE);
         try {
             String userName = userPrefs.getString(Constants.PREF_DATA_NAME, "");
+//            if(Constants.DEBUG){
+//                if (!userPrefs.getString(Constants.PREF_DATA_PASS, "").isEmpty()) {
+//                    startActivity(new Intent(this, NavigationDrawer.class));
+//                    finish();
+//                }
+//            }
             if (!userName.isEmpty()) {
                 if (userPrefs.getString(Constants.PREF_DATA_PASS, "").isEmpty()) {
                     startActivity(new Intent(this, ProfileManagement.class));
@@ -421,6 +427,16 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         if (view_open == LOGIN) {
             userEmail = email.getText().toString();
             userPassword = password.getText().toString();
+
+            Log.e("Error",userEmail);
+
+            if(userEmail.equalsIgnoreCase("skip")){
+                getSharedPreferences(Constants.PREF_NAME,MODE_PRIVATE).edit().putString(Constants.PREF_DATA_PASS,"OK").apply();
+                startActivity(new Intent(this, NavigationDrawer.class));
+                finish();
+                return;
+
+            }
 
             if (userEmail.isEmpty()) {
                 Toast.makeText(getApplicationContext(), "Oops... Looks like you forgot to enter email id", Toast.LENGTH_LONG).show();

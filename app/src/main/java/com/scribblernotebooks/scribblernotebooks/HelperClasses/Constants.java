@@ -7,7 +7,6 @@ import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.Pair;
 import android.util.Patterns;
 import android.view.animation.Animation;
@@ -15,9 +14,7 @@ import android.view.animation.LinearInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 
-import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.scribblernotebooks.scribblernotebooks.R;
 
@@ -33,10 +30,16 @@ import java.util.Random;
 /**
  * Created by Jibin_ism on 08-May-15.
  */
+
+
 public class Constants {
 
+
+//    public static boolean DEBUG=false;
+//    public static String DEBUG_RESPONSE="{\"success\":true,\"message\":[{\"_id\":\"55753f821f3eaf7c28db698c\",\"Id\":\"1\",\"Title\":\"Savaari\",\"Category\":\"Travel\",\"ShortDescription\":\"Savaari Chennai Airport Drop Starting at Rs.149\",\"Description\":\"Savaari Chennai Airport Drop Starting at Rs.149. Cabs to outstation destinations and airport transfers are also available at cheapest fares. No Savaari coupon code is required to get this Savaari Chennai Airport Drop offer. Hurry up!!! Don't miss it!!!\",\"ImageUUID\":\"e60c8daa-05c6-4b7d-b3eb-cca04d949b01\",\"__v\":0},{\"_id\":\"557545671f3eaf7c28db6994\",\"Id\":\"10\",\"Title\":\"SnapDeal\",\"Category\":\"Clothing\",\"ShortDescription\":\"Flat 60% offers on Snapdeal Mens Clothing\",\"Description\":\"Snapdeal Mens Clothing offer Flat 60%. Pick Mens Fashion Clothing Products like Shirts, T-Shirts, Jeans, Trousers, Shorts, Sweaters, Sweat Shirts, Jacket and more. Select Mens Wear Sale from Celio Brand. Mens Clothing online Shopping price starts from Rs.240.\",\"ImageUUID\":\"081b2e48-7dc6-46b2-8ea6-64ba5fea8eb4\",\"__v\":0},{\"_id\":\"55753fed1f3eaf7c28db698d\",\"Id\":\"2\",\"Title\":\"Hotels.com\",\"Category\":\"Restuarent\",\"ShortDescription\":\"Hotels.com Deal Of The Day Upto 65% OFF on Hotel Booking\",\"Description\":\"Offer is Get upto 65% Discounts on your hotel booking payments through Hotels.com Deal Of The day.Check out the mega deals and get discounts of upto 65% on hotels at top destinations. No coupon code is required for this Hotels.com Deal Of The Day Offer!!.\",\"ImageUUID\":\"b078bf86-a0a0-43e9-8ab6-0b450c852086\",\"__v\":0},{\"_id\":\"5575402b1f3eaf7c28db698e\",\"Id\":\"3\",\"Title\":\"Gaana.com\",\"Category\":\"Music\",\"ShortDescription\":\"Refer a Friend and Get 2 Weeks of Free Gaana Plus\",\"Description\":\"Gaana app new free recharge offer- Invite your friends and Get free 2 weeks pro subscription of gaana app,per refer and 50 rs to the person using your referral code. Each referral code can be used for upto 5 times.\",\"ImageUUID\":\"66746236-0882-49b9-9453-0d6a5c2d9451\",\"__v\":0},{\"_id\":\"557540911f3eaf7c28db698f\",\"Id\":\"4\",\"Title\":\"Fashion And You\",\"Category\":\"Clothing\",\"ShortDescription\":\"Fashionandyou Offer on Sunglasses & Watches Online - Upto 60% Offer\",\"Description\":\"Upto 60% Offer on Fashionandyou Sunglasses & Watches .Sunglasses and Watches Fashionandyou Offer on Both Men & Women From Lacoste Brands such as Unisex Frame, Women Frame, Unisex Sunglsses, Men frame, Men Casual Watches, Women Casual Watches, Unisex Casual Watches and more. \",\"ImageUUID\":\"77a800a2-96c4-417f-b815-4ba44210e5d8\",\"__v\":0},{\"_id\":\"557540e61f3eaf7c28db6990\",\"Id\":\"5\",\"Title\":\"ZoomCar\",\"Category\":\"Travel\",\"ShortDescription\":\"Zommcar Offer On First Ride Get 20% OFF\",\"Description\":\"Book your first drive and get 20% off at Zoomcar Offer O First Ride. Use coupon code ZOOMSD20 to avail this offer.Book your Cab now for your travel Plan And get 20% OFF O Discounts on your first ride alone.have a happy journey with Zoomcar!!\",\"ImageUUID\":\"6b970900-bfab-45fe-9b2d-cb7be7171a26\",\"__v\":0},{\"_id\":\"557541411f3eaf7c28db6991\",\"Id\":\"6\",\"Title\":\"Fashion Jewellery\",\"Category\":\"Jewellery\",\"ShortDescription\":\"Shine and Simmer on Women Fashion Jewellery Online - Upto 70% OFF\",\"Description\":\"Upto 70% Offer on Womens Fashion Jewellery Online from Fashionandyou. Buy online Fashion Jewellery Designs for Bauble Burst Brands such as Bracelet, Earrings, Rings and Bangles. Price Range of Women Fashion Jewellery Online Starts From Rs.229 .\",\"ImageUUID\":\"843a30a1-3423-4642-9c26-f62d5dc8b977\",\"__v\":0},{\"_id\":\"557541801f3eaf7c28db6992\",\"Id\":\"7\",\"Title\":\"FoodPanda\",\"Category\":\"Restuarent\",\"ShortDescription\":\"Get Rs.100 worth Foodpanda Voucher with ICICI Bank Pay \",\"Description\":\"Get Rs.100 worth Foodpanda Voucher with ICICI Bank Pay. ICICI Bank in collaboration with foodpanda.in presents a delightful offer for icicibankpay customers! Simply register for icicibankpay, a first of its kind banking service using Twitter and get Rs.100 offer on order of Rs.250 on foodpanda.in. Hurry up to grab this nice deal! Don't miss this excusive Online food orders offer!!!\",\"ImageUUID\":\"ef6227e2-d13b-4b12-86db-4530beaa52f6\",\"__v\":0},{\"_id\":\"557543a51f3eaf7c28db6993\",\"Id\":\"9\",\"Title\":\"Savaari\",\"Category\":\"Travel\",\"ShortDescription\":\"Savaari Cab Offer Flat 10% Discounts For ICICI Bank Customers!!\",\"Description\":\"ICICI Bank Offer in Savaari Cab Get FLAT 10% off* on Car Rentals! Use Promo code SAVICICI13 to avail the offer.This offer applicable for all kind of travel plans.No More restriction to grab this offer.book your Savaari Cab Offer through ICICI Bank Card And get Discounts on your travel payment!!!\",\"ImageUUID\":\"0a94eed8-041f-4c99-8dd1-8781c65b9544\",\"__v\":0}]}";
+
     public static class ServerUrls{
-        public static String websiteUrl="http://192.168.1.114:3000/";
+        public static String websiteUrl="http://192.168.178.1:3000/";
         public static String signUp=websiteUrl+"signup";
         public static String login=websiteUrl+"login";
         public static String loginFacebook=websiteUrl+"login/facebook";
@@ -48,6 +51,8 @@ public class Constants {
         public static String dealDetail=websiteUrl+"deal/";
         public static String dealList=websiteUrl+"deal";
         public static String likeDeal=websiteUrl+"likeDeal";
+        public static String shareDeal=websiteUrl+"shareDeal";
+        public static String forgotPassword=websiteUrl+"forgotPassword";
     }
 
     public static URL getDealDetailsURL(String dealId, String token) {
@@ -213,12 +218,12 @@ public class Constants {
     }
 
 
-    public static MixpanelAPI getMixPanelInstance(Context context){
-        MixpanelAPI mixpanelAPI= MixpanelAPI.getInstance(context,MIXPANEL_TOKEN);
-        String id=context.getSharedPreferences(Constants.PREF_NAME,Context.MODE_PRIVATE).getString(Constants.PREF_DATA_MIXPANEL_USER_ID,"0");
-        mixpanelAPI.identify(id);
-        return mixpanelAPI;
-    }
+//    public static MixpanelAPI getMixPanelInstance(Context context){
+//        MixpanelAPI mixpanelAPI= MixpanelAPI.getInstance(context,MIXPANEL_TOKEN);
+//        String id=context.getSharedPreferences(Constants.PREF_NAME,Context.MODE_PRIVATE).getString(Constants.PREF_DATA_MIXPANEL_USER_ID,"0");
+//        mixpanelAPI.identify(id);
+//        return mixpanelAPI;
+//    }
 
 
     /**
