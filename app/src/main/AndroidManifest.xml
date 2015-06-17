@@ -98,11 +98,9 @@
             android:windowSoftInputMode="adjustPan|stateHidden" >
             <intent-filter>
                 <data
-                    android:host="scribblernotebooks.co.in"
+                    android:host="scribbler.co.in"
                     android:scheme="http" />
-
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
@@ -112,7 +110,6 @@
                     android:scheme="market" />
 
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>

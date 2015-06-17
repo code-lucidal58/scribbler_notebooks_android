@@ -16,9 +16,16 @@ import java.util.ArrayList;
 public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.ViewHolder> {
 
     ArrayList<String> suggestionList;
-    public SearchListAdapter(ArrayList<String> s) {
+    String tag;
+    OnItemClickListener mListener=null;
+
+
+
+    public SearchListAdapter(ArrayList<String> s, String tag) {
         suggestionList=s;
+        this.tag=tag;
     }
+
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -40,10 +47,19 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder viewHolder, int position) {
-        String suggestion = suggestionList.get(position);
+    public void onBindViewHolder(ViewHolder viewHolder, final int position) {
+        final String suggestion = suggestionList.get(position);
 
         viewHolder.txtSuggestion.setText(suggestion);
+
+        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mListener!=null){
+                    mListener.onItemClick(position,suggestion,tag);
+                }
+            }
+        });
     }
 
     @Override
@@ -61,5 +77,14 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
             }
         }
         return result;
+    }
+
+
+    public void setItemClickListener(OnItemClickListener listener){
+        mListener=listener;
+    }
+
+    public interface OnItemClickListener{
+        void onItemClick(int position,String content, String Tag);
     }
 }

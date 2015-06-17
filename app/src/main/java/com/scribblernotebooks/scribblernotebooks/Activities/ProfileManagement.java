@@ -298,8 +298,6 @@ public class ProfileManagement extends AppCompatActivity {
                 String token, mixpanelid;
                 super.onPostExecute(s);
                 if (s.length == 0) {
-                    startActivity(new Intent(getApplicationContext(), NavigationDrawer.class));
-                    finish();
                     return;
                 } else {
                     token = s[0];

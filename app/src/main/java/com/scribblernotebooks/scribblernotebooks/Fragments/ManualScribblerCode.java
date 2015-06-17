@@ -66,6 +66,8 @@ public class ManualScribblerCode extends Fragment {
 
     RelativeLayout root;
 
+    ShakeEventManager shakeEventManager;
+
 
     ImageView sun, cloud1, cloud2;
 
@@ -239,20 +241,30 @@ public class ManualScribblerCode extends Fragment {
         /**
          * Shake to refresh
          */
-        final ShakeEventManager shakeEventManager=new ShakeEventManager(sContext);
-        shakeEventManager.setOnShakeListener(new ShakeEventManager.OnShakeListener() {
-            @Override
-            public void onShake() {
-                Fragment fragment=DealsFragment.newInstance(Constants.serverURL, "Deals");
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.content_frame, fragment);
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
-            }
-        });
+        try {
+            shakeEventManager = new ShakeEventManager(sContext);
+            shakeEventManager.setOnShakeListener(new ShakeEventManager.OnShakeListener() {
+                @Override
+                public void onShake() {
+                    try {
+                        Fragment fragment = DealsFragment.newInstance(Constants.serverURL, "Deals");
+                        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction.replace(R.id.content_frame, fragment);
+                        fragmentTransaction.addToBackStack(null);
+                        fragmentTransaction.commit();
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         return v;
     }
+
+
 
     /**
      * Code for setting background of button taking into account the deprecation of default methods

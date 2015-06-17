@@ -23,5 +23,19 @@
             android:layout_height="match_parent" />
 
     </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/notification_drawer"
+        android:layout_width="@dimen/navigation_drawer_width"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|center_vertical"
+        android:divider="@android:color/darker_gray"
+        android:dividerHeight="0.1dp"
+        android:background="#111">
+
+        <include layout="@layout/layout_right_drawer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
 
 </android.support.v4.widget.DrawerLayout>

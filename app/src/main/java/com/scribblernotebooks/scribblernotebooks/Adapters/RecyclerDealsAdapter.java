@@ -43,6 +43,19 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
     public ImageLoadingListener imageLoadingListener;
     public ImageLoaderConfiguration imageLoaderConfiguration;
     Boolean isClaimed=false;
+    onViewHolderListener mListener;
+    onItemClickListener itemClickListener;
+
+    public void setViewHolderListener(onViewHolderListener listener){
+        mListener=listener;
+    }
+    public void setItemClickListener(onItemClickListener listener){
+        itemClickListener=listener;
+    }
+
+    public interface onViewHolderListener{
+        void onRequestedLastItem();
+    }
 
     public RecyclerDealsAdapter(ArrayList<Deal> dealsList, Context context) {
         this.dealsList = dealsList;
@@ -114,7 +127,12 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
+
         final Deal deal=dealsList.get(position);
+
+        if(position==getItemCount()-1){
+            mListener.onRequestedLastItem();
+        }
 
         /** Retrieving deal info  */
         String id=deal.getId();
@@ -125,6 +143,8 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
         if(handler.findDeal(id)){
             Log.e("Deal Likes",id+"  "+deal.getTitle()+"   "+deal.isFavorited());
             deal.setIsFav(true);
+        }else{
+            deal.setIsFav(false);
         }
 
         Boolean isfavorited=deal.isFavorited();
@@ -149,12 +169,12 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
         viewHolder.shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                deal.sendShareStatus();
+                deal.sendShareStatus(context);
                 Intent sharingIntent=new Intent(Intent.ACTION_SEND);
                 sharingIntent.setType("text/plain");
                 sharingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "Scribbler Deal");
-                sharingIntent.putExtra(Intent.EXTRA_TEXT,"Hi there, Just checkout this Scribbler Deal ");
+                sharingIntent.putExtra(Intent.EXTRA_TEXT, "Hi there, Just checkout this Scribbler Deal ");
                 Intent starter=Intent.createChooser(sharingIntent,"Share Via");
                 starter.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.getApplicationContext().startActivity(starter);
@@ -174,11 +194,7 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
         viewHolder.rippleLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i=new Intent(context, DealDetail.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                i.putParcelableArrayListExtra(Constants.PARCELABLE_DEAL_LIST_KEY, dealsList);
-                i.putExtra(Constants.CURRENT_DEAL_INDEX,position);
-                context.startActivity(i);
+                itemClickListener.onItemClick(position, dealsList);
             }
         });
 
@@ -188,6 +204,10 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
     @Override
     public int getItemCount() {
         return dealsList.size();
+    }
+
+    public interface onItemClickListener{
+        void onItemClick(int position, ArrayList<Deal> deals);
     }
 
 }

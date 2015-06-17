@@ -24,7 +24,7 @@ import java.util.HashMap;
 public class ParseJson {
 
     public static ArrayList<Deal> getParsedData(String url, Context context, Boolean b) {
-        ArrayList<Deal> dealsList = new ArrayList<>();
+        ArrayList<Deal> dealsList = null;
         try {
             JSONObject jsonChild = new JSONObject(url);
             String success = jsonChild.optString("success");
@@ -36,6 +36,9 @@ public class ParseJson {
             int lengthJsonArr = jsonArray.length();
 
             for (int i = 0; i < lengthJsonArr; i++) {
+                if(i==0){
+                    dealsList=new ArrayList<>();
+                }
                 JSONObject jsonChildNode = jsonArray.getJSONObject(i);
 
                 /****Fetch node values****/
@@ -65,21 +68,23 @@ public class ParseJson {
             sdesp = jsonChild.optString(Constants.TAG_SHORT_DESCRIPTION);
             ldesp = jsonChild.optString(Constants.TAG_LONG_DESCRIPTION);
             // Image url http://www.ucarecdn.com/<image UUID>/image.png
-            imgurl = "http://www.ucarecdn.com/" + jsonChild.optString(Constants.TAG_IMAGE_UUID) + "/image.png";
-
+            if(jsonChild.optString(Constants.TAG_IMAGE_UUID).isEmpty() || jsonChild.optString(Constants.TAG_IMAGE_UUID)==null){
+                imgurl=Constants.ServerUrls.websiteUrl+jsonChild.optString(Constants.TAG_IMAGE_URL);
+            }else {
+                imgurl = "http://www.ucarecdn.com/" + jsonChild.optString(Constants.TAG_IMAGE_UUID) + "/image.png";
+            }
             deal.setId(id);
             deal.setTitle(title);
             deal.setCategory(category);
             deal.setImageUrl(imgurl);
             deal.setShortDescription(sdesp);
             deal.setLongDescription(ldesp);
-            Log.e("Done", "Done");
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        Log.e("Deal Object", deal.getId() + deal.getTitle() + deal.getCategory() + deal.getLongDescription() + deal.getShortDescription());
+//        Log.e("Deal Object", deal.getId() + deal.getTitle() + deal.getCategory() + deal.getLongDescription() + deal.getShortDescription());
         return deal;
     }
 
@@ -99,7 +104,11 @@ public class ParseJson {
             sdesp = jsonChild.optString(Constants.TAG_SHORT_DESCRIPTION);
             ldesp = jsonChild.optString(Constants.TAG_LONG_DESCRIPTION);
             // Image url http://www.ucarecdn.com/<image UUID>/image.png
-            imgurl = "http://www.ucarecdn.com/" + jsonChild.optString(Constants.TAG_IMAGE_UUID) + "/image.png";
+            if(jsonChild.optString(Constants.TAG_IMAGE_UUID).isEmpty() || jsonChild.optString(Constants.TAG_IMAGE_UUID)==null){
+               imgurl=Constants.ServerUrls.websiteUrl+jsonChild.optString(Constants.TAG_IMAGE_URL);
+            }else {
+                imgurl = "http://www.ucarecdn.com/" + jsonChild.optString(Constants.TAG_IMAGE_UUID) + "/image.png";
+            }
 
             deal.setId(id);
             deal.setTitle(title);
