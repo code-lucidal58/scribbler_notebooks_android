@@ -27,30 +27,23 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
-import com.scribblernotebooks.scribblernotebooks.Activities.NavigationDrawer;
 import com.scribblernotebooks.scribblernotebooks.Activities.ScannerActivity;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.CyclicTransitionDrawable;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.DealPopup;
-import com.scribblernotebooks.scribblernotebooks.CustomViews.LeftNavigationDrawer;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Deal;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.ParseJson;
-import com.scribblernotebooks.scribblernotebooks.HelperClasses.User;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.ShakeEventManager;
+import com.scribblernotebooks.scribblernotebooks.HelperClasses.User;
 import com.scribblernotebooks.scribblernotebooks.R;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
 
 
 public class ManualScribblerCode extends Fragment {
@@ -313,6 +306,7 @@ public class ManualScribblerCode extends Fragment {
                 try {
                     //TODO:Modify url to send token and deal id
 //                    URL url=Constants.getDealDetailsURL(params[0]);
+                    user=Constants.getUser(mContext);
                     URL url=Constants.getDealDetailsURL(params[0],user.getToken());
                     Log.e("Url ",url.toString());
                     if(url==null)

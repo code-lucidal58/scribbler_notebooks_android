@@ -32,6 +32,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.scribblernotebooks.scribblernotebooks.Activities.ScannerActivity;
 import com.scribblernotebooks.scribblernotebooks.Adapters.RecyclerDealsAdapter;
 import com.scribblernotebooks.scribblernotebooks.Adapters.SearchListAdapter;
@@ -42,6 +43,9 @@ import com.scribblernotebooks.scribblernotebooks.HelperClasses.ParseJson;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.ShakeEventManager;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.User;
 import com.scribblernotebooks.scribblernotebooks.R;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -185,13 +189,6 @@ public class DealsFragment extends android.support.v4.app.Fragment {
                 startActivity(new Intent(context, ScannerActivity.class));
             }
         });
-
-        /**
-         * Calling functions for execution of the 4 functionality of search bar
-         */
-//        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-//        SearchBarApplication searchBarApplication = new SearchBarApplication(searchbar, container, context, fragmentManager);
-//        searchBarApplication.ImplementFunctions();
 
         /**
          * Navigation Drawer Hamburger Icon Setup

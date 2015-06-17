@@ -6,8 +6,10 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.scribblernotebooks.scribblernotebooks.Handlers.UserHandler;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -156,6 +158,7 @@ public class Deal implements Parcelable {
 
     public void sendShareStatus(){
         //Code to synchronise with server
+        
     }
 
     /**
@@ -180,6 +183,15 @@ public class Deal implements Parcelable {
     public void setIsFav(Context context, Boolean isFav) {
         this.isFav = isFav;
         sendLikeStatus(context,isFav);
+        //Mixpanel code
+        MixpanelAPI mixpanelAPI=Constants.getMixPanelInstance(context);
+        JSONObject props=new JSONObject();
+        try {
+            props.put("Like",id);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        mixpanelAPI.track("User", props);
     }
     public void setIsFav(Boolean isFav) {
         this.isFav = isFav;
