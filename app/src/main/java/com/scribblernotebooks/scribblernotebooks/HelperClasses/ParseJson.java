@@ -134,7 +134,6 @@ public class ParseJson {
             parsedData.put(Constants.POST_ERROR, object.optString(Constants.POST_ERROR));
             parsedData.put(Constants.POST_TOKEN, object.optString(Constants.POST_TOKEN));
             JSONObject details = object.optJSONObject("details");
-
             try {
                 parsedData.put(Constants.POST_NAME, details.optString(Constants.POST_NAME));
                 Log.e("Login Check 2",details.optString("name")+"");
