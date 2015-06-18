@@ -127,7 +127,8 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
         final Deal deal=dealsList.get(position);
 
         if(position==getItemCount()-1){
-            mListener.onRequestedLastItem();
+            if(mListener!=null)
+                mListener.onRequestedLastItem();
         }
 
         /** Retrieving deal info  */

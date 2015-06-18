@@ -51,14 +51,17 @@ import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.User;
 import com.scribblernotebooks.scribblernotebooks.R;
 import com.scribblernotebooks.scribblernotebooks.Services.LocationRetreiver;
+import com.scribblernotebooks.scribblernotebooks.Services.SignUpService;
 
 import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ProfileFragment extends android.support.v4.app.Fragment implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
+
 
     final String TAG = "ProfileFragment";
     ImageView userPic, userCoverPic;
@@ -138,6 +141,8 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
         appbar = (Toolbar) v.findViewById(R.id.toolbar);
         signInButton = (SignInButton) v.findViewById(R.id.sign_in_button);
 
+        userPref=context.getSharedPreferences(Constants.PREF_NAME,Context.MODE_PRIVATE);
+
         /**Setting values to the fields*/
         userName = (EditText) v.findViewById(R.id.et_name);
         userEmail = (EditText) v.findViewById(R.id.et_email);
@@ -154,7 +159,7 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
         user=Constants.getUser(getActivity());
         userName.setText(user.getName());
         userEmail.setText(user.getEmail());
-        userLocation.setText(user.getLocation());
+        userLocation.setText(userPref.getString(Constants.PREF_DATA_LOCATION,""));
         userMob.setText(user.getMobile());
 
 
@@ -443,11 +448,26 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
                 String personName = currentPerson.getDisplayName();
                 String personImageUrl = currentPerson.getImage().getUrl();
                 String s = personImageUrl.replace("photo.jpg?sz=50", "photo.jpg?sz=250");
+
                 String userEmail = Plus.AccountApi.getAccountName(mGoogleApiClient);
-                String userCover = currentPerson.getCover().getCoverPhoto().getUrl();
-                saveUserDetails(personName, userEmail, s, userCover);
+                String userId = currentPerson.getId();
+
+                String userCover="";
+                if(currentPerson.hasCover()) {
+                    userCover = currentPerson.getCover().getCoverPhoto().getUrl();
+                }
                 setCoverPic(userCover);
                 setProfilePic(personImageUrl);
+
+                HashMap<String, String> data=new HashMap<>();
+                data.put(Constants.POST_EMAIL,userEmail);
+                data.put(Constants.GOOGLEID,userId);
+                data.put(Constants.POST_COVERPIC,userCover);
+                data.put(Constants.POST_PROFILEPIC,s);
+
+                new SignUpService(Constants.ServerUrls.linkSocialAccount,getActivity()).execute(data);
+
+
             } else {
                 Toast.makeText(context,
                         "Person information is null", Toast.LENGTH_LONG).show();
@@ -609,6 +629,5 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
 
         void onUserCoverChanged();
     }
-
 
 }

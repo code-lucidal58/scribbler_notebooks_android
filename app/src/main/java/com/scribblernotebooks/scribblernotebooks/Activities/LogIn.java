@@ -103,12 +103,6 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         userPrefs = getSharedPreferences(Constants.PREF_NAME, MODE_PRIVATE);
         try {
             String userName = userPrefs.getString(Constants.PREF_DATA_NAME, "");
-//            if(Constants.DEBUG){
-//                if (!userPrefs.getString(Constants.PREF_DATA_PASS, "").isEmpty()) {
-//                    startActivity(new Intent(this, NavigationDrawer.class));
-//                    finish();
-//                }
-//            }
             if (!userName.isEmpty()) {
                 if (userPrefs.getString(Constants.PREF_DATA_PASS, "").isEmpty()) {
                     startActivity(new Intent(this, ProfileManagement.class));
@@ -660,13 +654,13 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
             data.put(Constants.POST_NAME, name);
             data.put(Constants.POST_EMAIL, email);
             data.put(Constants.POST_GOOGLE, id);
-            data.put("coverPic", coverPic);
-            data.put("profilePic", profilePic);
+            data.put(Constants.POST_COVERPIC, coverPic);
+            data.put(Constants.POST_PROFILEPIC, profilePic);
         } else if (url.equalsIgnoreCase(Constants.ServerUrls.loginFacebook)) {
             data.put(Constants.POST_EMAIL, email);
             data.put(Constants.POST_FACEBOOK, id);
-            data.put("coverPic", coverPic);
-            data.put("profilePic", profilePic);
+            data.put(Constants.POST_COVERPIC, coverPic);
+            data.put(Constants.POST_PROFILEPIC, profilePic);
         }
         new SignUpService(url, this).execute(data);
     }

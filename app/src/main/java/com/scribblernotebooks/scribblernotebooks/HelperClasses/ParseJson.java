@@ -36,8 +36,8 @@ public class ParseJson {
             int lengthJsonArr = jsonArray.length();
 
             for (int i = 0; i < lengthJsonArr; i++) {
-                if(i==0){
-                    dealsList=new ArrayList<>();
+                if (i == 0) {
+                    dealsList = new ArrayList<>();
                 }
                 JSONObject jsonChildNode = jsonArray.getJSONObject(i);
 
@@ -68,9 +68,11 @@ public class ParseJson {
             sdesp = jsonChild.optString(Constants.TAG_SHORT_DESCRIPTION);
             ldesp = jsonChild.optString(Constants.TAG_LONG_DESCRIPTION);
             // Image url http://www.ucarecdn.com/<image UUID>/image.png
-            if(jsonChild.optString(Constants.TAG_IMAGE_UUID).isEmpty() || jsonChild.optString(Constants.TAG_IMAGE_UUID)==null){
-                imgurl=Constants.ServerUrls.websiteUrl+jsonChild.optString(Constants.TAG_IMAGE_URL);
-            }else {
+            if (jsonChild.optString(Constants.TAG_IMAGE_UUID).isEmpty() || jsonChild.optString(Constants.TAG_IMAGE_UUID) == null) {
+                imgurl = Constants.ServerUrls.websiteUrl + jsonChild.optString(Constants.TAG_IMAGE_URL);
+                imgurl = imgurl.replace("%5C", "/");
+                Log.e("Image Url",imgurl);
+            } else {
                 imgurl = "http://www.ucarecdn.com/" + jsonChild.optString(Constants.TAG_IMAGE_UUID) + "/image.png";
             }
             deal.setId(id);
@@ -104,9 +106,11 @@ public class ParseJson {
             sdesp = jsonChild.optString(Constants.TAG_SHORT_DESCRIPTION);
             ldesp = jsonChild.optString(Constants.TAG_LONG_DESCRIPTION);
             // Image url http://www.ucarecdn.com/<image UUID>/image.png
-            if(jsonChild.optString(Constants.TAG_IMAGE_UUID).isEmpty() || jsonChild.optString(Constants.TAG_IMAGE_UUID)==null){
-               imgurl=Constants.ServerUrls.websiteUrl+jsonChild.optString(Constants.TAG_IMAGE_URL);
-            }else {
+            if (jsonChild.optString(Constants.TAG_IMAGE_UUID).isEmpty() || jsonChild.optString(Constants.TAG_IMAGE_UUID) == null) {
+                imgurl = Constants.ServerUrls.websiteUrl + jsonChild.optString(Constants.TAG_IMAGE_URL);
+                imgurl = imgurl.replace("%5C", "/");
+                Log.e("Image Url",imgurl);
+            } else {
                 imgurl = "http://www.ucarecdn.com/" + jsonChild.optString(Constants.TAG_IMAGE_UUID) + "/image.png";
             }
 
@@ -136,11 +140,13 @@ public class ParseJson {
             JSONObject details = object.optJSONObject("details");
             try {
                 parsedData.put(Constants.POST_NAME, details.optString(Constants.POST_NAME));
-                Log.e("Login Check 2",details.optString("name")+"");
+                Log.e("Login Check 2", details.optString("name") + "");
                 parsedData.put(Constants.POST_EMAIL, details.optString(Constants.POST_EMAIL));
                 parsedData.put(Constants.POST_MOBILE, details.optString(Constants.POST_MOBILE));
                 parsedData.put(Constants.POST_MIXPANELID, details.optString(Constants.POST_MIXPANELID));
-            }catch(Exception e){
+                parsedData.put(Constants.POST_COVERPIC, details.optString(Constants.POST_COVERPIC));
+                parsedData.put(Constants.POST_PROFILEPIC, details.optString(Constants.POST_PROFILEPIC));
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             return parsedData;

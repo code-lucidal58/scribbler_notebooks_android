@@ -123,6 +123,7 @@
                 android:textSize="@dimen/searchBarTextSize" />
 
         </RelativeLayout>
+
     </LinearLayout>
 
     <LinearLayout
@@ -162,40 +163,59 @@
 
         </RelativeLayout>
 
-        <EditText
-            android:id="@+id/selectedQuery"
+        <FrameLayout
             android:layout_width="0dp"
             android:layout_height="35dp"
             android:layout_gravity="center"
-            android:layout_weight="3"
-            android:background="@drawable/edit_text2"
-            android:clickable="true"
-            android:enabled="true"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:gravity="center_vertical"
-            android:hint=""
-            android:inputType="textAutoComplete"
-            android:paddingLeft="15dp"
-            android:textColor="@color/loginEditText2TextColor"
-            android:textColorHint="@color/loginEditTextHintColor"
-            android:textSize="@dimen/searchBarEditTextFontSize" />
+            android:layout_weight="3.4">
+
+            <EditText
+                android:id="@+id/selectedQuery"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_gravity="center"
+                android:background="@drawable/edit_text2"
+                android:clickable="true"
+                android:enabled="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:gravity="center_vertical"
+                android:hint=""
+                android:inputType="textAutoComplete"
+                android:paddingLeft="15dp"
+                android:textColor="@color/loginEditText2TextColor"
+                android:textColorHint="@color/loginEditTextHintColor"
+                android:textSize="@dimen/searchBarEditTextFontSize" />
+
+
+            <ImageView
+                android:id="@+id/cancel"
+                android:layout_width="33dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:padding="5dp"
+                android:src="@drawable/ic_action_cancel" />
+
+        </FrameLayout>
+
 
         <ImageView
-            android:id="@+id/cancel"
+            android:id="@+id/searchIcon"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_weight="1"
-            android:padding="10dp"
-            android:src="@drawable/ic_action_cancel" />
+            android:padding="5dp"
+            android:layout_weight="0.6"
+            android:src="@drawable/ic_action_search" />
+
 
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="200dp"
         android:layout_below="@+id/replacedLinearLayout"
         android:clipToPadding="false"
         android:visibility="gone" />

@@ -18,6 +18,8 @@
     <string name="noTokenError">This is very unfortunate but some error has occurred. Our engineers are working to fix this error.\nPlease try again later</string>
     <string name="invalidLoginError">It seems like you have entered an invalid Email-ID Password combination. Please check and try again.</string>
 
+    <string name="dealListLoading">Noting down deals for you...\nPlease Wait...</string>
+    <string name="dealListLoadingError">ZZzzz...\nSorry! I just slept while noting down. \n\nShake me or Pull me down to try again</string>
 
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>

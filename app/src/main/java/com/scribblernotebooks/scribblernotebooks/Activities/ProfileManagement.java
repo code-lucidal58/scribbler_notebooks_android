@@ -41,6 +41,7 @@ import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.User;
 import com.scribblernotebooks.scribblernotebooks.R;
 import com.scribblernotebooks.scribblernotebooks.Services.LocationRetreiver;
+import com.scribblernotebooks.scribblernotebooks.Services.SignUpService;
 
 import org.json.JSONObject;
 
@@ -74,6 +75,8 @@ public class ProfileManagement extends AppCompatActivity {
     ScrollView scrollView;
     Button saveButton;
     String idName, idValue;
+    String coverUrl;
+    String profileUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,7 +128,7 @@ public class ProfileManagement extends AppCompatActivity {
         userMob.setText(user.getMobile());
 
         /**Setting images from shared Prefs**/
-        String coverUrl = user.getCoverImage();
+        coverUrl = user.getCoverImage();
         if (!coverUrl.isEmpty()) {
             if (coverUrl.contains("http") || coverUrl.contains("ftp")) {
                 ImageLoader.getInstance().displayImage(coverUrl, userCoverPic, displayImageOptionsCover, imageLoadingListener);
@@ -133,7 +136,7 @@ public class ProfileManagement extends AppCompatActivity {
                 userCoverPic.setImageBitmap(Constants.getScaledBitmap(coverUrl, 267, 200));
             }
         }
-        String profileUrl = user.getProfilePic();
+        profileUrl = user.getProfilePic();
         if (!profileUrl.isEmpty()) {
             if (profileUrl.contains("http") || profileUrl.contains("ftp")) {
                 ImageLoader.getInstance().displayImage(profileUrl, userPic, displayImageOptions, imageLoadingListener);
@@ -189,133 +192,16 @@ public class ProfileManagement extends AppCompatActivity {
         if (!isValidPassword(userPass.getText().toString())) {
             return;
         }
-        final SharedPreferences userPref = getSharedPreferences(Constants.PREF_NAME, MODE_PRIVATE);
 
-        final User user=new User();
-        user.setName(userName.getText().toString());
-        user.setMobile(userMob.getText().toString());
-        user.setEmail(userEmail.getText().toString());
-        Constants.saveUserDetails(this,user);
+        HashMap<String, String> postDataParams = new HashMap<>();
+        postDataParams.put(Constants.POST_NAME, userName.getText().toString());
+        postDataParams.put(Constants.POST_EMAIL, userEmail.getText().toString());
+        postDataParams.put(Constants.POST_MOBILE, userMob.getText().toString());
+        postDataParams.put(Constants.POST_PASSWORD, userPass.getText().toString());
+        postDataParams.put(Constants.POST_COVERPIC, coverUrl);
+        postDataParams.put(Constants.POST_PROFILEPIC, profileUrl);
 
-        new AsyncTask<String, Void, String[]>() {
-
-            ProgressDialog dialog;
-
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-                dialog = new ProgressDialog(ProfileManagement.this);
-                dialog.setIndeterminate(true);
-                dialog.setMessage("Skipping the queue and logging you in...");
-                dialog.show();
-            }
-
-            @Override
-            protected String[] doInBackground(String... params) {
-                String name, email, contact, password;
-                name = params[0];
-                email = params[1];
-                contact = params[2];
-                password = params[3];
-                String token, mixpanelId;
-
-                //Post request JSON object
-                Log.e("profile management",params.toString());
-                HashMap<String, String> postDataParams = new HashMap<>();
-                postDataParams.put(Constants.POST_NAME, name);
-                postDataParams.put(Constants.POST_EMAIL, email);
-                postDataParams.put(Constants.POST_MOBILE, contact);
-                postDataParams.put(Constants.POST_PASSWORD, password);
-                postDataParams.put(idName,idValue);
-
-                try {
-                    URL url = new URL(Constants.ServerUrls.signUp);
-                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                    connection.setRequestMethod("POST");
-                    connection.setReadTimeout(15000);
-                    connection.setConnectTimeout(15000);
-                    connection.setDoOutput(true);
-                    connection.setDoInput(true);
-
-                    //Writing post request data
-                    OutputStream os = connection.getOutputStream();
-                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-                    writer.write(Constants.getPostDataString(postDataParams));
-                    writer.flush();
-                    writer.close();
-                    os.close();
-
-                    //Reading response
-                    int responseCode = connection.getResponseCode();
-                    if (responseCode == HttpsURLConnection.HTTP_OK) {
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                        String r = reader.readLine();
-                        JSONObject userObject = new JSONObject(r);
-                        token = userObject.optString("token");
-                        mixpanelId = userObject.optString("mixpanelid");
-                        String error;
-//                        String success,error;
-//                        success=userObject.optString("success");
-                        error = userObject.optString("error");
-
-                        /**If user clicked google or fb button then check if user exists
-                         * if exist then login
-                         * else signup
-                         */
-                        if (error.equalsIgnoreCase("USER_EXIST")) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    AlertDialog.Builder builder=new AlertDialog.Builder(getApplicationContext());
-                                    builder.setTitle("User Exists")
-                                            .setMessage("An account already exists with this email id. Please Log In to continue")
-                                            .setNeutralButton("OK", new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    startActivity(new Intent(getApplicationContext(), LogIn.class));
-                                                    finish();
-                                                }
-                                            })
-                                            .show();
-
-                                }
-                            });
-                            return new String[]{};
-                        }
-                        return new String[]{token, mixpanelId};
-                    }
-
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return new String[]{};
-            }
-
-            @Override
-            protected void onPostExecute(String[] s) {
-                dialog.dismiss();
-                String token, mixpanelid;
-                super.onPostExecute(s);
-                if (s.length == 0) {
-                    return;
-                } else {
-                    token = s[0];
-                    mixpanelid = s[1];
-                }
-                User user1=new User();
-                user.setToken(token);
-                user.setMixpanelId(mixpanelid);
-                getSharedPreferences(Constants.PREF_NAME,Context.MODE_PRIVATE).edit().putString(Constants.PREF_DATA_PASS,"OK").apply();
-                Constants.saveUserDetails(getApplicationContext(), user1);
-
-                startActivity(new Intent(getApplicationContext(), NavigationDrawer.class));
-                finish();
-
-                overridePendingTransition(R.anim.profile_slide_in, R.anim.login_slide_out);
-            }
-        }.execute(userName.getText().toString(), userEmail.getText().toString(), userMob.getText().toString(), userPass.getText().toString());
-
+        new SignUpService(Constants.ServerUrls.signUp, this).execute(postDataParams);
     }
 
 

@@ -34,6 +34,7 @@ import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.User;
 import com.scribblernotebooks.scribblernotebooks.R;
 import com.scribblernotebooks.scribblernotebooks.Services.LocationRetreiver;
+import com.scribblernotebooks.scribblernotebooks.Services.TokenRetriever;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,8 +53,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class NavigationDrawer extends AppCompatActivity implements ProfileFragment.OnFragmentInteractionListener,
-        DealsFragment.OnFragmentInteractionListener,ManualScribblerCode.OnFragmentInteractionListener, ClaimedDeals.OnFragmentInteractionListener{
+        ManualScribblerCode.OnFragmentInteractionListener, ClaimedDeals.OnFragmentInteractionListener{
 
+
+    OnNavKeyPressed keyListener;
 
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private final static String TAG="NavigationActivity";
@@ -78,6 +81,9 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         sContext=getApplicationContext();
+
+        //Retrieve token
+        startService(new Intent(this, TokenRetriever.class));
 
         if(!checkPlayServices()){
             Toast.makeText(this, "Google play services not installed on your device. Notification won't be shown", Toast.LENGTH_LONG).show();
@@ -187,15 +193,22 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
 
     @Override
     public void onBackPressed() {
-        if(mDrawerLayout.isDrawerOpen(Gravity.START|Gravity.END)){
-            mDrawerLayout.closeDrawers();
+        Boolean registered=false;
+        if(keyListener!=null){
+            if(keyListener.onBackKeyPressed()){
+                Log.e("NavigationDrawer","BackKey Event Registered");
+                registered=true;
+            }
         }
-        else if(getSupportFragmentManager().getBackStackEntryCount()>0){
-            getSupportFragmentManager().popBackStack();
-        }
-        else
-        {
-            this.finish();
+        if(!registered) {
+            Log.e("NavigationDrawer","BackKey Event Not Registered");
+            if (mDrawerLayout.isDrawerOpen(findViewById(R.id.left_drawer_relative)) || mDrawerLayout.isDrawerOpen(findViewById(R.id.notification_drawer))) {
+                mDrawerLayout.closeDrawers();
+            } else if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                getSupportFragmentManager().popBackStack();
+            } else {
+                this.finish();
+            }
         }
     }
 
@@ -478,4 +491,16 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
         }
         return true;
     }
+
+
+    public  interface OnNavKeyPressed{
+        boolean onBackKeyPressed();
+    }
+
+    public void setKeyListener(OnNavKeyPressed onNavKeyPressed){
+        keyListener=onNavKeyPressed;
+    }
+
+
+
 }

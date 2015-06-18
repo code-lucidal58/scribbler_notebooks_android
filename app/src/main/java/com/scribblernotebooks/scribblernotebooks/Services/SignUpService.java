@@ -1,8 +1,10 @@
 package com.scribblernotebooks.scribblernotebooks.Services;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -112,15 +114,29 @@ public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User
         parsedData = ParseJson.parseLoginResponse(response);
         if (parsedData != null) {
             if (Boolean.parseBoolean(parsedData.get(Constants.POST_SUCCESS))) {
-                User user = new User(parsedData.get(Constants.POST_NAME), parsedData.get(Constants.POST_EMAIL),
-                        parsedData.get(Constants.POST_MOBILE), parsedData.get(Constants.POST_TOKEN), parsedData.get(Constants.POST_MIXPANELID));
+                User user = new User(parsedData.get(Constants.POST_NAME),
+                        parsedData.get(Constants.POST_EMAIL),
+                        parsedData.get(Constants.POST_MOBILE),
+                        parsedData.get(Constants.POST_COVERPIC),
+                        parsedData.get(Constants.POST_PROFILEPIC),
+                        parsedData.get(Constants.POST_TOKEN),
+                        parsedData.get(Constants.POST_MIXPANELID));
                 activity.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE).edit().putString(Constants.PREF_DATA_PASS, "OK").apply();
                 return user;
             } else {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(activity, "Wrong username or password", Toast.LENGTH_LONG).show();
+                        AlertDialog.Builder builder=new AlertDialog.Builder(activity.getApplicationContext());
+                        builder.setTitle("Error")
+                                .setMessage("The entered Email-password combination is incorrect. Please try again")
+                                .setNeutralButton("Close", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .show();
                     }
                 });
             }
@@ -133,8 +149,23 @@ public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User
         if (parsedData != null) {
             if (Boolean.parseBoolean(parsedData.get(Constants.POST_SUCCESS))) {
                 activity.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE).edit().putString(Constants.PREF_DATA_PASS, "OK").apply();
-                return new User(params.get(Constants.POST_NAME), params.get(Constants.POST_EMAIL),
-                        params.get(Constants.POST_MOBILE), parsedData.get(Constants.POST_TOKEN), parsedData.get(Constants.POST_MIXPANELID));
+                String cover,profilePic;
+                try {
+                    cover=params.get(Constants.POST_COVERPIC);
+                }catch (Exception e){
+                    cover="";
+                }
+                try {
+                    profilePic=params.get(Constants.POST_PROFILEPIC);
+                }catch (Exception e){
+                    profilePic="";
+                }
+                return new User(params.get(Constants.POST_NAME),
+                        params.get(Constants.POST_EMAIL),
+                        params.get(Constants.POST_MOBILE),
+                        cover,profilePic,
+                        parsedData.get(Constants.POST_TOKEN),
+                        parsedData.get(Constants.POST_MIXPANELID));
             } else {
                 activity.runOnUiThread(new Runnable() {
                     @Override
@@ -153,16 +184,21 @@ public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User
         if (parsedData != null) {
             //success is true
             if (Boolean.parseBoolean(parsedData.get(Constants.POST_SUCCESS))) {
-                user = new User(parsedData.get(Constants.POST_NAME), parsedData.get(Constants.POST_EMAIL), parsedData.get(Constants.POST_MOBILE),
-                        parsedData.get(Constants.POST_TOKEN), parsedData.get(Constants.POST_MIXPANELID));
+                user = new User(parsedData.get(Constants.POST_NAME),
+                        parsedData.get(Constants.POST_EMAIL),
+                        parsedData.get(Constants.POST_MOBILE),
+                        parsedData.get(Constants.POST_COVERPIC),
+                        parsedData.get(Constants.POST_PROFILEPIC),
+                        parsedData.get(Constants.POST_TOKEN),
+                        parsedData.get(Constants.POST_MIXPANELID));
             } else {
                 saveUserDetails(params.get(Constants.POST_NAME), params.get(Constants.POST_EMAIL), params.get("profilePic")
                         , params.get("coverPic"), "", "", Constants.POST_GOOGLE, params.get(Constants.POST_GOOGLE));
             }
         }
         if (user != null) {
-            user.setCoverImage(params.get("coverPic"));
-            user.setProfilePic(params.get("profilePic"));
+            user.setCoverImage(params.get(Constants.POST_COVERPIC));
+            user.setProfilePic(params.get(Constants.POST_PROFILEPIC));
             return user;
         }
         return null;
@@ -183,7 +219,6 @@ public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User
         activity.startActivity(i);
         activity.finish();
         activity.overridePendingTransition(R.anim.profile_slide_in, R.anim.login_slide_out);
-        return;
     }
 }
 

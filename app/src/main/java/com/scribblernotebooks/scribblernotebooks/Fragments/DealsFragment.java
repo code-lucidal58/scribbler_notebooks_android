@@ -27,11 +27,13 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.scribblernotebooks.scribblernotebooks.Activities.DealDetail;
+import com.scribblernotebooks.scribblernotebooks.Activities.NavigationDrawer;
 import com.scribblernotebooks.scribblernotebooks.Activities.ScannerActivity;
 import com.scribblernotebooks.scribblernotebooks.Adapters.RecyclerDealsAdapter;
 import com.scribblernotebooks.scribblernotebooks.Adapters.SearchListAdapter;
@@ -59,7 +61,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-public class DealsFragment extends android.support.v4.app.Fragment {
+public class DealsFragment extends android.support.v4.app.Fragment implements NavigationDrawer.OnNavKeyPressed {
 
     private static final String URL_STRING = "url";
     private static final String TITLE = "title";
@@ -76,7 +78,7 @@ public class DealsFragment extends android.support.v4.app.Fragment {
     int mToolbarHeight;
     DrawerLayout mDrawerLayout;
     RelativeLayout mDrawer;
-    TextView noConnectionText;
+//    TextView noConnectionText;
     SwipeRefreshLayout swipeRefreshLayout;
     Boolean reload;
     ShakeEventManager shakeEventManager = null;
@@ -84,7 +86,7 @@ public class DealsFragment extends android.support.v4.app.Fragment {
     Boolean finished=false;
     Boolean isFirst=true;
 
-    String category = "", searchQuery = "";
+    String category = "", searchQuery = "", sort="";
 
     private String url, title;
 
@@ -92,7 +94,9 @@ public class DealsFragment extends android.support.v4.app.Fragment {
 
     Boolean parametersChanged=false;
 
-    private OnFragmentInteractionListener mListener;
+    Boolean isloading=true;
+    Boolean isEmpty=true;
+
 
 
     RecyclerView suggestions;
@@ -102,6 +106,11 @@ public class DealsFragment extends android.support.v4.app.Fragment {
     EditText selectedIconQuery;
     Boolean isOptionOpened = false;
     SearchListAdapter searchListAdapter, querySearchListAdapter;
+
+    LinearLayout loadingProgressLayout;
+    ImageView loadingCharacter;
+    TextView loadingMessage;
+    ProgressBar loadingBar;
 
     private boolean loading = true;
     int pastVisibleItems, visibleItemCount, totalItemCount;
@@ -145,7 +154,7 @@ public class DealsFragment extends android.support.v4.app.Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_deals, container, false);
         context = getActivity();
-        noConnectionText = (TextView) v.findViewById(R.id.noConnectionText);
+//        noConnectionText = (TextView) v.findViewById(R.id.noConnectionText);
         swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipe_refresh_layout);
         reload = true;
 
@@ -178,6 +187,10 @@ public class DealsFragment extends android.support.v4.app.Fragment {
         selectedIcon = (ImageView) searchbar.findViewById(R.id.selectedIcon);
         selectionIconName = (TextView) searchbar.findViewById(R.id.selectedIcon_name);
         selectedIconQuery = (EditText) searchbar.findViewById(R.id.selectedQuery);
+        loadingProgressLayout=(LinearLayout)v.findViewById(R.id.loadingProgress);
+        loadingCharacter=(ImageView)loadingProgressLayout.findViewById(R.id.loadingCharacter);
+        loadingMessage=(TextView)loadingProgressLayout.findViewById(R.id.loadingMessage);
+        loadingBar=(ProgressBar)loadingProgressLayout.findViewById(R.id.loadingBar);
 
         category.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -294,7 +307,7 @@ public class DealsFragment extends android.support.v4.app.Fragment {
                 @Override
                 public void onShake() {
                     try {
-                        Toast.makeText(context, "Shaken", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(context, "Shaken", Toast.LENGTH_SHORT).show();
                         reload = true;
                         runAsyncTask();
                     }catch (Exception e){
@@ -330,7 +343,10 @@ public class DealsFragment extends android.support.v4.app.Fragment {
     public void showToolbarOptions() {
         isOptionOpened = false;
         if(parametersChanged){
-            new LongOperation().execute(page, category, searchQuery);
+            dealsList.clear();
+            Log.e("DealFragment","ShowToolbarOptions "+page+" "+category+" "+searchQuery+" "+sort);
+            page="1";
+            new LongOperation().execute(page, category, searchQuery, sort);
         }
         replacedLayout.setVisibility(View.GONE);
         originalLayout.setVisibility(View.VISIBLE);
@@ -338,11 +354,16 @@ public class DealsFragment extends android.support.v4.app.Fragment {
 //        toolbarContainer.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).start();
     }
 
+    String tag;
     /**
      * Hide the category, search, scan and sort options and show the corresponding menu
      */
-    public void hideToolbarOptions(final String tag) {
+    public void hideToolbarOptions(String tag1) {
+        if(isloading || isEmpty){
+            return;
+        }
         isOptionOpened = true;
+        tag=tag1;
 //        toolbarContainer.animate().translationY(-mToolbarHeight).setInterpolator(new AccelerateInterpolator(2)).start();
         toolbarContainer.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).start();
         replacedLayout.setVisibility(View.VISIBLE);
@@ -353,9 +374,49 @@ public class DealsFragment extends android.support.v4.app.Fragment {
         replacedLayout.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!selectedIconQuery.getText().toString().isEmpty()){
+                    selectedIconQuery.setText("");
+                }
+                switch (tag){
+                    case "category":
+                        category="";
+                        break;
+                    case "search":
+                        searchQuery="";
+                        break;
+                    case "sort":
+                        sort="";
+                        break;
+                }
+                Log.e("DealFragment","Search Cleared "+page+" "+category+" "+searchQuery+" "+sort);
+            }
+        });
+
+        replacedLayout.findViewById(R.id.searchIcon).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditText view=(EditText)replacedLayout.findViewById(R.id.selectedQuery);
+                String text=view.getText().toString();
+                switch (tag){
+                    case "category":
+                        category=text;
+                        Log.e("DealFragment","Category Changed "+category);
+                        break;
+                    case "search":
+                        searchQuery=text;
+                        Log.e("DealFragment","SearchQuery Changed "+searchQuery);
+                        break;
+                    case "sort":
+                        sort=text;
+                        Log.e("DealFragment","Sort Changed "+sort);
+                        break;
+                }
+                Log.e("DealFragment","Search Clicked "+page+" "+category+" "+searchQuery+" "+sort);
+                parametersChanged=true;
                 showToolbarOptions();
             }
         });
+
         switch (tag) {
             case "category":
                 selectedIcon.setImageDrawable(getResources().getDrawable(R.drawable.category));
@@ -392,6 +453,17 @@ public class DealsFragment extends android.support.v4.app.Fragment {
                 ArrayList<String> result = querySearchListAdapter.searchResult(s);
                 searchListAdapter = new SearchListAdapter(result,tag);
                 suggestions.setAdapter(searchListAdapter);
+                switch (tag){
+                    case "category":
+                        category=s.toString();
+                        break;
+                    case "search":
+                        searchQuery=s.toString();
+                        break;
+                    case "sort":
+                        sort=s.toString();
+                        break;
+                }
             }
 
             @Override
@@ -422,7 +494,11 @@ public class DealsFragment extends android.support.v4.app.Fragment {
                         showToolbarOptions();
                         break;
                     case "sort":
+                        list = Arrays.asList(getResources().getStringArray(R.array.sort_list));
+                        sort = list.get(position);
                         parametersChanged=true;
+                        Log.e("DealFragment","Sort set to "+sort);
+                        showToolbarOptions();
                         break;
                     default:
                         break;
@@ -453,6 +529,7 @@ public class DealsFragment extends android.support.v4.app.Fragment {
     }
 
 
+
     /**
      * To change to number of columns in the deal list. 1 when portrait and 2 when landscape
      *
@@ -468,6 +545,18 @@ public class DealsFragment extends android.support.v4.app.Fragment {
         new LongOperation().execute(page, category, searchQuery);
     }
 
+    @Override
+    public boolean onBackKeyPressed() {
+        Log.e("Deal NavigationDrawer","Back key passed");
+        if(isOptionOpened){
+            Log.e("DealavigationDrawer","Back key passed"+true);
+            showToolbarOptions();
+            return true;
+        }
+        Log.e("Deal NavigationDrawer","Back key passed "+false);
+        return false;
+    }
+
 
     /**
      * Async task to get the data from the server and process it
@@ -479,9 +568,17 @@ public class DealsFragment extends android.support.v4.app.Fragment {
         protected void onPreExecute() {
             super.onPreExecute();
             if (reload) {
-                progressDialog.show();
+//                progressDialog.show();
                 reload = false;
             }
+            isloading=true;
+            if(page.equals("1")) {
+                loadingProgressLayout.setVisibility(View.VISIBLE);
+                loadingMessage.setText(getResources().getString(R.string.dealListLoading));
+                loadingCharacter.setImageResource(R.drawable.child_searching_happy);
+                loadingBar.setVisibility(View.VISIBLE);
+            }
+
         }
 
         @Override
@@ -492,6 +589,7 @@ public class DealsFragment extends android.support.v4.app.Fragment {
                 String page = queries[0];
                 String searchQuery = queries[2];
                 String category = queries[1];
+                String sort=queries[3];
 
                 User user = Constants.getUser(context);
 
@@ -505,9 +603,13 @@ public class DealsFragment extends android.support.v4.app.Fragment {
                     if (!searchQuery.isEmpty())
                         data.put("searchQuery", searchQuery);
                 }
+                if(sort!=null) {
+                    if (!sort.isEmpty())
+                        data.put("sortBy", searchQuery);
+                }
                 data.put("token", user.getToken());
 
-                URL url = new URL(Constants.ServerUrls.dealList+"?token="+user.getToken()+"&page="+page+"&category="+category+"&searchQuery="+searchQuery);
+                URL url = new URL(Constants.ServerUrls.dealList+"?token="+user.getToken()+"&page="+page+"&category="+category+"&searchQuery="+searchQuery+"&sortBy="+sort);
                 Log.e("DealFragment","Url: "+url.toString());
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
@@ -527,9 +629,21 @@ public class DealsFragment extends android.support.v4.app.Fragment {
 
         @Override
         protected void onPostExecute(String s) {
+            isloading=false;
             Log.e("DealFragment","Response "+s);
-            progressDialog.dismiss();
+//            progressDialog.dismiss();
             swipeRefreshLayout.setRefreshing(false);
+
+            if(s.isEmpty()){
+                isEmpty=true;
+                loadingBar.setVisibility(View.GONE);
+                loadingCharacter.setImageResource(R.drawable.child_searching_slept);
+                loadingMessage.setText(getResources().getString(R.string.dealListLoadingError));
+                return;
+            }
+
+            loadingProgressLayout.setVisibility(View.GONE);
+
             JSONObject object = null;
             ArrayList<Deal> dealsList1=null;
 
@@ -537,6 +651,7 @@ public class DealsFragment extends android.support.v4.app.Fragment {
                 Log.e("DealFragment","Running for first time. Clearing original list");
                 dealsList.clear();
             }
+            isEmpty=false;
 
             try {
                 object = new JSONObject(s);
@@ -576,29 +691,6 @@ public class DealsFragment extends android.support.v4.app.Fragment {
     }
 
 
-    /**
-     * Auto-generated methods
-     */
-    public void onButtonPressed() {
-        if (mListener != null) {
-            mListener.onFragmentInteraction();
-        }
-        if (isOptionOpened) {
-            showToolbarOptions();
-        }
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
     @Override
     public void onResume() {
         super.onResume();
@@ -624,50 +716,50 @@ public class DealsFragment extends android.support.v4.app.Fragment {
         }
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction();
-    }
-
     /**
      * Run AsyncTask Only after phone is connected to internet
      */
     public void runAsyncTask() {
         if (!Constants.isNetworkAvailable(getActivity())) {
-            noConnectionText.setVisibility(View.VISIBLE);
+//            noConnectionText.setVisibility(View.VISIBLE);
             swipeRefreshLayout.setRefreshing(false);
         } else {
-            noConnectionText.setVisibility(View.GONE);
+//            noConnectionText.setVisibility(View.GONE);
             //Get response from server
-            new LongOperation().execute(page, category, searchQuery);
+            new LongOperation().execute(page, category, searchQuery, sort);
         }
     }
     void setAdapterHolder(){
-        adapter.setViewHolderListener(new RecyclerDealsAdapter.onViewHolderListener() {
-            @Override
-            public void onRequestedLastItem() {
-                if (!finished) {
-                    Log.e("DealFragment","Loading Next Page "+page);
-                    LoadNextPage();
-
-                }
-            }
-        });
         adapter.setItemClickListener(new RecyclerDealsAdapter.onItemClickListener() {
             @Override
             public void onItemClick(int position, ArrayList<Deal> deals) {
                 showDealDetail(position, deals);
             }
         });
+
+
+        if(adapter.getItemCount()<5){
+            return;
+        }
+
+
+        adapter.setViewHolderListener(new RecyclerDealsAdapter.onViewHolderListener() {
+            @Override
+            public void onRequestedLastItem() {
+                if (!finished) {
+                    Log.e("DealFragment", "Loading Next Page " + page);
+                    LoadNextPage();
+
+                }
+            }
+        });
     }
 
-
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        ((NavigationDrawer)getActivity()).setKeyListener(this);
+    }
 
     public void showDealDetail(int position, ArrayList<Deal> deals){
         Intent i=new Intent(context, DealDetail.class);

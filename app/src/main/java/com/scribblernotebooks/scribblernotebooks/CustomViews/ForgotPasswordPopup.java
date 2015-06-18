@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -30,6 +31,7 @@ import org.w3c.dom.Text;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
@@ -61,6 +63,7 @@ public class ForgotPasswordPopup extends Dialog implements View.OnClickListener 
         this.context=context;
     }
 
+    Dialog dialog;
 
 
 
@@ -109,21 +112,65 @@ public class ForgotPasswordPopup extends Dialog implements View.OnClickListener 
             @Override
             protected String doInBackground(String... params) {
                 String email=params[0];
-                //TODO: Send request to server to retrieve password
-                return "";
+
+                try {
+                    URL url=new URL(Constants.ServerUrls.forgotPassword+"?email="+email);
+                    HttpURLConnection connection=(HttpURLConnection)url.openConnection();
+                    connection.setRequestMethod("GET");
+                    connection.setReadTimeout(15000);
+                    connection.setConnectTimeout(15000);
+                    connection.setDoInput(true);
+                    connection.connect();
+
+                    BufferedReader reader=new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                    return reader.readLine();
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+
+                return null;
             }
 
             @Override
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
+
+                Log.e("ForgotPassword", "Server response " + s);
                 if(progressDialog.isShowing())
                     progressDialog.dismiss();
 
                 postResetText.setVisibility(View.VISIBLE);
-                if(s.isEmpty()){
-                    postResetText.setText("We are unable to verify this account. Check the email id you have entered.");
+                if(s==null){
+                    postResetText.setText("There is some problem connecting to server. Please try again later.");
                     return;
                 }
+                if(s.isEmpty()){
+                    postResetText.setText("There is some problem connecting to server. Please try again later.");
+                    return;
+                }
+                try {
+                    JSONObject object=new JSONObject(s);
+                    String err=object.optString("error");
+                    if(err.equalsIgnoreCase("INVALID_USER")){
+                        postResetText.setText("We are unable to verify this account. Check the email id you have entered.");
+                        return;
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }finally {
+                    resetButton.setText("Close");
+                    resetButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dismiss();
+                        }
+                    });
+                }
+
+
             }
 
         }.execute(userEmail);

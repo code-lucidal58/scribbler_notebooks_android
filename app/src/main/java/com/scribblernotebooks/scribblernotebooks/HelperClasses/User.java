@@ -36,7 +36,7 @@ public class User {
         this.likedDeals = likedDeals;
     }
 
-    public User(String name, String email, String mobile, String coverImage, String profilePic, String token, String mixpanelId, String location) {
+    public User(String name, String email, String mobile, String coverImage, String profilePic, String token, String mixpanelId) {
         this.name = name;
         this.email = email;
         this.mobile = mobile;
@@ -44,7 +44,6 @@ public class User {
         this.profilePic = profilePic;
         this.token = token;
         this.mixpanelId = mixpanelId;
-        this.location = location;
     }
 
     public String getName() {

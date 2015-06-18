@@ -37,9 +37,5 @@ dependencies {
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.3'
     compile 'com.journeyapps:zxing-android-embedded:3.0.0@aar'
     compile 'com.google.zxing:core:3.2.0'
-<<<<<<< HEAD
     compile 'com.mixpanel.android:mixpanel-android:4.5.3'
-    compile 'com.segment.analytics.android:analytics:+@aar'
-=======
->>>>>>> d5aea473a10114f213c83d236fbaf6afe7f2403b
 }

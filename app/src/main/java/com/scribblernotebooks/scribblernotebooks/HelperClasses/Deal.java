@@ -167,7 +167,7 @@ public class Deal implements Parcelable {
                 data.put("dealId", params[2]);
 
                 try {
-                    URL url = new URL(Constants.ServerUrls.likeDeal);
+                    URL url = new URL(Constants.ServerUrls.shareDeal);
                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                     connection.setConnectTimeout(15000);
                     connection.setReadTimeout(15000);

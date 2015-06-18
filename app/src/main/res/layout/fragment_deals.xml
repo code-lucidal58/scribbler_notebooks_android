@@ -35,14 +35,60 @@
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/noConnectionText"
+    <!--<TextView-->
+        <!--android:id="@+id/noConnectionText"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_below="@id/toolbar_container"-->
+        <!--android:layout_marginTop="20sp"-->
+        <!--android:gravity="center"-->
+        <!--android:text="@string/not_connected"-->
+        <!--android:textColor="#000" />-->
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_below="@id/toolbar_container"
-        android:layout_marginTop="20sp"
-        android:gravity="center"
-        android:text="@string/not_connected"
-        android:textColor="#000" />
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:background="#88000000"
+        android:id="@+id/loadingProgress"
+        android:weightSum="5">
+
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_weight="2">
+        <ProgressBar
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:id="@+id/loadingBar"
+            style="?android:attr/progressBarStyleLarge"
+            android:indeterminate="true"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#fff"
+                android:gravity="center"
+                android:id="@+id/loadingMessage"
+                android:text="@string/dealListLoading"/>
+
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:padding="25dp"
+            android:id="@+id/loadingCharacter"
+            android:src="@drawable/child_searching_happy"/>
+
+
+    </LinearLayout>
 
 </RelativeLayout>
