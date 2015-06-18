@@ -6,8 +6,10 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.scribblernotebooks.scribblernotebooks.Handlers.UserHandler;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -148,6 +150,15 @@ public class Deal implements Parcelable {
                 return null;
             }
         }.execute(email, token, id, liked);
+        //Mixpanel code
+        MixpanelAPI mixpanelAPI=Constants.getMixPanelInstance(context);
+        JSONObject props=new JSONObject();
+        try {
+            props.put("Like",id);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        mixpanelAPI.track("User", props);
     }
 
     public void sendShareStatus(final Context context) {
@@ -193,6 +204,16 @@ public class Deal implements Parcelable {
                 return null;
             }
         }.execute(email, token, id);
+
+        //Mixpanel code
+        MixpanelAPI mixpanelAPI=Constants.getMixPanelInstance(context);
+        JSONObject props=new JSONObject();
+        try {
+            props.put("Share",id);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        mixpanelAPI.track("User", props);
     }
 
     /**

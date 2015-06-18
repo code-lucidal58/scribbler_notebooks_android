@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.balysv.materialripple.MaterialRippleLayout;
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -25,7 +26,12 @@ import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Deal;
 import com.scribblernotebooks.scribblernotebooks.R;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by Aanisha on 07-May-15.
@@ -132,9 +138,9 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
         }
 
         /** Retrieving deal info  */
-        String id=deal.getId();
-        String title = deal.getTitle();
-        String category = deal.getCategory();
+        final String id=deal.getId();
+        final String title = deal.getTitle();
+        final String category = deal.getCategory();
         String details = deal.getShortDescription();
 
         if(handler.findDeal(id)){
@@ -157,7 +163,7 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
             @Override
             public void onClick(View v) {
                 Boolean isChecked = ((CheckBox) v).isChecked();
-                deal.setIsFav(context,isChecked);
+                deal.setIsFav(context, isChecked);
             }
         });
 
@@ -192,6 +198,24 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
             @Override
             public void onClick(View v) {
                 itemClickListener.onItemClick(position, dealsList);
+                //Mixpanel code
+                MixpanelAPI mixpanelAPI=Constants.getMixPanelInstance(context);
+                Calendar calendar=Calendar.getInstance();
+                JSONObject props=new JSONObject();
+                try {
+                    props.put("id",id);
+                    props.put("category",category);
+                    props.put("dealName",title);
+                    props.put("date", calendar.get(Calendar.DATE));
+                    props.put("month",calendar.get(Calendar.MONTH));
+                    props.put("year",calendar.get(Calendar.YEAR));
+                    props.put("time",new Date()) ;
+                    props.put("day", calendar.get(Calendar.DAY_OF_WEEK));
+                    Log.e("check",props.toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                mixpanelAPI.track("User", props);
             }
         });
 
