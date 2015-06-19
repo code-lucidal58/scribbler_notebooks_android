@@ -23,7 +23,7 @@ import java.util.HashMap;
 
 public class ParseJson {
 
-    public static ArrayList<Deal> getParsedData(String url, Context context, Boolean b) {
+    public static ArrayList<Deal> getParsedData(String url) {
         ArrayList<Deal> dealsList = null;
         try {
             JSONObject jsonChild = new JSONObject(url);
@@ -31,7 +31,7 @@ public class ParseJson {
             if (success.equalsIgnoreCase("false")) {
                 return null;
             }
-            JSONArray jsonArray = jsonChild.optJSONArray("message");
+            JSONArray jsonArray = jsonChild.optJSONArray(Constants.TAG_DATA);
 
             int lengthJsonArr = jsonArray.length();
 
@@ -59,22 +59,13 @@ public class ParseJson {
             JSONObject jsonChild = new JSONObject(jsonResponse);
             String id, title, category, sdesp, ldesp, imgurl,code;
 
-            JSONObject data=jsonChild.getJSONObject(Constants.TAG_DATA);
+            title = jsonChild.optString(Constants.TAG_DEAL_NAME);
+            category = jsonChild.optString(Constants.TAG_CATEGORY);
+            sdesp = jsonChild.optString(Constants.TAG_SHORT_DESCRIPTION);
+            ldesp = jsonChild.optString(Constants.TAG_LONG_DESCRIPTION);
+            code= jsonChild.optString(Constants.TAG_CODE);
+            imgurl = "http://www.ucarecdn.com/" + jsonChild.optString(Constants.TAG_IMAGE_URL) + "/image.png";
 
-            title = data.optString(Constants.TAG_DEAL_NAME);
-            category = data.optString(Constants.TAG_CATEGORY);
-            sdesp = data.optString(Constants.TAG_SHORT_DESCRIPTION);
-            ldesp = data.optString(Constants.TAG_LONG_DESCRIPTION);
-            code= data.optString(Constants.TAG_CODE);
-            imgurl=data.optString(Constants.TAG_IMAGE_URL);
-            // Image url http://www.ucarecdn.com/<image UUID>/image.png
-//            if (jsonChild.optString(Constants.TAG_IMAGE_UUID).isEmpty() || jsonChild.optString(Constants.TAG_IMAGE_UUID) == null) {
-//                imgurl = Constants.ServerUrls.websiteUrl + jsonChild.optString(Constants.TAG_IMAGE_URL);
-//                imgurl = imgurl.replace("%5C", "/");
-//                Log.e("Image Url",imgurl);
-//            } else {
-//                imgurl = "http://www.ucarecdn.com/" + jsonChild.optString(Constants.TAG_IMAGE_UUID) + "/image.png";
-//            }
             //deal.setId(id);
             deal.setTitle(title);
             deal.setCategory(category);

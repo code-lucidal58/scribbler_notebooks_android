@@ -655,7 +655,7 @@ public class DealsFragment extends android.support.v4.app.Fragment implements Na
 
             try {
                 object = new JSONObject(s);
-                dealsList1 = ParseJson.getParsedData(s, context, isFeatured);
+                dealsList1 = ParseJson.getParsedData(s);
                 if(dealsList1==null){
                     finished=true;
                     Log.e("DealFragment","Finished = true");
