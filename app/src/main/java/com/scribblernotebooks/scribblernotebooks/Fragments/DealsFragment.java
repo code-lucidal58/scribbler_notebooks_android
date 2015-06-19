@@ -660,7 +660,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
 
             try {
                 object = new JSONObject(s);
-                dealsList1 = ParseJson.getParsedData(s, context, isFeatured);
+                dealsList1 = ParseJson.getParsedData(s);
                 if(dealsList1==null){
                     finished=true;
                     Log.e("DealFragment","Finished = true");

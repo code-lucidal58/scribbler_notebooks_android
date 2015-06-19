@@ -2,31 +2,24 @@
 package com.scribblernotebooks.scribblernotebooks.Activities;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
+import android.graphics.PorterDuff;
 import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ScrollView;
-import android.widget.Toast;
+import android.widget.TableRow;
 
 import com.facebook.login.LoginManager;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -34,28 +27,14 @@ import com.google.android.gms.plus.Plus;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.User;
 import com.scribblernotebooks.scribblernotebooks.R;
-import com.scribblernotebooks.scribblernotebooks.Services.LocationRetreiver;
 import com.scribblernotebooks.scribblernotebooks.Services.SignUpService;
 
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.HashMap;
-import java.util.concurrent.CompletionService;
-
-import javax.net.ssl.HttpsURLConnection;
 
 
 public class ProfileManagement extends AppCompatActivity {
@@ -83,8 +62,8 @@ public class ProfileManagement extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_management);
 
-        idName=getIntent().getStringExtra(Constants.INTENT_ID_NAME);
-        idValue=getIntent().getStringExtra(Constants.INTENT_ID_VALUE);
+        idName = getIntent().getStringExtra(Constants.INTENT_ID_NAME);
+        idValue = getIntent().getStringExtra(Constants.INTENT_ID_VALUE);
 
         userPic = (ImageView) findViewById(R.id.pic);
         userCoverPic = (ImageView) findViewById(R.id.profileCoverPic);
@@ -119,13 +98,17 @@ public class ProfileManagement extends AppCompatActivity {
         userMob = (EditText) findViewById(R.id.et_mobile);
         userLocation = (EditText) findViewById(R.id.et_location);
 
-
         /**Initiating Shared Prefs and setting values*/
-        user=Constants.getUser(this);
+        user = Constants.getUser(this);
         userName.setText(user.getName());
         userEmail.setText(user.getEmail());
         userLocation.setText(user.getLocation());
         userMob.setText(user.getMobile());
+
+        imageChanger(userName);
+        imageChanger(userMob);
+        imageChanger(userEmail);
+        imageChanger(userPass);
 
         /**Setting images from shared Prefs**/
         coverUrl = user.getCoverImage();
@@ -171,6 +154,35 @@ public class ProfileManagement extends AppCompatActivity {
             }
         });
 
+    }
+
+    public void imageChanger(final EditText editText) {
+        if (!editText.getText().toString().isEmpty()) {
+            ((ImageView) ((TableRow) editText.getParent()).getChildAt(0)).getDrawable()
+                    .setColorFilter(R.color.darkerBlue, PorterDuff.Mode.MULTIPLY);
+        }
+        editText.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.toString().isEmpty() || s.toString().equals("")) {
+                    ((ImageView) ((TableRow) editText.getParent()).getChildAt(0)).getDrawable().clearColorFilter();
+                } else {
+                    ((ImageView) ((TableRow) editText.getParent()).getChildAt(0)).getDrawable()
+                            .setColorFilter(R.color.darkerBlue, PorterDuff.Mode.MULTIPLY);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
     public boolean isValidPassword(String password) {
@@ -289,7 +301,7 @@ public class ProfileManagement extends AppCompatActivity {
         userPref.edit().clear().apply();
         startActivity(new Intent(this, LogIn.class));
         finish();
-        overridePendingTransition(R.anim.login_slide_in,R.anim.profile_slide_out);
+        overridePendingTransition(R.anim.login_slide_in, R.anim.profile_slide_out);
     }
 
 }
