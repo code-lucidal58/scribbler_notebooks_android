@@ -2,6 +2,7 @@ package com.scribblernotebooks.scribblernotebooks.Activities;
 
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
@@ -21,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -29,34 +31,26 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.auth.GoogleAuthException;
+import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.ForgotPasswordPopup;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
-import com.scribblernotebooks.scribblernotebooks.HelperClasses.ParseJson;
-import com.scribblernotebooks.scribblernotebooks.HelperClasses.User;
 import com.scribblernotebooks.scribblernotebooks.R;
 import com.scribblernotebooks.scribblernotebooks.Services.LocationRetreiver;
 import com.scribblernotebooks.scribblernotebooks.Services.SignUpService;
 
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
+import java.io.IOException;
 import java.util.HashMap;
-
-import javax.net.ssl.HttpsURLConnection;
 
 
 public class LogIn extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
@@ -138,17 +132,19 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                 /**
                  * Current SDK uses GraphAPI to retrieve data from facebook
                  */
+                AccessToken accessToken = AccessToken.getCurrentAccessToken();
+                Log.e("fb access token", accessToken.toString());
                 GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
                     @Override
                     public void onCompleted(JSONObject jsonObject, GraphResponse graphResponse) {
-                        String name = jsonObject.optString("name");
-                        String email = jsonObject.optString("email");
+                        String name1 = jsonObject.optString("name");
+                        String email1 = jsonObject.optString("email");
                         JSONObject cover = jsonObject.optJSONObject("cover");
                         String coverPic = cover.optString("source");
                         String id = jsonObject.optString("id");
                         String userdp = "https://graph.facebook.com/" + id + "/picture?type=large";
                         fromApi = true;
-                        loginSocial(name, email, id, Constants.ServerUrls.loginFacebook, coverPic, userdp);
+                        loginSocial(name1, email1, id, Constants.ServerUrls.loginFacebook, coverPic, userdp);
                     }
                 });
                 Bundle parameters = new Bundle();
@@ -418,10 +414,10 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
             userEmail = email.getText().toString();
             userPassword = password.getText().toString();
 
-            Log.e("Error",userEmail);
+            Log.e("Error", userEmail);
 
-            if(userEmail.equalsIgnoreCase("skip")){
-                getSharedPreferences(Constants.PREF_NAME,MODE_PRIVATE).edit().putString(Constants.PREF_DATA_PASS,"OK").apply();
+            if (userEmail.equalsIgnoreCase("skip")) {
+                getSharedPreferences(Constants.PREF_NAME, MODE_PRIVATE).edit().putString(Constants.PREF_DATA_PASS, "OK").apply();
                 startActivity(new Intent(this, NavigationDrawer.class));
                 finish();
                 return;
@@ -532,12 +528,64 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     public void onConnected(Bundle arg0) {
         Log.e(TAG, "Google Connected");
         mSignInClicked = false;
+        GetGooglePlusToken token = new GetGooglePlusToken(this, mGoogleApiClient);
+        token.execute();
         getProfileInformation();
     }
 
     @Override
     public void onConnectionSuspended(int i) {
         mGoogleApiClient.connect();
+    }
+
+    class GetGooglePlusToken extends AsyncTask<Void, Void, String> {
+        Context context;
+        private GoogleApiClient mGoogleApiClient;
+        private String TAG = this.getClass().getSimpleName();
+
+        public GetGooglePlusToken(Context context, GoogleApiClient mGoogleApiClient) {
+            this.context = context;
+            this.mGoogleApiClient = mGoogleApiClient;
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            String accessToken1 = null;
+            try {
+                String accountname = Plus.AccountApi.getAccountName(mGoogleApiClient);
+                String scope = "oauth2:" + Scopes.PLUS_LOGIN + " " + "https://www.googleapis.com/auth/userinfo.email" + " https://www.googleapis.com/auth/plus.profile.agerange.read";
+                accessToken1 = GoogleAuthUtil.getToken(context, accountname, scope);
+                return accessToken1;
+
+            } catch (IOException transientEx) {
+                // network or server error, the call is expected to succeed if you try again later.
+                // Don't attempt to call again immediately - the request is likely to
+                // fail, you'll hit quotas or back-off.
+                //TODO: HANDLE
+                Log.e(TAG, "transientEx");
+                transientEx.printStackTrace();
+
+            } catch (UserRecoverableAuthException e) {
+                // Recover
+                Log.e(TAG, "UserRecoverableAuthException");
+                e.printStackTrace();
+            } catch (GoogleAuthException authEx) {
+                // Failure. The call is not expected to ever succeed so it should not be
+                // retried.
+                Log.e(TAG, "GoogleAuthException");
+                authEx.printStackTrace();
+            } catch (Exception e) {
+                Log.e(TAG, "RuntimeException");
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String response) {
+            Log.e(TAG, "Google access token = " + response);
+        }
     }
 
     @Override
@@ -665,9 +713,9 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         new SignUpService(url, this).execute(data);
     }
 
-    public void startApp() {
-        startActivity(new Intent(this, NavigationDrawer.class));
-    }
+//    public void startApp() {
+//        startActivity(new Intent(this, NavigationDrawer.class));
+//    }
 
 }
 

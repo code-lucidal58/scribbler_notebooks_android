@@ -55,32 +55,33 @@ public class ParseJson {
 
     public static Deal parseSingleDeal(String jsonResponse) {
         Deal deal = new Deal();
-//        Log.e("JSON","jsonResponse "+jsonResponse);
         try {
             JSONObject jsonChild = new JSONObject(jsonResponse);
-            String success = jsonChild.optString("success");
+            String id, title, category, sdesp, ldesp, imgurl,code;
 
-            String id, title, category, sdesp, ldesp, imgurl;
+            JSONObject data=jsonChild.getJSONObject(Constants.TAG_DATA);
 
-            id = jsonChild.optString(Constants.TAG_ID);
-            title = jsonChild.optString(Constants.TAG_DEAL_NAME);
-            category = jsonChild.optString(Constants.TAG_CATEGORY);
-            sdesp = jsonChild.optString(Constants.TAG_SHORT_DESCRIPTION);
-            ldesp = jsonChild.optString(Constants.TAG_LONG_DESCRIPTION);
+            title = data.optString(Constants.TAG_DEAL_NAME);
+            category = data.optString(Constants.TAG_CATEGORY);
+            sdesp = data.optString(Constants.TAG_SHORT_DESCRIPTION);
+            ldesp = data.optString(Constants.TAG_LONG_DESCRIPTION);
+            code= data.optString(Constants.TAG_CODE);
+            imgurl=data.optString(Constants.TAG_IMAGE_URL);
             // Image url http://www.ucarecdn.com/<image UUID>/image.png
-            if (jsonChild.optString(Constants.TAG_IMAGE_UUID).isEmpty() || jsonChild.optString(Constants.TAG_IMAGE_UUID) == null) {
-                imgurl = Constants.ServerUrls.websiteUrl + jsonChild.optString(Constants.TAG_IMAGE_URL);
-                imgurl = imgurl.replace("%5C", "/");
-                Log.e("Image Url",imgurl);
-            } else {
-                imgurl = "http://www.ucarecdn.com/" + jsonChild.optString(Constants.TAG_IMAGE_UUID) + "/image.png";
-            }
-            deal.setId(id);
+//            if (jsonChild.optString(Constants.TAG_IMAGE_UUID).isEmpty() || jsonChild.optString(Constants.TAG_IMAGE_UUID) == null) {
+//                imgurl = Constants.ServerUrls.websiteUrl + jsonChild.optString(Constants.TAG_IMAGE_URL);
+//                imgurl = imgurl.replace("%5C", "/");
+//                Log.e("Image Url",imgurl);
+//            } else {
+//                imgurl = "http://www.ucarecdn.com/" + jsonChild.optString(Constants.TAG_IMAGE_UUID) + "/image.png";
+//            }
+            //deal.setId(id);
             deal.setTitle(title);
             deal.setCategory(category);
             deal.setImageUrl(imgurl);
             deal.setShortDescription(sdesp);
             deal.setLongDescription(ldesp);
+            deal.setCouponCode(code);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -161,9 +162,17 @@ public class ParseJson {
             JSONObject object = new JSONObject(response);
             HashMap<String, String> parsedData = new HashMap<>();
             parsedData.put(Constants.POST_SUCCESS, object.optString(Constants.POST_SUCCESS));
-            parsedData.put(Constants.POST_ERROR, object.optString(Constants.POST_ERROR));
-            parsedData.put(Constants.POST_TOKEN, object.optString(Constants.POST_TOKEN));
-            parsedData.put(Constants.POST_MIXPANELID, object.optString(Constants.POST_MIXPANELID));
+//            parsedData.put(Constants.POST_ERROR, object.optString(Constants.POST_ERROR));
+//            parsedData.put(Constants.POST_MIXPANELID, object.optString(Constants.POST_MIXPANELID));
+            JSONObject data=object.optJSONObject(Constants.POST_DATA);
+            parsedData.put(Constants.POST_MIXPANELID,data.getString(Constants.POST_MIXPANELID));
+            parsedData.put(Constants.POST_EMAIL,data.getString(Constants.POST_EMAIL));
+            parsedData.put(Constants.POST_MOBILE,data.getString(Constants.POST_MOBILE));
+            parsedData.put(Constants.POST_TOKEN, data.optString(Constants.POST_TOKEN));
+            parsedData.put(Constants.POST_IS_NEW, data.optString(Constants.POST_IS_NEW));
+            JSONObject name=data.getJSONObject(Constants.POST_NAME);
+            parsedData.put(Constants.POST_NAME_FIRST,name.getString(Constants.POST_NAME_FIRST));
+            parsedData.put(Constants.POST_NAME_LAST,name.getString(Constants.POST_NAME_LAST));
 
             return parsedData;
         } catch (JSONException e) {
