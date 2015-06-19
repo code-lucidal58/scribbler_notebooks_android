@@ -12,7 +12,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,14 +26,12 @@ import com.google.android.gms.plus.Plus;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.LeftNavigationDrawer;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.NotificationDrawer;
 import com.scribblernotebooks.scribblernotebooks.Fragments.ClaimedDeals;
-import com.scribblernotebooks.scribblernotebooks.Fragments.DealsFragment;
 import com.scribblernotebooks.scribblernotebooks.Fragments.ManualScribblerCode;
 import com.scribblernotebooks.scribblernotebooks.Fragments.ProfileFragment;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.User;
 import com.scribblernotebooks.scribblernotebooks.R;
 import com.scribblernotebooks.scribblernotebooks.Services.LocationRetreiver;
-import com.scribblernotebooks.scribblernotebooks.Services.TokenRetriever;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -82,8 +79,6 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
         super.onCreate(savedInstanceState);
         sContext=getApplicationContext();
 
-        //Retrieve token
-        startService(new Intent(this, TokenRetriever.class));
 
         if(!checkPlayServices()){
             Toast.makeText(this, "Google play services not installed on your device. Notification won't be shown", Toast.LENGTH_LONG).show();

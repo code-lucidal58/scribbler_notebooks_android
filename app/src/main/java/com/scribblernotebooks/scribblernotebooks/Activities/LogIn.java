@@ -2,14 +2,20 @@ package com.scribblernotebooks.scribblernotebooks.Activities;
 
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ScaleDrawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -21,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -29,34 +36,26 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.auth.GoogleAuthException;
+import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.ForgotPasswordPopup;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
-import com.scribblernotebooks.scribblernotebooks.HelperClasses.ParseJson;
-import com.scribblernotebooks.scribblernotebooks.HelperClasses.User;
 import com.scribblernotebooks.scribblernotebooks.R;
 import com.scribblernotebooks.scribblernotebooks.Services.LocationRetreiver;
 import com.scribblernotebooks.scribblernotebooks.Services.SignUpService;
 
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
+import java.io.IOException;
 import java.util.HashMap;
-
-import javax.net.ssl.HttpsURLConnection;
 
 
 public class LogIn extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
@@ -138,17 +137,19 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                 /**
                  * Current SDK uses GraphAPI to retrieve data from facebook
                  */
+                final AccessToken accessToken = AccessToken.getCurrentAccessToken();
+                Log.e("fb access token", accessToken.toString());
                 GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
                     @Override
                     public void onCompleted(JSONObject jsonObject, GraphResponse graphResponse) {
-                        String name = jsonObject.optString("name");
-                        String email = jsonObject.optString("email");
+                        String name1 = jsonObject.optString("name");
+                        String email1 = jsonObject.optString("email");
                         JSONObject cover = jsonObject.optJSONObject("cover");
                         String coverPic = cover.optString("source");
                         String id = jsonObject.optString("id");
                         String userdp = "https://graph.facebook.com/" + id + "/picture?type=large";
                         fromApi = true;
-                        loginSocial(name, email, id, Constants.ServerUrls.loginFacebook, coverPic, userdp);
+                        loginSocial(Constants.POST_METHOD_FACEBOOK, accessToken.toString());
                     }
                 });
                 Bundle parameters = new Bundle();
@@ -188,11 +189,6 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                     .addScope(Plus.SCOPE_PLUS_LOGIN).build();
         }
 
-
-        /**Get User location*/
-        startService(new Intent(this, LocationRetreiver.class));
-
-
         //View Setup
         name = (EditText) findViewById(R.id.userName);
         email = (EditText) findViewById(R.id.userEmail);
@@ -210,6 +206,10 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         cloud1 = (ImageView) findViewById(R.id.cloud1);
         cloud2 = (ImageView) findViewById(R.id.cloud2);
 
+        name.setOnFocusChangeListener(Constants.drawableColorChange);
+        email.setOnFocusChangeListener(Constants.drawableColorChange);
+        password.setOnFocusChangeListener(Constants.drawableColorChange);
+        mobile.setOnFocusChangeListener(Constants.drawableColorChange);
 
         /**Forgot Password**/
         forgotPassword.setOnTouchListener(new View.OnTouchListener() {
@@ -418,10 +418,10 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
             userEmail = email.getText().toString();
             userPassword = password.getText().toString();
 
-            Log.e("Error",userEmail);
+            Log.e("Error", userEmail);
 
-            if(userEmail.equalsIgnoreCase("skip")){
-                getSharedPreferences(Constants.PREF_NAME,MODE_PRIVATE).edit().putString(Constants.PREF_DATA_PASS,"OK").apply();
+            if (userEmail.equalsIgnoreCase("skip")) {
+                getSharedPreferences(Constants.PREF_NAME, MODE_PRIVATE).edit().putString(Constants.PREF_DATA_PASS, "OK").apply();
                 startActivity(new Intent(this, NavigationDrawer.class));
                 finish();
                 return;
@@ -429,7 +429,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
             }
 
             if (userEmail.isEmpty()) {
-                Toast.makeText(getApplicationContext(), "Oops... Looks like you forgot to enter email id", Toast.LENGTH_LONG).show();
+                email.setError("Email is required");
             } else if (!validatePassword(userPassword, "SignIn")) {
                 Toast.makeText(getApplicationContext(), "Oops... Looks like you forgot to enter the password", Toast.LENGTH_LONG).show();
             } else {
@@ -458,7 +458,23 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
      */
     public void signUpUser() {
         if (view_open == SIGNUP) {
-            signUp(name.getText().toString(), email.getText().toString(), "", "", mobile.getText().toString(), password.getText().toString());
+
+
+            userName=name.getText().toString();
+            userEmail = email.getText().toString();
+            userPassword = password.getText().toString();
+            userMobile=mobile.getText().toString();
+
+            if(userName.isEmpty())
+                name.setError("Name required");
+            else if(!Constants.isValidEmailId(userEmail))
+                email.setError("Invalid Email ID");
+            else if(isValidPassword(userPassword)) {
+            }
+            else if(userMobile.isEmpty() || userMobile.length()!=10)
+                mobile.setError("Mobile Number should be 10 digits");
+            else
+                signUp(name.getText().toString(), email.getText().toString(), "", "", mobile.getText().toString(), password.getText().toString());
             return;
         }
         name.setVisibility(View.VISIBLE);
@@ -524,7 +540,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         }
         callbackManager.onActivityResult(requestCode, responseCode, intent);
     }
-
+;
     /**
      * GoogleAPI callbacks. Called after sign in
      */
@@ -532,12 +548,65 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     public void onConnected(Bundle arg0) {
         Log.e(TAG, "Google Connected");
         mSignInClicked = false;
-        getProfileInformation();
+        GetGooglePlusToken token = new GetGooglePlusToken(this, mGoogleApiClient);
+        token.execute();
     }
 
     @Override
     public void onConnectionSuspended(int i) {
         mGoogleApiClient.connect();
+    }
+
+
+    class GetGooglePlusToken extends AsyncTask<Void, Void, String> {
+        Context context;
+        private GoogleApiClient mGoogleApiClient;
+        private String TAG = this.getClass().getSimpleName();
+
+        public GetGooglePlusToken(Context context, GoogleApiClient mGoogleApiClient) {
+            this.context = context;
+            this.mGoogleApiClient = mGoogleApiClient;
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            String accessToken1 = null;
+            try {
+                String accountname = Plus.AccountApi.getAccountName(mGoogleApiClient);
+                String scope = "oauth2:" + Scopes.PLUS_LOGIN + " " + "https://www.googleapis.com/auth/userinfo.email" + " https://www.googleapis.com/auth/plus.profile.agerange.read";
+                accessToken1 = GoogleAuthUtil.getToken(context, accountname, scope);
+                return accessToken1;
+
+            } catch (IOException transientEx) {
+                // network or server error, the call is expected to succeed if you try again later.
+                // Don't attempt to call again immediately - the request is likely to
+                // fail, you'll hit quotas or back-off.
+                //TODO: HANDLE
+                Log.e(TAG, "transientEx");
+                transientEx.printStackTrace();
+
+            } catch (UserRecoverableAuthException e) {
+                // Recover
+                Log.e(TAG, "UserRecoverableAuthException");
+                e.printStackTrace();
+            } catch (GoogleAuthException authEx) {
+                // Failure. The call is not expected to ever succeed so it should not be
+                // retried.
+                Log.e(TAG, "GoogleAuthException");
+                authEx.printStackTrace();
+            } catch (Exception e) {
+                Log.e(TAG, "RuntimeException");
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String response) {
+            Log.e(TAG, "Google access token = " + response);
+            getProfileInformation(response);
+        }
     }
 
     @Override
@@ -606,7 +675,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     /**
      * Fetching user's information name, email, profile pic
      */
-    private void getProfileInformation() {
+    private void getProfileInformation(String token) {
         progressDialog.dismiss();
         try {
             if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
@@ -624,7 +693,8 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                     userCover = currentPerson.getCover().getCoverPhoto().getUrl();
                 }
                 fromApi = true;
-                loginSocial(personName, userEmail, userId, Constants.ServerUrls.loginGoogle, userCover, resizedImageUrl);
+//                loginSocial(personName, userEmail, userId, Constants.ServerUrls.loginGoogle, userCover, resizedImageUrl);
+                loginSocial(Constants.POST_METHOD_GOOGLE, token);
             } else {
                 Log.e("profile info", "person null");
                 Toast.makeText(getApplicationContext(),
@@ -637,37 +707,45 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     }
 
 
-    /**
-     * Login Through Social Network
-     *
-     * @param name
-     * @param email
-     * @param id
-     * @param url
-     * @param coverPic
-     * @param profilePic
-     */
-    void loginSocial(String name, String email, String id, String url, String coverPic, String profilePic) {
-
+    public void loginSocial(String method, String accessToken){
         HashMap<String, String> data = new HashMap<>();
-        if (url.equalsIgnoreCase(Constants.ServerUrls.loginGoogle)) {
-            data.put(Constants.POST_NAME, name);
-            data.put(Constants.POST_EMAIL, email);
-            data.put(Constants.POST_GOOGLE, id);
-            data.put(Constants.POST_COVERPIC, coverPic);
-            data.put(Constants.POST_PROFILEPIC, profilePic);
-        } else if (url.equalsIgnoreCase(Constants.ServerUrls.loginFacebook)) {
-            data.put(Constants.POST_EMAIL, email);
-            data.put(Constants.POST_FACEBOOK, id);
-            data.put(Constants.POST_COVERPIC, coverPic);
-            data.put(Constants.POST_PROFILEPIC, profilePic);
-        }
-        new SignUpService(url, this).execute(data);
+            data.put(Constants.POST_METHOD, method);
+            data.put(Constants.POST_ACCESS_TOKEN, accessToken);
+        new SignUpService(Constants.ServerUrls.signUp, this).execute(data);
     }
 
-    public void startApp() {
-        startActivity(new Intent(this, NavigationDrawer.class));
-    }
+
+//    /**
+//     * Login Through Social Network
+//     *
+//     * @param name
+//     * @param email
+//     * @param id
+//     * @param url
+//     * @param coverPic
+//     * @param profilePic
+//     */
+//    void loginSocial(String name, String email, String id, String url, String coverPic, String profilePic) {
+//
+//        HashMap<String, String> data = new HashMap<>();
+//        if (url.equalsIgnoreCase(Constants.ServerUrls.loginGoogle)) {
+//            data.put(Constants.POST_NAME, name);
+//            data.put(Constants.POST_EMAIL, email);
+//            data.put(Constants.POST_GOOGLE, id);
+//            data.put(Constants.POST_COVERPIC, coverPic);
+//            data.put(Constants.POST_PROFILEPIC, profilePic);
+//        } else if (url.equalsIgnoreCase(Constants.ServerUrls.loginFacebook)) {
+//            data.put(Constants.POST_EMAIL, email);
+//            data.put(Constants.POST_FACEBOOK, id);
+//            data.put(Constants.POST_COVERPIC, coverPic);
+//            data.put(Constants.POST_PROFILEPIC, profilePic);
+//        }
+//        new SignUpService(url, this).execute(data);
+//    }
+
+//    public void startApp() {
+//        startActivity(new Intent(this, NavigationDrawer.class));
+//    }
 
 }
 

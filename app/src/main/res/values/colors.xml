@@ -27,7 +27,8 @@
     <color name="loginEditText2TextColor">#ff2c2c2c</color>
 
     <color name="navigation_drawer_list_text_color">#ff3c3c3c</color>
-    <color name="navigation_drawer_background">#ffe3e3e3</color>
+    <color name="navigation_drawer_background">#fff2f2f2</color>
+    <!--<color name="navigation_drawer_background">#ffe3e3e3</color>-->
     <color name="default_text_color">#000</color>
     <color name="text_color">#222</color>
     <color name="roundImageViewBorder">#FFF</color>
@@ -35,7 +36,7 @@
     <color name="edit_text_background_end">#CCC</color>
     <color name="edit_text_background_start_05">#55FFFFFF</color>
     <color name="edit_text_background_end_05">#55CCCCCC</color>
-    <color name="table_text_light">#555</color>
+    <color name="table_text_light">#ff373737</color>
 
 
     <color name="table_text">#222</color>

@@ -8,6 +8,7 @@ import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -61,7 +62,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-public class DealsFragment extends android.support.v4.app.Fragment implements NavigationDrawer.OnNavKeyPressed {
+public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKeyPressed {
 
     private static final String URL_STRING = "url";
     private static final String TITLE = "title";
@@ -634,12 +635,16 @@ public class DealsFragment extends android.support.v4.app.Fragment implements Na
 //            progressDialog.dismiss();
             swipeRefreshLayout.setRefreshing(false);
 
-            if(s.isEmpty()){
-                isEmpty=true;
-                loadingBar.setVisibility(View.GONE);
-                loadingCharacter.setImageResource(R.drawable.child_searching_slept);
-                loadingMessage.setText(getResources().getString(R.string.dealListLoadingError));
-                return;
+            try {
+                if (s.isEmpty()) {
+                    isEmpty = true;
+                    loadingBar.setVisibility(View.GONE);
+                    loadingCharacter.setImageResource(R.drawable.child_searching_slept);
+                    loadingMessage.setText(getResources().getString(R.string.dealListLoadingError));
+                    return;
+                }
+            }catch (Exception e){
+                e.printStackTrace();
             }
 
             loadingProgressLayout.setVisibility(View.GONE);

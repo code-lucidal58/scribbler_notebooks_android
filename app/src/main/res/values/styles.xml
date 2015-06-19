@@ -8,32 +8,34 @@
     <style name="AppTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/themeColor</item>
         <item name="colorPrimaryDark">@color/darkerBlue</item>
-        <item name="colorAccent">@android:color/white</item>
+        <item name="colorAccent">#222</item>
         <item name="android:textColorPrimary">#222</item>
         <item name="android:textCursorDrawable">@drawable/bootstrap_edit_text_cursor</item>
     </style>
 
     <style name="ScannerTheme" parent="AppTheme.Base">
-
+        <item name="android:textCursorDrawable">@drawable/bootstrap_edit_text_cursor</item>
     </style>
 
 
     <style name="font" parent="AppTheme.Base">
         <item name="android:textSize">18sp</item>
         <item name="android:gravity">center</item>
+        <item name="android:textCursorDrawable">@drawable/bootstrap_edit_text_cursor</item>
     </style>
 
     <style name="SignInEditText" parent="AppTheme.Base">
         <item name="android:singleLine">true</item>
         <item name="android:textColor">@color/table_text</item>
-        <item name="android:textCursorDrawable">@drawable/bootstrap_edit_text_cursor</item>
         <item name="android:textSize">20sp</item>
         <item name="android:background">@drawable/bootstrap_edittext</item>
+        <item name="android:textCursorDrawable">@drawable/bootstrap_edit_text_cursor</item>
     </style>
 
     <style name="ForgotPasswordAnimation" parent="AppTheme.Base">
         <item name="android:windowEnterAnimation">@android:anim/slide_in_left</item>
         <item name="android:windowExitAnimation">@android:anim/slide_out_right</item>
+        <item name="android:textCursorDrawable">@drawable/bootstrap_edit_text_cursor</item>
     </style>
 
 

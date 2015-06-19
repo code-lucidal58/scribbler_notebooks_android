@@ -4,14 +4,19 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.text.TextUtils;
 import android.util.Pair;
 import android.util.Patterns;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.TranslateAnimation;
+import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
@@ -36,7 +41,7 @@ import java.util.Random;
 public class Constants {
 
     public static class ServerUrls {
-        public static String websiteUrl = "http://192.168.117.1:3000/";
+        public static String websiteUrl = "http://192.168.1.117:3000/api/";
         //User Module
         public static String signUp = websiteUrl + "signup";
         public static String login = websiteUrl + "login";
@@ -65,23 +70,38 @@ public class Constants {
         }
     }
 
+
+    public static View.OnFocusChangeListener drawableColorChange=new View.OnFocusChangeListener() {
+        @Override
+        public void onFocusChange(View v, boolean hasFocus) {
+            EditText e=(EditText)v;
+            if(!hasFocus){
+                if(!e.getText().toString().isEmpty()){
+                    Drawable d=e.getCompoundDrawables()[2];
+                    d.setColorFilter(Color.parseColor("#ff13657b"), PorterDuff.Mode.MULTIPLY);
+                }
+            }
+        }
+    };
+
     public static final String MIXPANEL_TOKEN = "873f1995dd119bdb63b8a51bc2f4951d";
 
     public static final String parentURLForGetRequest = "http://192.168.1.117:3000/deal/";
-    public static final String parentURLForCouponCode = "http://192.168.1.114:3000/deal/";
+    public static final String parentURLForCouponCode = "http://192.168.1.117:3000/deal/";
 
 
     public static final String serverURL = "http://jazzyarchitects.orgfree.com/deal.php";
-    public static final String TAG_DEAL_NAME = "Title";
-    public static final String TAG_IMAGE_URL = "ImageUrl";
+    public static final String TAG_DEAL_NAME = "title";
+    public static final String TAG_IMAGE_URL = "imgUrl";
     public static final String TAG_IMAGE_UUID = "ImageUUID";
-    public static final String TAG_SHORT_DESCRIPTION = "ShortDescription";
-    public static final String TAG_LONG_DESCRIPTION = "Description";
+    public static final String TAG_SHORT_DESCRIPTION = "shortDescription";
+    public static final String TAG_LONG_DESCRIPTION = "description";
+    public static final String TAG_CODE="code";
     public static final String TAG_ID = "Id";
-    public static final String TAG_CATEGORY = "Category";
+    public static final String TAG_CATEGORY = "category";
     public static final String TAG_IF_FEATURED = "ifFeatured";
     public static final String TAG_IF_FAVOURITE = "ifFavorite";
-    public static final String TAG_DETAILS = "details";
+    public static final String TAG_DATA = "data";
     public static final String TAG_COUPON_CODE = "couponCode";
 
     public static final String PARCELABLE_DEAL_LIST_KEY = "dealList";
@@ -111,17 +131,25 @@ public class Constants {
     public static final String GOOGLEID = "googleId";
 
     public static final String POST_SUCCESS = "success";
+    public static final String POST_DATA="data";
+    public static final String POST_IS_NEW="isNew";
     public static final String POST_ERROR = "error";
     public static final String POST_TOKEN = "token";
+    public static final String POST_NAME_FIRST = "first";
+    public static final String POST_NAME_LAST = "last";
     public static final String POST_NAME = "name";
     public static final String POST_EMAIL = "email";
     public static final String POST_MOBILE = "mobile";
     public static final String POST_PASSWORD = "password";
-    public static final String POST_MIXPANELID = "mixpanelId";
+    public static final String POST_MIXPANELID = "_id";
     public static final String POST_GOOGLE = "googleId";
     public static final String POST_FACEBOOK = "facebookId";
-    public static final String POST_COVERPIC="coverImage";
-    public static final String POST_PROFILEPIC="profilePic";
+    public static final String POST_COVERPIC = "coverImage";
+    public static final String POST_PROFILEPIC = "profilePic";
+    public static final String POST_METHOD="method";
+    public static final String POST_ACCESS_TOKEN="accessToken";
+    public static final String POST_METHOD_FACEBOOK="facebook";
+    public static final String POST_METHOD_GOOGLE="google";
 
     public static final String PREF_NOTIFICATION_NAME = "Notification";
     public static final String PREF_NOTIFICATION_ON_OFF = "NotifyOnOff";
