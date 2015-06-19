@@ -75,18 +75,19 @@
                         android:layout_height="@dimen/tableRowHeight"
                         android:layout_weight="1"
                         android:padding="7dp"
-                        android:src="@drawable/userlogin" />
+                        android:src="@drawable/userlogin"
+                        android:id="@+id/name_image"/>
 
                     <EditText
                         android:id="@+id/et_name"
                         android:layout_height="@dimen/tableRowHeight"
                         android:layout_weight="10"
                         android:background="@color/profileBackgroundColor"
-                        android:gravity="center_vertical"
-                        android:hint="Name"
+                        android:clickable="true"
                         android:focusable="true"
                         android:focusableInTouchMode="true"
-                        android:clickable="true"
+                        android:gravity="center_vertical"
+                        android:hint="Name"
                         android:textColor="@color/profileBackgroundEditTextTextColor"
                         android:textColorHint="@color/profileBackgroundEditTextHintColor"
                         android:textSize="@dimen/profileEditTextFontSize" />
@@ -100,19 +101,20 @@
                         android:layout_height="@dimen/tableRowHeight"
                         android:layout_weight="1"
                         android:padding="7dp"
-                        android:src="@drawable/phonelogin" />
+                        android:src="@drawable/phonelogin"
+                        android:id="@+id/mobile_image"/>
 
                     <EditText
                         android:id="@+id/et_mobile"
                         android:layout_height="@dimen/tableRowHeight"
-                        android:inputType="phone"
                         android:layout_weight="10"
+                        android:background="@color/profileBackgroundColor"
+                        android:clickable="true"
                         android:focusable="true"
                         android:focusableInTouchMode="true"
-                        android:clickable="true"
-                        android:background="@color/profileBackgroundColor"
                         android:gravity="center_vertical"
                         android:hint="Contact Number"
+                        android:inputType="phone"
                         android:textColor="@color/profileBackgroundEditTextTextColor"
                         android:textColorHint="@color/profileBackgroundEditTextHintColor"
                         android:textSize="@dimen/profileEditTextFontSize" />
@@ -126,19 +128,20 @@
                         android:layout_height="@dimen/tableRowHeight"
                         android:layout_weight="1"
                         android:padding="7dp"
-                        android:src="@drawable/maillogin" />
+                        android:src="@drawable/maillogin"
+                        android:id="@+id/email_image"/>
 
                     <EditText
                         android:id="@+id/et_email"
                         android:layout_height="@dimen/tableRowHeight"
                         android:layout_weight="10"
                         android:background="@color/profileBackgroundColor"
-                        android:gravity="center_vertical"
-                        android:inputType="none"
-                        android:hint="Email Address"
-                        android:focusableInTouchMode="false"
-                        android:focusable="false"
                         android:clickable="false"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:gravity="center_vertical"
+                        android:hint="Email Address"
+                        android:inputType="none"
                         android:textColor="@color/profileBackgroundEditTextTextColor"
                         android:textColorHint="@color/profileBackgroundEditTextHintColor"
                         android:textSize="@dimen/profileEditTextFontSize" />
@@ -152,16 +155,17 @@
                         android:layout_height="@dimen/tableRowHeight"
                         android:layout_weight="1"
                         android:padding="7dp"
-                        android:src="@drawable/passwordlogin" />
+                        android:src="@drawable/passwordlogin"
+                        android:id="@+id/password_image"/>
 
                     <EditText
                         android:id="@+id/et_password"
                         android:layout_height="@dimen/tableRowHeight"
                         android:layout_weight="10"
-                        android:inputType="textPassword"
                         android:background="@color/profileBackgroundColor"
                         android:gravity="center_vertical"
                         android:hint="Password"
+                        android:inputType="textPassword"
                         android:textColor="@color/profileBackgroundEditTextTextColor"
                         android:textColorHint="@color/profileBackgroundEditTextHintColor"
                         android:textSize="@dimen/profileEditTextFontSize" />
@@ -175,18 +179,19 @@
                         android:layout_height="@dimen/tableRowHeight"
                         android:layout_weight="1"
                         android:padding="7dp"
-                        android:src="@drawable/location" />
+                        android:src="@drawable/location"
+                        android:id="@+id/location_image"/>
 
                     <EditText
                         android:id="@+id/et_location"
                         android:layout_height="@dimen/tableRowHeight"
                         android:layout_weight="10"
                         android:background="@color/profileBackgroundColor"
+                        android:clickable="false"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
                         android:gravity="center_vertical"
                         android:hint="Location"
-                        android:focusable="false"
-                        android:clickable="false"
-                        android:focusableInTouchMode="false"
                         android:textColor="@color/profileBackgroundEditTextTextColor"
                         android:textColorHint="@color/profileBackgroundEditTextHintColor"
                         android:textSize="@dimen/profileEditTextFontSize" />
@@ -206,18 +211,18 @@
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Logout"
-                    android:textColor="#FFF"
+                    android:background="@drawable/scanner_button"
                     android:onClick="logOutAll"
-                    android:background="@drawable/scanner_button"/>
+                    android:text="Logout"
+                    android:textColor="#FFF" />
 
                 <Button
-                    android:layout_marginLeft="5dp"
                     android:id="@+id/save"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="0dp"
+                    android:layout_marginLeft="5dp"
                     android:background="@drawable/scanner_button"
+                    android:padding="0dp"
                     android:text="Save"
                     android:textColor="#FFF" />
 

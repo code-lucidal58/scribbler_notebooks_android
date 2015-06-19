@@ -8,6 +8,7 @@ import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -17,6 +18,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -25,6 +28,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,8 +63,7 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ProfileFragment extends android.support.v4.app.Fragment implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
+public class ProfileFragment extends android.support.v4.app.Fragment {
 
 
     final String TAG = "ProfileFragment";
@@ -79,13 +82,13 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
     public ImageLoadingListener imageLoadingListener;
     public ImageLoaderConfiguration imageLoaderConfiguration;
 
-    SignInButton signInButton;
-    LoginButton loginButton;
-    CallbackManager callbackManager;
-    private GoogleApiClient mGoogleApiClient;
-    private ConnectionResult mConnectionResult;
-    private boolean mIntentInProgress;
-    private boolean mSignInClicked;
+//    SignInButton signInButton;
+//    LoginButton loginButton;
+//    CallbackManager callbackManager;
+//    private GoogleApiClient mGoogleApiClient;
+//    private ConnectionResult mConnectionResult;
+//    private boolean mIntentInProgress;
+//    private boolean mSignInClicked;
     ProgressDialog progressDialog = null;
 
     RecyclerView basicInfoRecyclerView;
@@ -130,7 +133,7 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
+        //FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
 
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
@@ -139,7 +142,7 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
         userPic = (ImageView) v.findViewById(R.id.pic);
         userCoverPic = (ImageView) v.findViewById(R.id.profileCoverPic);
         appbar = (Toolbar) v.findViewById(R.id.toolbar);
-        signInButton = (SignInButton) v.findViewById(R.id.sign_in_button);
+        //signInButton = (SignInButton) v.findViewById(R.id.sign_in_button);
 
         userPref=context.getSharedPreferences(Constants.PREF_NAME,Context.MODE_PRIVATE);
 
@@ -153,7 +156,7 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
         appbar.setTitleTextColor(Color.WHITE);
 
         progressDialog = new ProgressDialog(getActivity(),R.style.Theme_AppCompat_Dialog);
-        signInButton.setOnClickListener(this);
+        //signInButton.setOnClickListener(this);
 
         /** setting values*/
         user=Constants.getUser(getActivity());
@@ -162,14 +165,19 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
         userLocation.setText(userPref.getString(Constants.PREF_DATA_LOCATION,""));
         userMob.setText(user.getMobile());
 
+        imageChanger(userName);
+        imageChanger(userMob);
+        imageChanger(userEmail);
+        imageChanger(userPass);
 
-        for(int i=0;i<signInButton.getChildCount();i++){
-            View c=signInButton.getChildAt(i);
-            if(c instanceof TextView){
-                ((TextView) c).setText("Connect Google");
-                break;
-            }
-        }
+
+//        for(int i=0;i<signInButton.getChildCount();i++){
+//            View c=signInButton.getChildAt(i);
+//            if(c instanceof TextView){
+//                ((TextView) c).setText("Connect Google");
+//                break;
+//            }
+//        }
 
         /**Setting images from shared Prefs**/
         String coverUrl = user.getCoverImage();
@@ -236,59 +244,88 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
          * Facebook Login initialize
          * @Link https://developers.facebook.com/docs/facebook-login/android/v2.3
          */
-        callbackManager = CallbackManager.Factory.create();
-        loginButton = (LoginButton) v.findViewById(R.id.login_button);
-        loginButton.setFragment(this);
-        loginButton.setReadPermissions("user_friends", "email");
-        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                /**
-                 * Current SDK uses GraphAPI to retrieve data from facebook
-                 */
-                GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
-                    @Override
-                    public void onCompleted(JSONObject jsonObject, GraphResponse graphResponse) {
-                        String name = jsonObject.optString("name");
-                        String email = jsonObject.optString("email");
-                        JSONObject cover = jsonObject.optJSONObject("cover");
-                        String coverPic = cover.optString("source");
-                        String userdp = "https://graph.facebook.com/" + jsonObject.optString("id") + "/picture?type=large";
-                        //TODO: signup login check
-                        saveUserDetails(name, email, userdp, coverPic);
-                        setCoverPic(coverPic);
-                        setProfilePic(userdp);
-                    }
-                });
-                Bundle parameters = new Bundle();
-                parameters.putString("fields", "id,name,email,cover");
-                request.setParameters(parameters);
-                request.executeAsync();
-            }
-
-            @Override
-            public void onCancel() {
-                Toast.makeText(context.getApplicationContext(), "Login Cancelled... Please try again later", Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onError(FacebookException exception) {
-                Toast.makeText(context.getApplicationContext(), "Login Failed... Please try again later", Toast.LENGTH_LONG).show();
-            }
-        });
+//        callbackManager = CallbackManager.Factory.create();
+//        loginButton = (LoginButton) v.findViewById(R.id.login_button);
+//        loginButton.setFragment(this);
+//        loginButton.setReadPermissions("user_friends", "email");
+//        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+//            @Override
+//            public void onSuccess(LoginResult loginResult) {
+//                /**
+//                 * Current SDK uses GraphAPI to retrieve data from facebook
+//                 */
+//                GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
+//                    @Override
+//                    public void onCompleted(JSONObject jsonObject, GraphResponse graphResponse) {
+//                        String name = jsonObject.optString("name");
+//                        String email = jsonObject.optString("email");
+//                        JSONObject cover = jsonObject.optJSONObject("cover");
+//                        String coverPic = cover.optString("source");
+//                        String userdp = "https://graph.facebook.com/" + jsonObject.optString("id") + "/picture?type=large";
+//                        //TODO: signup login check
+//                        saveUserDetails(name, email, userdp, coverPic);
+//                        setCoverPic(coverPic);
+//                        setProfilePic(userdp);
+//                    }
+//                });
+//                Bundle parameters = new Bundle();
+//                parameters.putString("fields", "id,name,email,cover");
+//                request.setParameters(parameters);
+//                request.executeAsync();
+//            }
+//
+//            @Override
+//            public void onCancel() {
+//                Toast.makeText(context.getApplicationContext(), "Login Cancelled... Please try again later", Toast.LENGTH_LONG).show();
+//            }
+//
+//            @Override
+//            public void onError(FacebookException exception) {
+//                Toast.makeText(context.getApplicationContext(), "Login Failed... Please try again later", Toast.LENGTH_LONG).show();
+//            }
+//        });
 
 
         /**
          * Setting up GoogleAPI Client for sign in through google
          */
-        mGoogleApiClient = new GoogleApiClient.Builder(getActivity().getApplicationContext())
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(Plus.API, Plus.PlusOptions.builder().build())
-                .addScope(Plus.SCOPE_PLUS_LOGIN).build();
+//        mGoogleApiClient = new GoogleApiClient.Builder(getActivity().getApplicationContext())
+//                .addConnectionCallbacks(this)
+//                .addOnConnectionFailedListener(this)
+//                .addApi(Plus.API, Plus.PlusOptions.builder().build())
+//                .addScope(Plus.SCOPE_PLUS_LOGIN).build();
 
 
         return v;
+    }
+
+    public void imageChanger(final EditText editText) {
+        if (!editText.getText().toString().isEmpty()) {
+            ((ImageView) ((TableRow) editText.getParent()).getChildAt(0)).getDrawable()
+                    .setColorFilter(R.color.darkerBlue, PorterDuff.Mode.MULTIPLY);
+        }
+        editText.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.toString().isEmpty() || s.toString().equals("")) {
+                    ((ImageView) ((TableRow) editText.getParent()).getChildAt(0)).getDrawable().clearColorFilter();
+                } else {
+                    ((ImageView) ((TableRow) editText.getParent()).getChildAt(0)).getDrawable()
+                            .setColorFilter(R.color.darkerBlue, PorterDuff.Mode.MULTIPLY);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
 
@@ -299,108 +336,108 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
      * @param resultCode  result code saying if result is OK
      * @param data        the calling intent
      */
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == Activity.RESULT_OK) {
-            switch (requestCode) {
-                case COVER_PIC_REQUEST_CODE:
-                    setCoverPic(data);
-                    break;
-                case PROFILE_PIC_REQUEST_CODE:
-                    setProfilePic(data);
-                    break;
-                case RC_SIGN_IN:
-                    mSignInClicked = true;
-                    mIntentInProgress = false;
-                    if (!mGoogleApiClient.isConnecting()) {
-                        progressDialog.setMessage("Connecting...");
-                        progressDialog.show();
-                        mGoogleApiClient.connect();
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-        if (requestCode != COVER_PIC_REQUEST_CODE && requestCode != PROFILE_PIC_REQUEST_CODE && requestCode != RC_SIGN_IN) {
-            callbackManager.onActivityResult(requestCode, resultCode, data);
-
-        }
-    }
-
-    /**
-     * GoogleAPI callbacks. Called after sign in
-     */
-    @Override
-    public void onConnected(Bundle arg0) {
-        Log.e(TAG, "Google Connected");
-        dismissProgressDialog();
-        if (mSignInClicked) {
-            getProfileInformation();
-            mSignInClicked = false;
-        }
-
-    }
-
-    public void dismissProgressDialog() {
-        try {
-            progressDialog.dismiss();
-        } catch (Exception e) {
-            Log.e("ProfileFragment", "Progress Dialog error");
-        }
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        Log.e(TAG, "Google Suspended");
-        dismissProgressDialog();
-        mGoogleApiClient.connect();
-
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult result) {
-        Log.e(TAG, "Google Failed");
-        dismissProgressDialog();
-        if (!result.hasResolution()) {
-            GooglePlayServicesUtil.getErrorDialog(result.getErrorCode(), getActivity(), 0).show();
-            progressDialog.hide();
-            Toast.makeText(context, "Could not connect", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (!mIntentInProgress) {
-            mConnectionResult = result;
-
-            if (mSignInClicked) {
-                resolveSignInError();
-            }
-        }
-    }
-
-    /**
-     * Handling clicks on buttons
-     */
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.sign_in_button:
-                if (isNetworkAvailable()) {
-                    if (!mGoogleApiClient.isConnecting()) {
-                        progressDialog.setMessage("Connecting...");
-                        progressDialog.show();
-                        mSignInClicked = true;
-                        resolveSignInError();
-                    }
-                } else {
-                    Toast toast = Toast.makeText(context, "Not connected to Internet\nPlease check the connection and try again later", Toast.LENGTH_SHORT);
-                    toast.setGravity(Gravity.CENTER, 0, 0);
-                    toast.show();
-                }
-                break;
-        }
-    }
+//    @Override
+//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        if (resultCode == Activity.RESULT_OK) {
+//            switch (requestCode) {
+//                case COVER_PIC_REQUEST_CODE:
+//                    setCoverPic(data);
+//                    break;
+//                case PROFILE_PIC_REQUEST_CODE:
+//                    setProfilePic(data);
+//                    break;
+//                case RC_SIGN_IN:
+//                    mSignInClicked = true;
+//                    mIntentInProgress = false;
+//                    if (!mGoogleApiClient.isConnecting()) {
+//                        progressDialog.setMessage("Connecting...");
+//                        progressDialog.show();
+//                        mGoogleApiClient.connect();
+//                    }
+//                    break;
+//                default:
+//                    break;
+//            }
+//        }
+//        if (requestCode != COVER_PIC_REQUEST_CODE && requestCode != PROFILE_PIC_REQUEST_CODE && requestCode != RC_SIGN_IN) {
+//            callbackManager.onActivityResult(requestCode, resultCode, data);
+//
+//        }
+//    }
+//
+//    /**
+//     * GoogleAPI callbacks. Called after sign in
+//     */
+//    @Override
+//    public void onConnected(Bundle arg0) {
+//        Log.e(TAG, "Google Connected");
+//        dismissProgressDialog();
+//        if (mSignInClicked) {
+//            getProfileInformation();
+//            mSignInClicked = false;
+//        }
+//
+//    }
+//
+//    public void dismissProgressDialog() {
+//        try {
+//            progressDialog.dismiss();
+//        } catch (Exception e) {
+//            Log.e("ProfileFragment", "Progress Dialog error");
+//        }
+//    }
+//
+//    @Override
+//    public void onConnectionSuspended(int i) {
+//        Log.e(TAG, "Google Suspended");
+//        dismissProgressDialog();
+//        mGoogleApiClient.connect();
+//
+//    }
+//
+//    @Override
+//    public void onConnectionFailed(ConnectionResult result) {
+//        Log.e(TAG, "Google Failed");
+//        dismissProgressDialog();
+//        if (!result.hasResolution()) {
+//            GooglePlayServicesUtil.getErrorDialog(result.getErrorCode(), getActivity(), 0).show();
+//            progressDialog.hide();
+//            Toast.makeText(context, "Could not connect", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//
+//        if (!mIntentInProgress) {
+//            mConnectionResult = result;
+//
+//            if (mSignInClicked) {
+//                resolveSignInError();
+//            }
+//        }
+//    }
+//
+//    /**
+//     * Handling clicks on buttons
+//     */
+//    @Override
+//    public void onClick(View v) {
+//        switch (v.getId()) {
+//            case R.id.sign_in_button:
+//                if (isNetworkAvailable()) {
+//                    if (!mGoogleApiClient.isConnecting()) {
+//                        progressDialog.setMessage("Connecting...");
+//                        progressDialog.show();
+//                        mSignInClicked = true;
+//                        resolveSignInError();
+//                    }
+//                } else {
+//                    Toast toast = Toast.makeText(context, "Not connected to Internet\nPlease check the connection and try again later", Toast.LENGTH_SHORT);
+//                    toast.setGravity(Gravity.CENTER, 0, 0);
+//                    toast.show();
+//                }
+//                break;
+//        }
+//    }
 
     /**
      * Check if phone is connected to internet
@@ -415,76 +452,76 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
     /**
      * Google Provided Method
      */
-    private void resolveSignInError() {
-        try {
-            if (mConnectionResult.hasResolution()) {
-                try {
-                    mIntentInProgress = true;
-                    mConnectionResult.startResolutionForResult(getActivity(), RC_SIGN_IN);
-                } catch (IntentSender.SendIntentException e) {
-                    mIntentInProgress = false;
-                    mGoogleApiClient.connect();
-                }
-            }
-        } catch (Exception e) {
-            dismissProgressDialog();
-            Toast.makeText(getActivity(), "Already Logged In", Toast.LENGTH_LONG).show();
-        }
-    }
-
-    /**
-     * Fetching user's information name, email, profile pic
-     */
-    private void getProfileInformation() {
-        try {
-            progressDialog.dismiss();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
-                Person currentPerson = Plus.PeopleApi
-                        .getCurrentPerson(mGoogleApiClient);
-                String personName = currentPerson.getDisplayName();
-                String personImageUrl = currentPerson.getImage().getUrl();
-                String s = personImageUrl.replace("photo.jpg?sz=50", "photo.jpg?sz=250");
-
-                String userEmail = Plus.AccountApi.getAccountName(mGoogleApiClient);
-                String userId = currentPerson.getId();
-
-                String userCover="";
-                if(currentPerson.hasCover()) {
-                    userCover = currentPerson.getCover().getCoverPhoto().getUrl();
-                }
-                setCoverPic(userCover);
-                setProfilePic(personImageUrl);
-
-                HashMap<String, String> data=new HashMap<>();
-                data.put(Constants.POST_EMAIL,userEmail);
-                data.put(Constants.GOOGLEID,userId);
-                data.put(Constants.POST_COVERPIC,userCover);
-                data.put(Constants.POST_PROFILEPIC,s);
-
-                new SignUpService(Constants.ServerUrls.linkSocialAccount,getActivity()).execute(data);
-
-
-            } else {
-                Toast.makeText(context,
-                        "Person information is null", Toast.LENGTH_LONG).show();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Connect Google Client on startup of activity
-     */
-    @Override
-    public void onStart() {
-        super.onStart();
-        mGoogleApiClient.connect();
-    }
+//    private void resolveSignInError() {
+//        try {
+//            if (mConnectionResult.hasResolution()) {
+//                try {
+//                    mIntentInProgress = true;
+//                    mConnectionResult.startResolutionForResult(getActivity(), RC_SIGN_IN);
+//                } catch (IntentSender.SendIntentException e) {
+//                    mIntentInProgress = false;
+//                    mGoogleApiClient.connect();
+//                }
+//            }
+//        } catch (Exception e) {
+//            dismissProgressDialog();
+//            Toast.makeText(getActivity(), "Already Logged In", Toast.LENGTH_LONG).show();
+//        }
+//    }
+//
+//    /**
+//     * Fetching user's information name, email, profile pic
+//     */
+//    private void getProfileInformation() {
+//        try {
+//            progressDialog.dismiss();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        try {
+//            if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
+//                Person currentPerson = Plus.PeopleApi
+//                        .getCurrentPerson(mGoogleApiClient);
+//                String personName = currentPerson.getDisplayName();
+//                String personImageUrl = currentPerson.getImage().getUrl();
+//                String s = personImageUrl.replace("photo.jpg?sz=50", "photo.jpg?sz=250");
+//
+//                String userEmail = Plus.AccountApi.getAccountName(mGoogleApiClient);
+//                String userId = currentPerson.getId();
+//
+//                String userCover="";
+//                if(currentPerson.hasCover()) {
+//                    userCover = currentPerson.getCover().getCoverPhoto().getUrl();
+//                }
+//                setCoverPic(userCover);
+//                setProfilePic(personImageUrl);
+//
+//                HashMap<String, String> data=new HashMap<>();
+//                data.put(Constants.POST_EMAIL,userEmail);
+//                data.put(Constants.GOOGLEID,userId);
+//                data.put(Constants.POST_COVERPIC,userCover);
+//                data.put(Constants.POST_PROFILEPIC,s);
+//
+//                new SignUpService(Constants.ServerUrls.linkSocialAccount,getActivity()).execute(data);
+//
+//
+//            } else {
+//                Toast.makeText(context,
+//                        "Person information is null", Toast.LENGTH_LONG).show();
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    /**
+//     * Connect Google Client on startup of activity
+//     */
+//    @Override
+//    public void onStart() {
+//        super.onStart();
+//        mGoogleApiClient.connect();
+//    }
 
     public void setCoverPic(Intent result) {
         String picturePath = getImagePath(result);
