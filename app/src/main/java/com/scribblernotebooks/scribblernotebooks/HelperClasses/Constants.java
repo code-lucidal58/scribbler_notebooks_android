@@ -44,7 +44,7 @@ public class Constants {
         public static String websiteUrl = "http://192.168.1.117:3000/api/";
         //User Module
         public static String signUp = websiteUrl + "signup";
-        public static String login = websiteUrl + "login";
+        public static String login = websiteUrl + "signin";
         public static String loginFacebook = websiteUrl + "login/facebook";
         public static String loginGoogle = websiteUrl + "login/google";
         public static String linkSocialAccount = websiteUrl + "linkSocialNetwork";
