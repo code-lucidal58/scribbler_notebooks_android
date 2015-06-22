@@ -36,10 +36,12 @@ import android.widget.Toast;
 import com.scribblernotebooks.scribblernotebooks.Activities.DealDetail;
 import com.scribblernotebooks.scribblernotebooks.Activities.NavigationDrawer;
 import com.scribblernotebooks.scribblernotebooks.Activities.ScannerActivity;
+import com.scribblernotebooks.scribblernotebooks.Adapters.CategoryListAdapter;
 import com.scribblernotebooks.scribblernotebooks.Adapters.RecyclerDealsAdapter;
 import com.scribblernotebooks.scribblernotebooks.Adapters.SearchListAdapter;
 import com.scribblernotebooks.scribblernotebooks.CustomListeners.HidingScrollListener;
 import com.scribblernotebooks.scribblernotebooks.CustomListeners.RecyclerItemClickListener;
+import com.scribblernotebooks.scribblernotebooks.HelperClasses.Categories;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Deal;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.ParseJson;
@@ -47,6 +49,7 @@ import com.scribblernotebooks.scribblernotebooks.HelperClasses.ShakeEventManager
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.User;
 import com.scribblernotebooks.scribblernotebooks.R;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -67,6 +70,8 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
     private static final String URL_STRING = "url";
     private static final String TITLE = "title";
     int PAGE_LIMIT=5;
+
+    ArrayList<Categories> categoryList=null;
 
     RecyclerView recyclerView;
     ArrayList<Deal> dealsList = new ArrayList<>();
@@ -423,7 +428,6 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
                 selectedIcon.setImageDrawable(getResources().getDrawable(R.drawable.category));
                 selectionIconName.setText("Category");
                 selectedIconQuery.setHint("Enter Category...");
-                suggestionList = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.category_list)));
                 break;
             case "search":
                 selectedIcon.setImageDrawable(getResources().getDrawable(R.drawable.search));
@@ -440,8 +444,13 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
             default:
                 break;
         }
-        searchListAdapter = new SearchListAdapter(suggestionList,tag);
-        suggestions.setAdapter(searchListAdapter);
+        if(tag.equalsIgnoreCase("category")){
+            CategoryListAdapter categoryListAdapter=new CategoryListAdapter(categoryList, tag);
+            suggestions.setAdapter(categoryListAdapter);
+        }else {
+            searchListAdapter = new SearchListAdapter(suggestionList, tag);
+            suggestions.setAdapter(searchListAdapter);
+        }
 
         querySearchListAdapter = new SearchListAdapter(suggestionList,tag);
         selectedIconQuery.addTextChangedListener(new TextWatcher() {
@@ -771,6 +780,48 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
         i.putParcelableArrayListExtra(Constants.PARCELABLE_DEAL_LIST_KEY, deals);
         i.putExtra(Constants.CURRENT_DEAL_INDEX, position);
         startActivityForResult(i,DEAL_DETAIL_REQUEST_CODE);
+    }
+
+    class CategoriesRetriever extends AsyncTask<Void, Void, String>{
+        @Override
+        protected String doInBackground(Void... params) {
+            try {
+                URL url = new URL(Constants.ServerUrls.dealCategories);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setReadTimeout(10000);
+                connection.setConnectTimeout(5000);
+                connection.setDoInput(true);
+
+                BufferedReader reader=new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                return reader.readLine();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            try {
+                JSONObject jsonObject=new JSONObject(s);
+                if(Boolean.parseBoolean(jsonObject.optString("success"))){
+                    JSONObject data=jsonObject.optJSONObject("data");
+                    categoryList.clear();
+
+                    JSONArray list=data.optJSONArray("dealcategories");
+                    for(int i=0;i<list.length();i++){
+                        JSONObject categoryObject=list.optJSONObject(i);
+                        Log.e("CategoryList",categoryObject.optString("name"));
+                        Categories categories=new Categories(categoryObject.optString("_id"),categoryObject.optString("name"));
+                        categoryList.add(categories);
+                    }
+
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            super.onPostExecute(s);
+        }
     }
 
 }

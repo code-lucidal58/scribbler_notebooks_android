@@ -40,6 +40,7 @@ import java.util.Random;
 
 public class Constants {
 
+
     public static class ServerUrls {
         public static String websiteUrl = "http://192.168.1.117:3000/api/";
         //User Module
@@ -83,34 +84,27 @@ public class Constants {
             }
         }
     };
-
     public static final String MIXPANEL_TOKEN = "873f1995dd119bdb63b8a51bc2f4951d";
-
     public static final String parentURLForGetRequest = "http://192.168.1.117:3000/deal/";
     public static final String parentURLForCouponCode = "http://192.168.1.117:3000/deal/";
-
-
     public static final String serverURL = "http://jazzyarchitects.orgfree.com/deal.php";
     public static final String TAG_DEAL_NAME = "title";
     public static final String TAG_IMAGE_URL = "imgUrl";
     public static final String TAG_IMAGE_UUID = "ImageUUID";
     public static final String TAG_SHORT_DESCRIPTION = "shortDescription";
     public static final String TAG_LONG_DESCRIPTION = "description";
-    public static final String TAG_CODE="code";
+    public static final String TAG_CODE = "code";
     public static final String TAG_ID = "Id";
     public static final String TAG_CATEGORY = "category";
     public static final String TAG_IF_FEATURED = "ifFeatured";
     public static final String TAG_IF_FAVOURITE = "ifFavorite";
     public static final String TAG_DATA = "data";
+    public static final String TAG_DEALS = "data";
     public static final String TAG_COUPON_CODE = "couponCode";
-
     public static final String PARCELABLE_DEAL_LIST_KEY = "dealList";
     public static final String PARCELABLE_DEAL_KEY = "dealList";
-
     public static final String CURRENT_DEAL_INDEX = "index";
-
     public static final String URL_ARGUMENT = "urlArg";
-
     /**
      * Shared Pref Tags for USER DATA *
      */
@@ -124,15 +118,13 @@ public class Constants {
     public static final String PREF_DATA_PASS = "password";
     public static final String PREF_DATA_USER_TOKEN = "userToken";
     public static final String PREF_DATA_MIXPANEL_USER_ID = "mixpanelUserId";
-
     public static final String INTENT_ID_NAME = "idName";
     public static final String INTENT_ID_VALUE = "idValue";
     public static final String FACEBOOKID = "facebookId";
     public static final String GOOGLEID = "googleId";
-
     public static final String POST_SUCCESS = "success";
-    public static final String POST_DATA="data";
-    public static final String POST_IS_NEW="isNew";
+    public static final String POST_DATA = "data";
+    public static final String POST_IS_NEW = "isNew";
     public static final String POST_ERROR = "error";
     public static final String POST_TOKEN = "token";
     public static final String POST_NAME_FIRST = "first";
@@ -146,47 +138,97 @@ public class Constants {
     public static final String POST_FACEBOOK = "facebookId";
     public static final String POST_COVERPIC = "coverImage";
     public static final String POST_PROFILEPIC = "profilePic";
-    public static final String POST_METHOD="method";
-    public static final String POST_ACCESS_TOKEN="accessToken";
-    public static final String POST_METHOD_FACEBOOK="facebook";
-    public static final String POST_METHOD_GOOGLE="google";
-
+    public static final String POST_METHOD = "method";
+    public static final String POST_ACCESS_TOKEN = "accessToken";
+    public static final String POST_METHOD_FACEBOOK = "facebook";
+    public static final String POST_METHOD_GOOGLE = "google";
     public static final String PREF_NOTIFICATION_NAME = "Notification";
     public static final String PREF_NOTIFICATION_ON_OFF = "NotifyOnOff";
     public static final String PREF_NOTIFICATION_DEAL_OF_DAY = "DealOfDay";
     public static final String PREF_NOTIFICATION_RINGTONE = "Ringtone";
-
-
     /**
      * Shared Pref Tags for GCM *
      */
     public static final String PREF_GCM_NAME = "gcmSharedPreferences";
     public static final String GCM_REG_ID = "registrationId";
     public static final String GCM_APP_VERSION = "appVersion";
+    /**
+     * Basic Profile Info fields
+     */
+    public static final String[] sharedPrefTags = {Constants.PREF_DATA_NAME, Constants.PREF_DATA_EMAIL,
+            Constants.PREF_DATA_MOBILE, Constants.PREF_DATA_LOCATION};
+    public static View.OnFocusChangeListener drawableColorChange = new View.OnFocusChangeListener() {
+        @Override
+        public void onFocusChange(View v, boolean hasFocus) {
+            EditText e = (EditText) v;
+            if (!hasFocus) {
+                if (!e.getText().toString().isEmpty()) {
+                    Drawable d = e.getCompoundDrawables()[2];
+                    d.setColorFilter(Color.parseColor("#ff13657b"), PorterDuff.Mode.MULTIPLY);
+                }
+            }
+        }
+    };
 
+    public static URL getDealDetailsURL(String dealId, String token) {
+        try {
+            return new URL(ServerUrls.dealDetail + dealId + "?token=" + token);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
-    public static boolean saveUserDetails(Context context, User user) {
+public static boolean saveUserDetails(Context context, User user) {
         if (user == null)
             return false;
         SharedPreferences userPrefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = userPrefs.edit();
-        if (!user.getName().isEmpty())
-            editor.putString(PREF_DATA_NAME, user.getName());
-        if (!user.getProfilePic().isEmpty())
-            editor.putString(PREF_DATA_PHOTO, user.getProfilePic());
-        if (!user.getCoverImage().isEmpty())
-            editor.putString(PREF_DATA_COVER_PIC, user.getCoverImage());
-        if (!user.getEmail().isEmpty())
-            editor.putString(PREF_DATA_EMAIL, user.getEmail());
-        if (!user.getMobile().isEmpty())
-            editor.putString(PREF_DATA_MOBILE, user.getMobile());
-        if (!user.getToken().isEmpty())
-            editor.putString(PREF_DATA_USER_TOKEN, user.getToken());
-        if (!user.getMixpanelId().isEmpty())
-            editor.putString(PREF_DATA_MIXPANEL_USER_ID, user.getMixpanelId());
-        editor.apply();
-        return true;
-    }
+        try {
+            if (!user.getName().isEmpty())
+                editor.putString(PREF_DATA_NAME, user.getName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            if (!user.getProfilePic().isEmpty())
+                editor.putString(PREF_DATA_PHOTO, user.getProfilePic());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            if (!user.getCoverImage().isEmpty())
+                editor.putString(PREF_DATA_COVER_PIC, user.getCoverImage());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            if (!user.getEmail().isEmpty())
+                editor.putString(PREF_DATA_EMAIL, user.getEmail());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            if (!user.getMobile().isEmpty())
+                editor.putString(PREF_DATA_MOBILE, user.getMobile());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            if (!user.getToken().isEmpty())
+                editor.putString(PREF_DATA_USER_TOKEN, user.getToken());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            if (!user.getMixpanelId().isEmpty())
+                editor.putString(PREF_DATA_MIXPANEL_USER_ID, user.getMixpanelId());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+            editor.apply();
+            return true;
+        }
 
     public static User getUser(Context context) {
         SharedPreferences userPref;
@@ -259,13 +301,6 @@ public class Constants {
         return mixpanelAPI;
     }
 
-
-    /**
-     * Basic Profile Info fields
-     */
-    public static final String[] sharedPrefTags = {Constants.PREF_DATA_NAME, Constants.PREF_DATA_EMAIL,
-            Constants.PREF_DATA_MOBILE, Constants.PREF_DATA_LOCATION};
-
     public static ArrayList<Pair<Integer, String>> getProfileInfoFields() {
         ArrayList<Pair<Integer, String>> list = new ArrayList<>();
         list.add(Pair.create(R.drawable.userlogin, "Name"));
@@ -281,7 +316,6 @@ public class Constants {
     public static boolean isValidEmailId(CharSequence target) {
         return !TextUtils.isEmpty(target) && Patterns.EMAIL_ADDRESS.matcher(target).matches();
     }
-
 
     /**
      * Image Size Reducing
@@ -321,7 +355,6 @@ public class Constants {
 
         return inSampleSize;
     }
-
 
     /**
      * Code for Animation
@@ -374,7 +407,6 @@ public class Constants {
         return (float) result;
     }
 
-
     /**
      * Navigation Drawer Items
      */
@@ -388,7 +420,6 @@ public class Constants {
         return item;
     }
 
-
     /**
      * Check if phone is connected to internet
      */
@@ -397,6 +428,28 @@ public class Constants {
                 = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    public static class ServerUrls {
+        public static String websiteUrl = "http://192.168.1.117:3000/api/";
+        //User Module
+        public static String signUp = websiteUrl + "signup";
+        public static String login = websiteUrl + "signin";
+        public static String linkSocialAccount = websiteUrl + "user/link-social-account";
+        public static String changePassword = websiteUrl + "user/change-password";
+        public static String forgotPassword = websiteUrl + "forgot-password";
+        public static String insertGCM = websiteUrl + "insertGcm";
+
+        //Deal Details
+        public static String dealDetail = websiteUrl + "deal/";
+        public static String dealList = websiteUrl + "deal";
+
+        public static String likeDeal = websiteUrl + "like-deal/";
+        public static String shareDeal = websiteUrl + "shareDeal";
+
+        public static String dealCategories = websiteUrl + "deal-category";
+
+
     }
 
 

@@ -159,7 +159,7 @@ public class ProfileManagement extends AppCompatActivity {
     public void imageChanger(final EditText editText) {
         if (!editText.getText().toString().isEmpty()) {
             ((ImageView) ((TableRow) editText.getParent()).getChildAt(0)).getDrawable()
-                    .setColorFilter(R.color.darkerBlue, PorterDuff.Mode.MULTIPLY);
+                    .setColorFilter(getResources().getColor(R.color.darkerBlue), PorterDuff.Mode.MULTIPLY);
         }
         editText.addTextChangedListener(new TextWatcher() {
 
@@ -174,7 +174,7 @@ public class ProfileManagement extends AppCompatActivity {
                     ((ImageView) ((TableRow) editText.getParent()).getChildAt(0)).getDrawable().clearColorFilter();
                 } else {
                     ((ImageView) ((TableRow) editText.getParent()).getChildAt(0)).getDrawable()
-                            .setColorFilter(R.color.darkerBlue, PorterDuff.Mode.MULTIPLY);
+                            .setColorFilter(getResources().getColor(R.color.darkerBlue), PorterDuff.Mode.MULTIPLY);
                 }
             }
 

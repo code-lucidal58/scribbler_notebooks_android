@@ -414,7 +414,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
             userEmail = email.getText().toString();
             userPassword = password.getText().toString();
 
-            Log.e("Error", userEmail);
+//            Log.e("Error", userEmail);
 
             if (userEmail.equalsIgnoreCase("skip")) {
                 getSharedPreferences(Constants.PREF_NAME, MODE_PRIVATE).edit().putString(Constants.PREF_DATA_PASS, "OK").apply();
@@ -440,7 +440,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
 
     public void login(String email, String password) {
         HashMap<String, String> data = new HashMap<>();
-        data.put("email", email);
+        data.put("username", email);
         data.put("password", password);
         new SignUpService(Constants.ServerUrls.login, this).execute(data);
     }

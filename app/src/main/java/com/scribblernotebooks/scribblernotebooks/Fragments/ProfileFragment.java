@@ -63,8 +63,8 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ProfileFragment extends android.support.v4.app.Fragment implements View.OnClickListener,GoogleApiClient.ConnectionCallbacks ,
-GoogleApiClient.OnConnectionFailedListener{
+public class ProfileFragment extends android.support.v4.app.Fragment implements View.OnClickListener,
+        GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener {
 
 
     final String TAG = "ProfileFragment";
@@ -303,7 +303,7 @@ GoogleApiClient.OnConnectionFailedListener{
     public void imageChanger(final EditText editText) {
         if (!editText.getText().toString().isEmpty()) {
             ((ImageView) ((TableRow) editText.getParent()).getChildAt(0)).getDrawable()
-                    .setColorFilter(R.color.darkerBlue, PorterDuff.Mode.MULTIPLY);
+                    .setColorFilter(getResources().getColor(R.color.darkerBlue), PorterDuff.Mode.MULTIPLY);
         }
         editText.addTextChangedListener(new TextWatcher() {
 
@@ -318,7 +318,7 @@ GoogleApiClient.OnConnectionFailedListener{
                     ((ImageView) ((TableRow) editText.getParent()).getChildAt(0)).getDrawable().clearColorFilter();
                 } else {
                     ((ImageView) ((TableRow) editText.getParent()).getChildAt(0)).getDrawable()
-                            .setColorFilter(R.color.darkerBlue, PorterDuff.Mode.MULTIPLY);
+                            .setColorFilter(getResources().getColor(R.color.darkerBlue), PorterDuff.Mode.MULTIPLY);
                 }
             }
 
@@ -367,9 +367,9 @@ GoogleApiClient.OnConnectionFailedListener{
         }
     }
 
-    /**
-     * GoogleAPI callbacks. Called after sign in
-     */
+//    /**
+//     * GoogleAPI callbacks. Called after sign in
+//     */
     @Override
     public void onConnected(Bundle arg0) {
         Log.e(TAG, "Google Connected");
@@ -416,10 +416,10 @@ GoogleApiClient.OnConnectionFailedListener{
             }
         }
     }
-
-    /**
-     * Handling clicks on buttons
-     */
+//
+//    /**
+//     * Handling clicks on buttons
+//     */
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -469,10 +469,10 @@ GoogleApiClient.OnConnectionFailedListener{
             Toast.makeText(getActivity(), "Already Logged In", Toast.LENGTH_LONG).show();
         }
     }
-
-    /**
-     * Fetching user's information name, email, profile pic
-     */
+//
+//    /**
+//     * Fetching user's information name, email, profile pic
+//     */
     private void getProfileInformation() {
         try {
             progressDialog.dismiss();

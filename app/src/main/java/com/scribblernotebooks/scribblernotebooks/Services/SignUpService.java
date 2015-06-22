@@ -84,13 +84,15 @@ public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User
             if (responseCode == HttpsURLConnection.HTTP_OK) {
                 BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                 String response = br.readLine();
+//                Log.e("SignUpService","Response: "+response);
                 if (urlExtension.equalsIgnoreCase(Constants.ServerUrls.login)) {
                     return loginHandle(response);
                 } else if (urlExtension.equalsIgnoreCase(Constants.ServerUrls.signUp)) {
                     return signupHandle(response, params[0]);
-                } else if (urlExtension.equalsIgnoreCase(Constants.ServerUrls.loginGoogle) || urlExtension.equalsIgnoreCase(Constants.ServerUrls.loginFacebook)) {
-                    return loginSocialHandle(response, params[0]);
                 }
+//                else if (urlExtension.equalsIgnoreCase(Constants.ServerUrls.loginGoogle) || urlExtension.equalsIgnoreCase(Constants.ServerUrls.loginFacebook)) {
+//                    return loginSocialHandle(response, params[0]);
+//                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -114,6 +116,13 @@ public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User
         parsedData = ParseJson.parseLoginResponse(response);
         if (parsedData != null) {
             if (Boolean.parseBoolean(parsedData.get(Constants.POST_SUCCESS))) {
+//                Log.e("Parsed Data:",parsedData.get(Constants.POST_NAME)+
+//                        parsedData.get(Constants.POST_EMAIL)+
+//                        parsedData.get(Constants.POST_MOBILE)+
+//                        parsedData.get(Constants.POST_COVERPIC)+
+//                        parsedData.get(Constants.POST_PROFILEPIC)+
+//                        parsedData.get(Constants.POST_TOKEN)+
+//                        parsedData.get(Constants.POST_MIXPANELID));
                 User user = new User(parsedData.get(Constants.POST_NAME),
                         parsedData.get(Constants.POST_EMAIL),
                         parsedData.get(Constants.POST_MOBILE),
