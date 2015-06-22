@@ -6,22 +6,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.scribblernotebooks.scribblernotebooks.HelperClasses.Categories;
 import com.scribblernotebooks.scribblernotebooks.R;
 
 import java.util.ArrayList;
 
 /**
- * Created by Aanisha on 22-May-15.
+ * Created by Jibin_ism on 22-Jun-15.
  */
-public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.ViewHolder> {
+public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapter.ViewHolder> {
 
-    ArrayList<String> suggestionList;
+    ArrayList<Categories> suggestionList;
     String tag;
     OnItemClickListener mListener=null;
 
 
 
-    public SearchListAdapter(ArrayList<String> s, String tag) {
+    public CategoryListAdapter(ArrayList<Categories> s, String tag) {
         suggestionList=s;
         this.tag=tag;
     }
@@ -48,7 +49,7 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
-        final String suggestion = suggestionList.get(position);
+        final String suggestion = suggestionList.get(position).getName();
 
         viewHolder.txtSuggestion.setText(suggestion);
 
@@ -70,10 +71,10 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
     public ArrayList<String> searchResult(CharSequence s){
         ArrayList<String> result=new ArrayList<>();
         for(int i=0;i<suggestionList.size();i++) {
-            String str1 = suggestionList.get(i).toLowerCase();
+            String str1 = suggestionList.get(i).getName().toLowerCase();
             String str2 = s.toString().toLowerCase();
             if (str1.contains(str2)) {
-                result.add(suggestionList.get(i));
+                result.add(suggestionList.get(i).getName());
             }
         }
         return result;
@@ -87,7 +88,4 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
     public interface OnItemClickListener{
         void onItemClick(int position,String content, String Tag);
     }
-
-
-
 }
