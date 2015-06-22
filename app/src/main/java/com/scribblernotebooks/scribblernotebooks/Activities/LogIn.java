@@ -1,21 +1,17 @@
 package com.scribblernotebooks.scribblernotebooks.Activities;
 
+import android.accounts.Account;
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ScaleDrawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -406,8 +402,8 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
             password.setError("Password cannot be empty");
             return false;
         }
-        if (pass.length() < 8) {
-            password.setError("Password must be at least 8 characters");
+        if (pass.length() < 6) {
+            password.setError("Password must be at least 6 characters");
             return false;
         }
         return true;
@@ -460,18 +456,17 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         if (view_open == SIGNUP) {
 
 
-            userName=name.getText().toString();
+            userName = name.getText().toString();
             userEmail = email.getText().toString();
             userPassword = password.getText().toString();
-            userMobile=mobile.getText().toString();
+            userMobile = mobile.getText().toString();
 
-            if(userName.isEmpty())
+            if (userName.isEmpty())
                 name.setError("Name required");
-            else if(!Constants.isValidEmailId(userEmail))
+            else if (!Constants.isValidEmailId(userEmail))
                 email.setError("Invalid Email ID");
-            else if(isValidPassword(userPassword)) {
-            }
-            else if(userMobile.isEmpty() || userMobile.length()!=10)
+            else if (isValidPassword(userPassword)) {
+            } else if (userMobile.isEmpty() || userMobile.length() != 10)
                 mobile.setError("Mobile Number should be 10 digits");
             else
                 signUp(name.getText().toString(), email.getText().toString(), "", "", mobile.getText().toString(), password.getText().toString());
@@ -540,7 +535,9 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         }
         callbackManager.onActivityResult(requestCode, responseCode, intent);
     }
-;
+
+    ;
+
     /**
      * GoogleAPI callbacks. Called after sign in
      */
@@ -548,8 +545,9 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     public void onConnected(Bundle arg0) {
         Log.e(TAG, "Google Connected");
         mSignInClicked = false;
-        GetGooglePlusToken token = new GetGooglePlusToken(this, mGoogleApiClient);
-        token.execute();
+        GetGooglePlusToken token1 = new GetGooglePlusToken(this, mGoogleApiClient);
+        token1.execute();
+
     }
 
     @Override
@@ -572,9 +570,12 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         protected String doInBackground(Void... params) {
             String accessToken1 = null;
             try {
-                String accountname = Plus.AccountApi.getAccountName(mGoogleApiClient);
+                final String SCOPES = "https://www.googleapis.com/auth/userinfo.profile"
+                        + "https://www.googleapis.com/auth/drive.file";
+                //String accountname = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient).getDisplayName();
                 String scope = "oauth2:" + Scopes.PLUS_LOGIN + " " + "https://www.googleapis.com/auth/userinfo.email" + " https://www.googleapis.com/auth/plus.profile.agerange.read";
-                accessToken1 = GoogleAuthUtil.getToken(context, accountname, scope);
+                accessToken1 = GoogleAuthUtil.getToken(context,Plus.AccountApi.getAccountName(mGoogleApiClient),
+                        "oauth2:" + SCOPES);
                 return accessToken1;
 
             } catch (IOException transientEx) {
@@ -588,6 +589,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
             } catch (UserRecoverableAuthException e) {
                 // Recover
                 Log.e(TAG, "UserRecoverableAuthException");
+                startActivityForResult(e.getIntent(),RC_SIGN_IN);
                 e.printStackTrace();
             } catch (GoogleAuthException authEx) {
                 // Failure. The call is not expected to ever succeed so it should not be
@@ -681,6 +683,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
             if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
                 Log.e("profile info", "inside if");
 
+
                 Person currentPerson = Plus.PeopleApi
                         .getCurrentPerson(mGoogleApiClient);
                 String personName = currentPerson.getDisplayName();
@@ -707,11 +710,11 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     }
 
 
-    public void loginSocial(String method, String accessToken){
+    public void loginSocial(String method, String accessToken) {
         HashMap<String, String> data = new HashMap<>();
-            data.put(Constants.POST_METHOD, method);
-            data.put(Constants.POST_ACCESS_TOKEN, accessToken);
-        new SignUpService(Constants.ServerUrls.signUp, this).execute(data);
+        data.put(Constants.POST_METHOD, method);
+        data.put(Constants.POST_ACCESS_TOKEN, accessToken);
+        new SignUpService(Constants.ServerUrls.login, this).execute(data);
     }
 
 
