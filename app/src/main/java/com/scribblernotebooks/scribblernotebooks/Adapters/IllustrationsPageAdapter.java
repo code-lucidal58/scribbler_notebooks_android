@@ -63,7 +63,7 @@ public class IllustrationsPageAdapter extends PagerAdapter {
             getStarted.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    activity.getSharedPreferences("Illustrations",activity.MODE_PRIVATE).edit().putBoolean("firstTime",false);
+                    activity.getSharedPreferences("Illustrations",Context.MODE_PRIVATE).edit().putBoolean("firstTime",false).apply();
                     activity.startActivity(new Intent(activity, LogIn.class));
                     activity.finish();
                 }
