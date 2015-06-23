@@ -527,7 +527,6 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         if (requestCode == RC_SIGN_IN) {
             if (responseCode != RESULT_OK) {
                 mSignInClicked = false;
-                new GetGooglePlusToken(this, mGoogleApiClient).execute();
             }
             mIntentInProgress = false;
 
@@ -547,7 +546,6 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     public void onConnected(Bundle arg0) {
         Log.e(TAG, "Google Connected");
         mSignInClicked = false;
-        new GetGooglePlusToken(this, mGoogleApiClient).execute();
     }
 
     @Override
@@ -582,7 +580,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
             } catch (UserRecoverableAuthException e) {
                 // Recover (with e.getIntent())
                 Log.e(TAG,"UserRecoverableAuthException");
-                startActivityForResult(e.getIntent(), REQ_SIGN_IN_REQUIRED);
+                onActivityResult( REQ_SIGN_IN_REQUIRED,RESULT_OK,e.getIntent());
             } catch (GoogleAuthException authEx) {
                 // The call is not ever expected to succeed
                 // assuming you have already verified that
