@@ -137,8 +137,8 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                 /**
                  * Current SDK uses GraphAPI to retrieve data from facebook
                  */
-                final AccessToken accessToken = AccessToken.getCurrentAccessToken();
-                Log.e("fb access token", accessToken.toString());
+                final String token=loginResult.getAccessToken().getToken();
+                Log.e("fb access token", token);
                 GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
                     @Override
                     public void onCompleted(JSONObject jsonObject, GraphResponse graphResponse) {
@@ -149,7 +149,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                         String id = jsonObject.optString("id");
                         String userdp = "https://graph.facebook.com/" + id + "/picture?type=large";
                         fromApi = true;
-                        loginSocial(Constants.POST_METHOD_FACEBOOK, accessToken.toString());
+                        loginSocial(Constants.POST_METHOD_FACEBOOK, token);
                     }
                 });
                 Bundle parameters = new Bundle();
