@@ -46,19 +46,20 @@ public class Constants {
         //User Module
         public static String signUp = websiteUrl + "signup";
         public static String login = websiteUrl + "signin";
-        public static String loginFacebook = websiteUrl + "login/facebook";
-        public static String loginGoogle = websiteUrl + "login/google";
-        public static String linkSocialAccount = websiteUrl + "linkSocialNetwork";
+        public static String linkSocialAccount = websiteUrl + "user/link-social-account";
+        public static String changePassword = websiteUrl + "user/change-password";
+        public static String forgotPassword = websiteUrl + "forgot-password";
         public static String insertGCM = websiteUrl + "insertGcm";
-        public static String regenerateToken = websiteUrl + "token";
-        public static String changePassword = websiteUrl + "changePassword";
-        public static String forgotPassword = websiteUrl + "forgotPassword";
 
         //Deal Details
         public static String dealDetail = websiteUrl + "deal/";
         public static String dealList = websiteUrl + "deal";
-        public static String likeDeal = websiteUrl + "likeDeal";
+
+        public static String likeDeal = websiteUrl + "like-deal/";
         public static String shareDeal = websiteUrl + "shareDeal";
+
+        public static String dealCategories = websiteUrl + "deal-category";
+
 
     }
 
@@ -71,26 +72,13 @@ public class Constants {
         }
     }
 
-
-    public static View.OnFocusChangeListener drawableColorChange=new View.OnFocusChangeListener() {
-        @Override
-        public void onFocusChange(View v, boolean hasFocus) {
-            EditText e=(EditText)v;
-            if(!hasFocus){
-                if(!e.getText().toString().isEmpty()){
-                    Drawable d=e.getCompoundDrawables()[2];
-                    d.setColorFilter(Color.parseColor("#ff13657b"), PorterDuff.Mode.MULTIPLY);
-                }
-            }
-        }
-    };
     public static final String MIXPANEL_TOKEN = "873f1995dd119bdb63b8a51bc2f4951d";
     public static final String parentURLForGetRequest = "http://192.168.1.117:3000/deal/";
     public static final String parentURLForCouponCode = "http://192.168.1.117:3000/deal/";
     public static final String serverURL = "http://jazzyarchitects.orgfree.com/deal.php";
     public static final String TAG_DEAL_NAME = "title";
     public static final String TAG_IMAGE_URL = "imgUrl";
-    public static final String TAG_IMAGE_UUID = "ImageUUID";
+    public static final String TAG_IMAGE_UUID = "imgUUID";
     public static final String TAG_SHORT_DESCRIPTION = "shortDescription";
     public static final String TAG_LONG_DESCRIPTION = "description";
     public static final String TAG_CODE = "code";
@@ -99,7 +87,7 @@ public class Constants {
     public static final String TAG_IF_FEATURED = "ifFeatured";
     public static final String TAG_IF_FAVOURITE = "ifFavorite";
     public static final String TAG_DATA = "data";
-    public static final String TAG_DEALS = "data";
+    public static final String TAG_DEALS = "deals";
     public static final String TAG_COUPON_CODE = "couponCode";
     public static final String PARCELABLE_DEAL_LIST_KEY = "dealList";
     public static final String PARCELABLE_DEAL_KEY = "dealList";
@@ -169,15 +157,6 @@ public class Constants {
             }
         }
     };
-
-    public static URL getDealDetailsURL(String dealId, String token) {
-        try {
-            return new URL(ServerUrls.dealDetail + dealId + "?token=" + token);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 
 public static boolean saveUserDetails(Context context, User user) {
         if (user == null)
@@ -430,27 +409,6 @@ public static boolean saveUserDetails(Context context, User user) {
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
-    public static class ServerUrls {
-        public static String websiteUrl = "http://192.168.1.117:3000/api/";
-        //User Module
-        public static String signUp = websiteUrl + "signup";
-        public static String login = websiteUrl + "signin";
-        public static String linkSocialAccount = websiteUrl + "user/link-social-account";
-        public static String changePassword = websiteUrl + "user/change-password";
-        public static String forgotPassword = websiteUrl + "forgot-password";
-        public static String insertGCM = websiteUrl + "insertGcm";
-
-        //Deal Details
-        public static String dealDetail = websiteUrl + "deal/";
-        public static String dealList = websiteUrl + "deal";
-
-        public static String likeDeal = websiteUrl + "like-deal/";
-        public static String shareDeal = websiteUrl + "shareDeal";
-
-        public static String dealCategories = websiteUrl + "deal-category";
-
-
-    }
 
 
 }

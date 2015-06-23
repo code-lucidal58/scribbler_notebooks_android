@@ -23,16 +23,23 @@ import java.util.HashMap;
 
 public class ParseJson {
 
-    public static ArrayList<Deal> getParsedData(String url) {
-        ArrayList<Deal> dealsList = null;
+    public static DealListResponse getParsedData(String response) {
+        DealListResponse result=null;
         try {
-            JSONObject jsonChild = new JSONObject(url);
+            JSONObject jsonChild = new JSONObject(response);
             String success = jsonChild.optString("success");
             if (success.equalsIgnoreCase("false")) {
                 return null;
             }
-            JSONArray jsonArray = jsonChild.optJSONArray(Constants.TAG_DEALS);
 
+            JSONObject data=jsonChild.optJSONObject(Constants.TAG_DATA);
+            JSONArray jsonArray=data.optJSONArray(Constants.TAG_DEALS);
+
+            int pageCount=Integer.parseInt(data.optString("pages"));
+            int dealCount=Integer.parseInt(data.optString("count"));
+            int currentPage=Integer.parseInt(data.optString("currentPage"));
+
+            ArrayList<Deal> dealsList = null;
             int lengthJsonArr = jsonArray.length();
 
             for (int i = 0; i < lengthJsonArr; i++) {
@@ -47,10 +54,12 @@ public class ParseJson {
 
             }
 
+            result=new DealListResponse(dealsList,pageCount,dealCount, currentPage);
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return dealsList;
+        return result;
     }
 
     public static Deal parseSingleDeal(String jsonResponse) {
@@ -59,14 +68,16 @@ public class ParseJson {
             JSONObject jsonChild = new JSONObject(jsonResponse);
             String id, title, category, sdesp, ldesp, imgurl,code;
 
+            id=jsonChild.optString("_id");
             title = jsonChild.optString(Constants.TAG_DEAL_NAME);
-            category = jsonChild.optString(Constants.TAG_CATEGORY);
+            JSONObject categoryDetail=jsonChild.optJSONObject(Constants.TAG_CATEGORY);
+            category = categoryDetail.optString("name");
             sdesp = jsonChild.optString(Constants.TAG_SHORT_DESCRIPTION);
             ldesp = jsonChild.optString(Constants.TAG_LONG_DESCRIPTION);
             code= jsonChild.optString(Constants.TAG_CODE);
 //            imgurl = "http://www.ucarecdn.com/" + jsonChild.optString(Constants.TAG_IMAGE_URL) + "/image.png";
             imgurl=jsonChild.optString(Constants.TAG_IMAGE_UUID);
-            //deal.setId(id);
+            deal.setId(id);
             deal.setTitle(title);
             deal.setCategory(category);
             deal.setImageUrl(imgurl);

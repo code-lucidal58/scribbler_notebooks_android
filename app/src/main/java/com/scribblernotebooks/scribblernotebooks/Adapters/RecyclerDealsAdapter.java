@@ -146,13 +146,14 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
         if(handler.findDeal(id)){
             Log.e("Deal Likes",id+"  "+deal.getTitle()+"   "+deal.isFavorited());
             deal.setIsFav(true);
+            viewHolder.favoriteIcon.setChecked(true);
         }else{
             deal.setIsFav(false);
+            viewHolder.favoriteIcon.setChecked(false);
         }
 
-        Boolean isfavorited=deal.isFavorited();
 
-        viewHolder.favoriteIcon.setChecked(isfavorited);
+
         /** Setting list View item details */
         viewHolder.txtViewTitle.setText(title);
         viewHolder.txtViewCategory.setText(category);

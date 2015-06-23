@@ -20,7 +20,7 @@ import java.util.Random;
 public class DatabaseHandler extends SQLiteOpenHelper {
 
     private static final int DATABASE_VERSION = 1;
-    private static final String DATABASE_NAME = "dealsManager";
+    public static final String DATABASE_NAME = "dealsManager";
     private static final String TABLE_DEALS = "deals";
     private static final String TABLE_CLAIMED_DEALS="claimedDeals";
     SQLiteDatabase db;

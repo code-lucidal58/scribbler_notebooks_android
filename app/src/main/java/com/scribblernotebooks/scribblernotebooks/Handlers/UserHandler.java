@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 /**
  * Created by Jibin_ism on 14-Jun-15.
@@ -54,12 +55,32 @@ public class UserHandler extends SQLiteOpenHelper {
 
     public void removeDeal(String dealId){
         db.delete(TABLE_NAME, DEAL_ID + "= ?", new String[]{dealId});
+        Cursor c=db.query(TABLE_NAME,new String[]{DEAL_ID},null,null,null,null,null);
+        if(c.moveToFirst()){
+            do{
+                Log.e("Leftover deal id: ",c.getString(0));
+            }while (c.moveToNext());
+        }else{
+            Log.e("Leftover deal id: ","No Left overs");
+        }
+        c.close();
     }
 
     public boolean findDeal(String dealId){
         Cursor cursor=db.query(TABLE_NAME, new String[]{DEAL_ID},DEAL_ID+"=?",new String[]{dealId},null,null,null);
         Boolean b=cursor.moveToFirst();
         cursor.close();
+
+        Cursor c=db.query(TABLE_NAME,new String[]{DEAL_ID},null,null,null,null,null);
+        if(c.moveToFirst()){
+            do{
+                Log.e("Added leftover: ",c.getString(0));
+            }while (c.moveToNext());
+        }else{
+            Log.e("Added leftover ","No Left overs");
+        }
+        c.close();
+
         return b;
     }
     public void addSharedDeal(String dealId){
