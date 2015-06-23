@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -65,6 +66,8 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
     public View mainView;
     View decorView;
 
+    TelephonyManager telephonyManager;
+    String deviceId="";
     String url = "";
     Fragment fragment;
     static Context sContext;
@@ -82,6 +85,8 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
         super.onCreate(savedInstanceState);
         sContext=getApplicationContext();
 
+        telephonyManager=(TelephonyManager)getSystemService(TELEPHONY_SERVICE);
+        deviceId=telephonyManager.getDeviceId();
 
         if(!checkPlayServices()){
             Toast.makeText(this, "Google play services not installed on your device. Notification won't be shown", Toast.LENGTH_LONG).show();
@@ -366,6 +371,9 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
                 HashMap<String, String> data=new HashMap<>();
                 data.put("email",strings[0]);
                 data.put("gcmkey",strings[1]);
+                data.put("deviceID",deviceId);
+
+                Log.e("Device ID",deviceId);
 
                 URL url=new URL(Constants.ServerUrls.insertGCM);
                 HttpURLConnection connection=(HttpURLConnection)url.openConnection();

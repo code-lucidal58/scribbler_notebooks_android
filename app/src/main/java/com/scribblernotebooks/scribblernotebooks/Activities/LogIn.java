@@ -46,6 +46,7 @@ import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.ForgotPasswordPopup;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
+import com.scribblernotebooks.scribblernotebooks.HelperClasses.User;
 import com.scribblernotebooks.scribblernotebooks.R;
 import com.scribblernotebooks.scribblernotebooks.Services.LocationRetreiver;
 import com.scribblernotebooks.scribblernotebooks.Services.SignUpService;
@@ -129,7 +130,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
          */
         callbackManager = CallbackManager.Factory.create();
         loginButton = (LoginButton) findViewById(R.id.login_button);
-        loginButton.setReadPermissions("user_friends", "email","access_token");
+        loginButton.setReadPermissions("user_friends", "email");
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -536,6 +537,12 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                 mGoogleApiClient.connect();
             }
         }
+
+        if (requestCode == REQ_SIGN_IN_REQUIRED && responseCode == RESULT_OK) {
+            // We had to sign in - now we can finish off the token request.
+            Log.e("Google Token","On Activity Result");
+            new GetGooglePlusToken(getApplicationContext(), mGoogleApiClient).execute();
+        }
         callbackManager.onActivityResult(requestCode, responseCode, intent);
     }
 
@@ -546,12 +553,19 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     public void onConnected(Bundle arg0) {
         Log.e(TAG, "Google Connected");
         mSignInClicked = false;
+        getProfileInformation();
     }
 
     @Override
     public void onConnectionSuspended(int i) {
         mGoogleApiClient.connect();
     }
+
+
+
+
+
+
 
 
     class GetGooglePlusToken extends AsyncTask<Void, Void, String> {
@@ -562,6 +576,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         public GetGooglePlusToken(Context context, GoogleApiClient mGoogleApiClient) {
             this.context = context;
             this.mGoogleApiClient = mGoogleApiClient;
+            Log.e("GoogleClient","Constructor");
         }
 
         @Override
@@ -580,7 +595,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
             } catch (UserRecoverableAuthException e) {
                 // Recover (with e.getIntent())
                 Log.e(TAG,"UserRecoverableAuthException");
-                onActivityResult( REQ_SIGN_IN_REQUIRED,RESULT_OK,e.getIntent());
+                startActivityForResult(e.getIntent(), REQ_SIGN_IN_REQUIRED);
             } catch (GoogleAuthException authEx) {
                 // The call is not ever expected to succeed
                 // assuming you have already verified that
@@ -593,9 +608,58 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         @Override
         protected void onPostExecute(String response) {
             Log.e(TAG, "Google access token = " + response);
-            getProfileInformation(response);
         }
     }
+
+
+    /**
+     * Fetching user's information name, email, profile pic
+     */
+    private void getProfileInformation() {
+        progressDialog.dismiss();
+        try {
+            if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
+                Log.e("profile info", "inside if");
+
+
+                Person currentPerson = Plus.PeopleApi
+                        .getCurrentPerson(mGoogleApiClient);
+                String personName = currentPerson.getDisplayName();
+                String personImageUrl = currentPerson.getImage().getUrl();
+                String userId = currentPerson.getId();
+                String resizedImageUrl = personImageUrl.replace("photo.jpg?sz=50", "photo.jpg?sz=250");
+                String userEmail = Plus.AccountApi.getAccountName(mGoogleApiClient);
+                String userCover = "";
+                if (currentPerson.hasCover()) {
+                    userCover = currentPerson.getCover().getCoverPhoto().getUrl();
+                }
+
+                User user=new User();
+                user.setName(personName);
+                user.setEmail(userEmail);
+                user.setCoverImage(userCover);
+                user.setProfilePic(resizedImageUrl);
+                Constants.saveUserDetails(getApplicationContext(), user);
+
+                fromApi = true;
+//                loginSocial(personName, userEmail, userId, Constants.ServerUrls.loginGoogle, userCover, resizedImageUrl);
+//                loginSocial(Constants.POST_METHOD_GOOGLE, token);
+                sendGoogleMethodAndToken(mGoogleApiClient);
+            } else {
+                Log.e("profile info", "person null");
+                Toast.makeText(getApplicationContext(),
+                        "Person information is null", Toast.LENGTH_LONG).show();
+            }
+        } catch (Exception e) {
+            Log.e("profile info", "inside catch");
+            e.printStackTrace();
+        }
+    }
+
+    void sendGoogleMethodAndToken(GoogleApiClient googleApiClient){
+        new GetGooglePlusToken(getApplicationContext(),googleApiClient).execute();
+    }
+
 
     @Override
     public void onConnectionFailed(ConnectionResult result) {
@@ -659,41 +723,6 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         }
     }
 
-
-    /**
-     * Fetching user's information name, email, profile pic
-     */
-    private void getProfileInformation(String token) {
-        progressDialog.dismiss();
-        try {
-            if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
-                Log.e("profile info", "inside if");
-
-
-                Person currentPerson = Plus.PeopleApi
-                        .getCurrentPerson(mGoogleApiClient);
-                String personName = currentPerson.getDisplayName();
-                String personImageUrl = currentPerson.getImage().getUrl();
-                String userId = currentPerson.getId();
-                String resizedImageUrl = personImageUrl.replace("photo.jpg?sz=50", "photo.jpg?sz=250");
-                String userEmail = Plus.AccountApi.getAccountName(mGoogleApiClient);
-                String userCover = "";
-                if (currentPerson.hasCover()) {
-                    userCover = currentPerson.getCover().getCoverPhoto().getUrl();
-                }
-                fromApi = true;
-//                loginSocial(personName, userEmail, userId, Constants.ServerUrls.loginGoogle, userCover, resizedImageUrl);
-                loginSocial(Constants.POST_METHOD_GOOGLE, token);
-            } else {
-                Log.e("profile info", "person null");
-                Toast.makeText(getApplicationContext(),
-                        "Person information is null", Toast.LENGTH_LONG).show();
-            }
-        } catch (Exception e) {
-            Log.e("profile info", "inside catch");
-            e.printStackTrace();
-        }
-    }
 
 
     public void loginSocial(String method, String accessToken) {
