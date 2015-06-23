@@ -129,7 +129,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
          */
         callbackManager = CallbackManager.Factory.create();
         loginButton = (LoginButton) findViewById(R.id.login_button);
-        loginButton.setReadPermissions("user_friends", "email");
+        loginButton.setReadPermissions("user_friends", "email","access_token");
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
