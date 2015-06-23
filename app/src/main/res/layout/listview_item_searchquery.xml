@@ -30,8 +30,7 @@
         android:text="Item"
         android:padding="10dp"
         android:textColor="#000"
-        android:textSize="15sp"
-        android:textAllCaps="true"
+        android:textSize="14sp"
         android:id="@+id/suggestion"/>
 
     </com.balysv.materialripple.MaterialRippleLayout>

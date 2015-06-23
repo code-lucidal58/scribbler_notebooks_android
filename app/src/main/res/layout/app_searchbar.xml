@@ -214,9 +214,9 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="200dp"
+        android:layout_height="200dp"
+        android:maxHeight="200dp"
+        android:background="@color/darkBlue"
         android:layout_below="@+id/replacedLinearLayout"
-        android:clipToPadding="false"
         android:visibility="gone" />
 </RelativeLayout>
