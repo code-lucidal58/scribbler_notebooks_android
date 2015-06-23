@@ -1,8 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/darkBlue"
+    android:layout_height="wrap_content"
     tools:context="com.scribblernotebooks.scribblernotebooks.SearchQuery">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -74,11 +73,11 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:background="@color/darkBlue"
+        android:layout_height="100dp"
         android:layout_below="@id/during_searchbar"
         android:divider="@android:color/transparent"
-        android:dividerHeight="0dp"
-        android:clipToPadding="false" />
+        android:dividerHeight="0dp" />
 
 
 </RelativeLayout>

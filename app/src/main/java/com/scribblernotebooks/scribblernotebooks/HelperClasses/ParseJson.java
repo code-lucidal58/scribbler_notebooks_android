@@ -159,20 +159,24 @@ public class ParseJson {
 
     public static HashMap<String, String> parseSignupResponse(String response) {
         try {
+            Log.e("sigup","parsesignupresponse");
             JSONObject object = new JSONObject(response);
             HashMap<String, String> parsedData = new HashMap<>();
-            parsedData.put(Constants.POST_SUCCESS, object.optString(Constants.POST_SUCCESS));
 
+            parsedData.put(Constants.POST_SUCCESS, object.optString(Constants.POST_SUCCESS));
             JSONObject data=object.optJSONObject(Constants.POST_DATA);
-//            parsedData.put(Constants.POST_ERROR, object.optString(Constants.POST_ERROR));
-//            parsedData.put(Constants.POST_MIXPANELID, object.optString(Constants.POST_MIXPANELID));
+
             parsedData.put(Constants.POST_MIXPANELID,data.getString(Constants.POST_MIXPANELID));
             parsedData.put(Constants.POST_EMAIL,data.getString(Constants.POST_EMAIL));
             parsedData.put(Constants.POST_MOBILE,data.getString(Constants.POST_MOBILE));
             parsedData.put(Constants.POST_TOKEN, data.optString(Constants.POST_TOKEN));
             parsedData.put(Constants.POST_IS_NEW, data.optString(Constants.POST_IS_NEW));
             JSONObject name=data.getJSONObject(Constants.POST_NAME);
-            parsedData.put(Constants.POST_NAME,name.getString(Constants.POST_NAME_FIRST)+" "+name.getString(Constants.POST_NAME_LAST));
+            try {
+                parsedData.put(Constants.POST_NAME,name.getString(Constants.POST_NAME_FIRST)+" "+name.getString(Constants.POST_NAME_LAST));
+            }catch (JSONException e){
+                parsedData.put(Constants.POST_NAME,name.getString(Constants.POST_NAME_FIRST));
+            }
 
             return parsedData;
         } catch (JSONException e) {

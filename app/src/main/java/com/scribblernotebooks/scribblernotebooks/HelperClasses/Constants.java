@@ -106,10 +106,12 @@ public class Constants {
     public static final String PREF_DATA_PASS = "password";
     public static final String PREF_DATA_USER_TOKEN = "userToken";
     public static final String PREF_DATA_MIXPANEL_USER_ID = "mixpanelUserId";
+
     public static final String INTENT_ID_NAME = "idName";
     public static final String INTENT_ID_VALUE = "idValue";
     public static final String FACEBOOKID = "facebookId";
     public static final String GOOGLEID = "googleId";
+
     public static final String POST_SUCCESS = "success";
     public static final String POST_DATA = "data";
     public static final String POST_IS_NEW = "isNew";
@@ -130,6 +132,7 @@ public class Constants {
     public static final String POST_ACCESS_TOKEN = "accessToken";
     public static final String POST_METHOD_FACEBOOK = "facebook";
     public static final String POST_METHOD_GOOGLE = "google";
+
     public static final String PREF_NOTIFICATION_NAME = "Notification";
     public static final String PREF_NOTIFICATION_ON_OFF = "NotifyOnOff";
     public static final String PREF_NOTIFICATION_DEAL_OF_DAY = "DealOfDay";
