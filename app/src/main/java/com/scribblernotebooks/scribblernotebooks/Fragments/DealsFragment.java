@@ -380,7 +380,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
 //        toolbarContainer.animate().translationY(-mToolbarHeight).setInterpolator(new AccelerateInterpolator(2)).start();
         toolbarContainer.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).start();
         replacedLayout.setVisibility(View.VISIBLE);
-        originalLayout.setVisibility(View.GONE);
+        //originalLayout.setVisibility(View.GONE);
         suggestions.setVisibility(View.VISIBLE);
         selectedIconQuery.setText("");
         ArrayList<String> suggestionList = new ArrayList<>();

@@ -159,6 +159,7 @@ public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User
             if (Boolean.parseBoolean(parsedData.get(Constants.POST_SUCCESS))) {
                 activity.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE).edit().putString(Constants.PREF_DATA_PASS, "OK").apply();
                 String cover,profilePic;
+                Log.e("normal signIn","signupHandle");
                 try {
                     cover=params.get(Constants.POST_COVERPIC);
                 }catch (Exception e){

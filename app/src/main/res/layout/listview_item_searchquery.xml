@@ -14,7 +14,7 @@
     <com.balysv.materialripple.MaterialRippleLayout
         android:id="@+id/dealRipple"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         app:mrl_rippleAlpha="0.1"
         app:mrl_rippleColor="@color/darkBlueRippleColor"
         app:mrl_rippleDelayClick="true"

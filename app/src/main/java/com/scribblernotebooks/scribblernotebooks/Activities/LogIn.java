@@ -137,7 +137,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                 /**
                  * Current SDK uses GraphAPI to retrieve data from facebook
                  */
-                final String token=loginResult.getAccessToken().getToken();
+                final String token = loginResult.getAccessToken().getToken();
                 Log.e("fb access token", token);
                 GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
                     @Override
@@ -458,22 +458,24 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
      */
     public void signUpUser() {
         if (view_open == SIGNUP) {
-
-
+            Log.e("normal signIn", "inside if");
             userName = name.getText().toString();
             userEmail = email.getText().toString();
             userPassword = password.getText().toString();
             userMobile = mobile.getText().toString();
 
-            if (userName.isEmpty())
+            if (userName.isEmpty()) {
                 name.setError("Name required");
-            else if (!Constants.isValidEmailId(userEmail))
+            } else if (!Constants.isValidEmailId(userEmail)) {
                 email.setError("Invalid Email ID");
-            else if (isValidPassword(userPassword)) {
+            } else if (!isValidPassword(userPassword)) {
+                password.setError("Password must be ateast 6 characters");
             } else if (userMobile.isEmpty() || userMobile.length() != 10)
                 mobile.setError("Mobile Number should be 10 digits");
-            else
-                signUp(name.getText().toString(), email.getText().toString(), "", "", mobile.getText().toString(), password.getText().toString());
+            else {
+                Log.e("normal signIn", "going to signup");
+                signUp(name.getText().toString(), email.getText().toString(), mobile.getText().toString(), password.getText().toString());
+            }
             return;
         }
         name.setVisibility(View.VISIBLE);
@@ -486,30 +488,25 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
      *
      * @param userName      username
      * @param userEmail     useremail
-     * @param coverImageUrl coverpic url (not sent to server)
-     * @param profilePicUrl profilepic url (not sent to server)
      * @param userContact   mobile no.
      * @param userPassword  password
      */
-    public void signUp(String userName, String userEmail, final String coverImageUrl,
-                       final String profilePicUrl, final String userContact, String userPassword) {
+
+    public void signUp(String userName, String userEmail, final String userContact, String userPassword) {
 
         //If username or email or password is empty then do not signup
         if (userName.isEmpty() || userEmail.isEmpty() || userPassword.isEmpty()) {
             Toast.makeText(getApplicationContext(), "Please check if all fields are filled and try again", Toast.LENGTH_LONG).show();
             return;
         }
-        if (!isValidPassword(password.getText().toString())) {
-            return;
-        }
-        if (!Constants.isValidEmailId(email.getText().toString())) {
-            return;
-        }
         HashMap<String, String> data = new HashMap<>();
-        data.put("name", userName);
-        data.put("email", userEmail);
-        data.put("mobile", userContact);
-        data.put("password", userPassword);
+        data.put(Constants.POST_NAME, userName);
+        data.put(Constants.POST_EMAIL, userEmail);
+        data.put(Constants.POST_MOBILE, userContact);
+        data.put(Constants.POST_PASSWORD, userPassword);
+        data.put(Constants.POST_COVERPIC,"");
+        data.put(Constants.POST_PROFILEPIC,"");
+        Log.e("normal signIn", "going to signupservice");
         new SignUpService(Constants.ServerUrls.signUp, this).execute(data);
     }
 
@@ -540,7 +537,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
 
         if (requestCode == REQ_SIGN_IN_REQUIRED && responseCode == RESULT_OK) {
             // We had to sign in - now we can finish off the token request.
-            Log.e("Google Token","On Activity Result");
+            Log.e("Google Token", "On Activity Result");
             new GetGooglePlusToken(getApplicationContext(), mGoogleApiClient).execute();
         }
         callbackManager.onActivityResult(requestCode, responseCode, intent);
@@ -562,12 +559,6 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     }
 
 
-
-
-
-
-
-
     class GetGooglePlusToken extends AsyncTask<Void, Void, String> {
         Context context;
         private GoogleApiClient mGoogleApiClient;
@@ -576,14 +567,14 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         public GetGooglePlusToken(Context context, GoogleApiClient mGoogleApiClient) {
             this.context = context;
             this.mGoogleApiClient = mGoogleApiClient;
-            Log.e("GoogleClient","Constructor");
+            Log.e("GoogleClient", "Constructor");
         }
 
         @Override
         protected String doInBackground(Void... params) {
             String token = null;
             try {
-                String scope = "oauth2:" + Scopes.PLUS_LOGIN + " " + Scopes.PLUS_ME+
+                String scope = "oauth2:" + Scopes.PLUS_LOGIN + " " + Scopes.PLUS_ME +
                         " https://www.googleapis.com/auth/userinfo.email ";
                 token = GoogleAuthUtil.getToken(
                         getApplicationContext(),
@@ -594,7 +585,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                 Log.e(TAG, transientEx.toString());
             } catch (UserRecoverableAuthException e) {
                 // Recover (with e.getIntent())
-                Log.e(TAG,"UserRecoverableAuthException");
+                Log.e(TAG, "UserRecoverableAuthException");
                 startActivityForResult(e.getIntent(), REQ_SIGN_IN_REQUIRED);
             } catch (GoogleAuthException authEx) {
                 // The call is not ever expected to succeed
@@ -634,7 +625,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                     userCover = currentPerson.getCover().getCoverPhoto().getUrl();
                 }
 
-                User user=new User();
+                User user = new User();
                 user.setName(personName);
                 user.setEmail(userEmail);
                 user.setCoverImage(userCover);
@@ -656,8 +647,8 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         }
     }
 
-    void sendGoogleMethodAndToken(GoogleApiClient googleApiClient){
-        new GetGooglePlusToken(getApplicationContext(),googleApiClient).execute();
+    void sendGoogleMethodAndToken(GoogleApiClient googleApiClient) {
+        new GetGooglePlusToken(getApplicationContext(), googleApiClient).execute();
     }
 
 
@@ -722,7 +713,6 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
             e.printStackTrace();
         }
     }
-
 
 
     public void loginSocial(String method, String accessToken) {
