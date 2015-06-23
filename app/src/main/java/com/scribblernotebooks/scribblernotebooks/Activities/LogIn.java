@@ -575,7 +575,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                 //String accountname = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient).getDisplayName();
                 String scope = "oauth2:" + Scopes.PLUS_LOGIN + " " + "https://www.googleapis.com/auth/userinfo.email" + " https://www.googleapis.com/auth/plus.profile.agerange.read";
                 accessToken1 = GoogleAuthUtil.getToken(context,Plus.AccountApi.getAccountName(mGoogleApiClient),
-                        "oauth2:" + SCOPES);
+                        "oauth2:" + scope);
                 return accessToken1;
 
             } catch (IOException transientEx) {
