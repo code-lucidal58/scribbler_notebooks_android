@@ -1,6 +1,7 @@
 package com.scribblernotebooks.scribblernotebooks.Activities;
 
 import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -40,6 +41,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.ForgotPasswordPopup;
@@ -59,6 +61,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     private final static String TAG = "LogIn";
 
     private final static double IMAGE_SCALE_RATIO = 0.6;
+    private static final int REQ_SIGN_IN_REQUIRED = 55664;
 
     EditText name, email, mobile, password;
     TextView forgotPassword;
@@ -524,6 +527,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         if (requestCode == RC_SIGN_IN) {
             if (responseCode != RESULT_OK) {
                 mSignInClicked = false;
+                new GetGooglePlusToken(this, mGoogleApiClient).execute();
             }
             mIntentInProgress = false;
 
@@ -536,8 +540,6 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         callbackManager.onActivityResult(requestCode, responseCode, intent);
     }
 
-    ;
-
     /**
      * GoogleAPI callbacks. Called after sign in
      */
@@ -545,9 +547,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     public void onConnected(Bundle arg0) {
         Log.e(TAG, "Google Connected");
         mSignInClicked = false;
-        GetGooglePlusToken token1 = new GetGooglePlusToken(this, mGoogleApiClient);
-        token1.execute();
-
+        new GetGooglePlusToken(this, mGoogleApiClient).execute();
     }
 
     @Override
@@ -568,40 +568,28 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
 
         @Override
         protected String doInBackground(Void... params) {
-            String accessToken1 = null;
+            String token = null;
             try {
-                final String SCOPES = "https://www.googleapis.com/auth/userinfo.profile"
-                        + "https://www.googleapis.com/auth/drive.file";
-                //String accountname = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient).getDisplayName();
-                String scope = "oauth2:" + Scopes.PLUS_LOGIN + " " + "https://www.googleapis.com/auth/userinfo.email" + " https://www.googleapis.com/auth/plus.profile.agerange.read";
-                accessToken1 = GoogleAuthUtil.getToken(context,Plus.AccountApi.getAccountName(mGoogleApiClient),
-                        "oauth2:" + scope);
-                return accessToken1;
-
+                String scope = "oauth2:" + Scopes.PLUS_LOGIN + " " + Scopes.PLUS_ME+
+                        " https://www.googleapis.com/auth/userinfo.email ";
+                token = GoogleAuthUtil.getToken(
+                        getApplicationContext(),
+                        Plus.AccountApi.getAccountName(mGoogleApiClient),
+                        scope);
             } catch (IOException transientEx) {
-                // network or server error, the call is expected to succeed if you try again later.
-                // Don't attempt to call again immediately - the request is likely to
-                // fail, you'll hit quotas or back-off.
-                //TODO: HANDLE
-                Log.e(TAG, "transientEx");
-                transientEx.printStackTrace();
-
+                // Network or server error, try later
+                Log.e(TAG, transientEx.toString());
             } catch (UserRecoverableAuthException e) {
-                // Recover
-                Log.e(TAG, "UserRecoverableAuthException");
-                startActivityForResult(e.getIntent(),RC_SIGN_IN);
-                e.printStackTrace();
+                // Recover (with e.getIntent())
+                Log.e(TAG,"UserRecoverableAuthException");
+                startActivityForResult(e.getIntent(), REQ_SIGN_IN_REQUIRED);
             } catch (GoogleAuthException authEx) {
-                // Failure. The call is not expected to ever succeed so it should not be
-                // retried.
-                Log.e(TAG, "GoogleAuthException");
-                authEx.printStackTrace();
-            } catch (Exception e) {
-                Log.e(TAG, "RuntimeException");
-                e.printStackTrace();
-                throw new RuntimeException(e);
+                // The call is not ever expected to succeed
+                // assuming you have already verified that
+                // Google Play services is installed.
+                Log.e(TAG, authEx.toString());
             }
-            return null;
+            return token;
         }
 
         @Override

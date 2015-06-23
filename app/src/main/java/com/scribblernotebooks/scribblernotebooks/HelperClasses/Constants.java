@@ -40,50 +40,29 @@ import java.util.Random;
 
 public class Constants {
 
-
     public static class ServerUrls {
         public static String websiteUrl = "http://192.168.1.117:3000/api/";
         //User Module
         public static String signUp = websiteUrl + "signup";
         public static String login = websiteUrl + "signin";
-        public static String loginFacebook = websiteUrl + "login/facebook";
-        public static String loginGoogle = websiteUrl + "login/google";
-        public static String linkSocialAccount = websiteUrl + "linkSocialNetwork";
+        public static String linkSocialAccount = websiteUrl + "user/link-social-account";
+        public static String changePassword = websiteUrl + "user/change-password";
+        public static String forgotPassword = websiteUrl + "forgot-password";
         public static String insertGCM = websiteUrl + "insertGcm";
-        public static String regenerateToken = websiteUrl + "token";
-        public static String changePassword = websiteUrl + "changePassword";
-        public static String forgotPassword = websiteUrl + "forgotPassword";
 
         //Deal Details
         public static String dealDetail = websiteUrl + "deal/";
         public static String dealList = websiteUrl + "deal";
-        public static String likeDeal = websiteUrl + "likeDeal";
+
+        public static String likeDeal = websiteUrl + "like-deal/";
         public static String shareDeal = websiteUrl + "shareDeal";
 
+        public static String dealCategories = websiteUrl + "deal-category";
+
+
     }
 
-    public static URL getDealDetailsURL(String dealId, String token) {
-        try {
-            return new URL(ServerUrls.dealDetail + dealId + "?token=" + token);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-
-    public static View.OnFocusChangeListener drawableColorChange=new View.OnFocusChangeListener() {
-        @Override
-        public void onFocusChange(View v, boolean hasFocus) {
-            EditText e=(EditText)v;
-            if(!hasFocus){
-                if(!e.getText().toString().isEmpty()){
-                    Drawable d=e.getCompoundDrawables()[2];
-                    d.setColorFilter(Color.parseColor("#ff13657b"), PorterDuff.Mode.MULTIPLY);
-                }
-            }
-        }
-    };
+    public static final String WEB_CLIENT_ID="777744127254-oibb930vp6r4fm22ott9ee1kuhu0tseo.apps.googleusercontent.com";
     public static final String MIXPANEL_TOKEN = "873f1995dd119bdb63b8a51bc2f4951d";
     public static final String parentURLForGetRequest = "http://192.168.1.117:3000/deal/";
     public static final String parentURLForCouponCode = "http://192.168.1.117:3000/deal/";
@@ -429,30 +408,6 @@ public static boolean saveUserDetails(Context context, User user) {
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
-
-    public static class ServerUrls {
-        public static String websiteUrl = "http://192.168.1.117:3000/api/";
-        //User Module
-        public static String signUp = websiteUrl + "signup";
-        public static String login = websiteUrl + "signin";
-        public static String linkSocialAccount = websiteUrl + "user/link-social-account";
-        public static String changePassword = websiteUrl + "user/change-password";
-        public static String forgotPassword = websiteUrl + "forgot-password";
-        public static String insertGCM = websiteUrl + "insertGcm";
-
-        //Deal Details
-        public static String dealDetail = websiteUrl + "deal/";
-        public static String dealList = websiteUrl + "deal";
-
-        public static String likeDeal = websiteUrl + "like-deal/";
-        public static String shareDeal = websiteUrl + "shareDeal";
-
-        public static String dealCategories = websiteUrl + "deal-category";
-
-
-    }
-
-
 }
 
 
