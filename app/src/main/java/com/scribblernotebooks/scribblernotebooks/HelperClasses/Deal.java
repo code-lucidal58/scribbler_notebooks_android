@@ -104,23 +104,31 @@ public class Deal implements Parcelable {
         String id = this.getId();
         String liked = String.valueOf(isFav);
 
+        UserHandler handler = new UserHandler(context);
+        if (isFav)
+            handler.addDeal(id);
+        else
+            handler.removeDeal(id);
+        Log.e("Deal Favorite", "Deal Favorited");
+        handler.close();
+
         new AsyncTask<String, Void, String>() {
             @Override
             protected String doInBackground(String... params) {
                 HashMap<String, String> data = new HashMap<String, String>();
-                data.put(Constants.POST_EMAIL, params[0]);
-                data.put(Constants.POST_TOKEN, params[1]);
-                data.put("dealId", params[2]);
-                data.put("liked", params[3]);
+
+                String email=params[0];
+                String token=params[1];
+                String id=params[2];
+                String liked=params[3];
 
                 try {
-                    URL url = new URL(Constants.ServerUrls.likeDeal);
+                    URL url = new URL(Constants.ServerUrls.likeDeal+id+"/"+email+"/"+liked+"?token="+token);
                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                     connection.setConnectTimeout(15000);
                     connection.setReadTimeout(15000);
                     connection.setDoInput(true);
                     connection.setDoOutput(true);
-                    connection.setRequestMethod("GET");
 
                     OutputStream os = connection.getOutputStream();
                     BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
@@ -128,20 +136,6 @@ public class Deal implements Parcelable {
                     writer.flush();
                     writer.close();
                     os.close();
-
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                    String response = reader.readLine();
-                    JSONObject object = new JSONObject(response);
-                    if (Boolean.parseBoolean(object.optString("success"))) {
-                        UserHandler handler = new UserHandler(context);
-                        if (Boolean.parseBoolean(params[3]))
-                            handler.addDeal(params[2]);
-                        else
-                            handler.removeDeal(params[2]);
-                        Log.e("Deal Favorite", "Deal Favorited");
-                        handler.close();
-                    }
-
 
                 } catch (Exception e) {
                     e.printStackTrace();

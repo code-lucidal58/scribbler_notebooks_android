@@ -44,6 +44,7 @@ import com.scribblernotebooks.scribblernotebooks.CustomListeners.RecyclerItemCli
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Categories;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Deal;
+import com.scribblernotebooks.scribblernotebooks.HelperClasses.DealListResponse;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.ParseJson;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.ShakeEventManager;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.User;
@@ -120,7 +121,8 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
 
     private boolean loading = true;
     int pastVisibleItems, visibleItemCount, totalItemCount;
-    String page = "1";
+
+    int page=1, dealCount=0, pageCount=0;
 
     /**
      * Setting statically the new fragment
@@ -163,6 +165,10 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
 //        noConnectionText = (TextView) v.findViewById(R.id.noConnectionText);
         swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipe_refresh_layout);
         reload = true;
+
+
+        //Retrieve Categories
+        new CategoriesRetriever().execute();
 
         //Progress Dialog Setup
         progressDialog = new ProgressDialog(context);
@@ -350,9 +356,10 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
         isOptionOpened = false;
         if(parametersChanged){
             dealsList.clear();
-            Log.e("DealFragment","ShowToolbarOptions "+page+" "+category+" "+searchQuery+" "+sort);
-            page="1";
-            new LongOperation().execute(page, category, searchQuery, sort);
+            Log.e("DealFragment", "ShowToolbarOptions " + page + " " + category + " " + searchQuery + " " + sort);
+            page=1;
+            new CategoriesRetriever().execute();
+            new LongOperation().execute(String.valueOf(page), category, searchQuery, sort);
         }
         replacedLayout.setVisibility(View.GONE);
         originalLayout.setVisibility(View.VISIBLE);
@@ -490,8 +497,8 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
                 List<String> list;
                 switch (tag) {
                     case "category":
-                        list = Arrays.asList(getResources().getStringArray(R.array.category_list));
-                        category = list.get(position);
+                        ArrayList<Categories> categories = categoryList;
+                        category = categories.get(position).getId();
                         parametersChanged=true;
                         Log.e("DealFragment","Category set to "+category);
                         showToolbarOptions();
@@ -552,7 +559,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
     }
 
     public void LoadNextPage() {
-        new LongOperation().execute(page, category, searchQuery);
+        new LongOperation().execute(String.valueOf(page), category, searchQuery);
     }
 
     @Override
@@ -582,7 +589,12 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
                 reload = false;
             }
             isloading=true;
-            if(page.equals("1")) {
+            if(page==1) {
+                try{
+                    recyclerView.setAdapter(null);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
                 loadingProgressLayout.setVisibility(View.VISIBLE);
                 loadingMessage.setText(getResources().getString(R.string.dealListLoading));
                 loadingCharacter.setImageResource(R.drawable.child_searching_happy);
@@ -661,7 +673,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
             JSONObject object = null;
             ArrayList<Deal> dealsList1=null;
 
-            if(page.equals("1")){
+            if(page==1){
                 Log.e("DealFragment","Running for first time. Clearing original list");
                 dealsList.clear();
             }
@@ -669,13 +681,19 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
 
             try {
                 object = new JSONObject(s);
-                dealsList1 = ParseJson.getParsedData(s);
+                DealListResponse dealListResponse= ParseJson.getParsedData(s);
+                if(dealListResponse==null){
+                    finished=true;
+                    return;
+                }
+                dealsList1 =dealListResponse.getDealList();
+
                 if(dealsList1==null){
                     finished=true;
                     Log.e("DealFragment","Finished = true");
                 }
                 if(!finished) {
-                    page = String.valueOf(Integer.parseInt(object.optString("page")) + 1);
+                    page = dealListResponse.getCurrentPage()+1;
                     Log.e("DealFragment","Finished =false, Page="+page);
                 }
             } catch (JSONException e) {
@@ -690,7 +708,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
                 e.printStackTrace();
             }
 
-            if(page.equals("1")) {
+            if(page==1) {
                 Log.e("Running","First Time");
                 adapter = new RecyclerDealsAdapter(dealsList, context);
             }else {
@@ -740,7 +758,8 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
         } else {
 //            noConnectionText.setVisibility(View.GONE);
             //Get response from server
-            new LongOperation().execute(page, category, searchQuery, sort);
+            new CategoriesRetriever().execute();
+            new LongOperation().execute(String.valueOf(page), category, searchQuery, sort);
         }
     }
     void setAdapterHolder(){
@@ -802,11 +821,16 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
 
         @Override
         protected void onPostExecute(String s) {
+            if(s==null){
+                Log.e("Category", "Retrieving again");
+                doInBackground();
+                return;
+            }
             try {
                 JSONObject jsonObject=new JSONObject(s);
                 if(Boolean.parseBoolean(jsonObject.optString("success"))){
                     JSONObject data=jsonObject.optJSONObject("data");
-                    categoryList.clear();
+                    categoryList=new ArrayList<>();
 
                     JSONArray list=data.optJSONArray("dealcategories");
                     for(int i=0;i<list.length();i++){
@@ -819,6 +843,8 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
+            } catch (NullPointerException n){
+                Log.e("Category","Null reposne recieved and tried to parse");
             }
             super.onPostExecute(s);
         }

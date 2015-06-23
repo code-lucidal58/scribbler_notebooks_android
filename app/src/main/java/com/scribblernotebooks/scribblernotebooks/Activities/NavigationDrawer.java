@@ -28,6 +28,9 @@ import com.scribblernotebooks.scribblernotebooks.CustomViews.NotificationDrawer;
 import com.scribblernotebooks.scribblernotebooks.Fragments.ClaimedDeals;
 import com.scribblernotebooks.scribblernotebooks.Fragments.ManualScribblerCode;
 import com.scribblernotebooks.scribblernotebooks.Fragments.ProfileFragment;
+import com.scribblernotebooks.scribblernotebooks.Handlers.DatabaseHandler;
+import com.scribblernotebooks.scribblernotebooks.Handlers.NotificationDataHandler;
+import com.scribblernotebooks.scribblernotebooks.Handlers.UserHandler;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.User;
 import com.scribblernotebooks.scribblernotebooks.R;
@@ -227,6 +230,10 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
             mGoogleApiClient.disconnect();
 //            mGoogleApiClient.connect();
         }
+
+        this.deleteDatabase(UserHandler.DATABASE_NAME);
+        this.deleteDatabase(DatabaseHandler.DATABASE_NAME);
+        this.deleteDatabase(NotificationDataHandler.DATABASE_NAME);
 
         try {
             LoginManager.getInstance().logOut();
