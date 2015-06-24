@@ -1,18 +1,19 @@
 package com.scribblernotebooks.scribblernotebooks.Activities;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.ScaleDrawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -24,7 +25,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -41,7 +41,6 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.ForgotPasswordPopup;
@@ -60,8 +59,6 @@ import java.util.HashMap;
 public class LogIn extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
     private final static String TAG = "LogIn";
-
-    private final static double IMAGE_SCALE_RATIO = 0.6;
     private static final int REQ_SIGN_IN_REQUIRED = 55664;
 
     EditText name, email, mobile, password;
@@ -206,10 +203,13 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         cloud1 = (ImageView) findViewById(R.id.cloud1);
         cloud2 = (ImageView) findViewById(R.id.cloud2);
 
-        name.setOnFocusChangeListener(Constants.drawableColorChange);
-        email.setOnFocusChangeListener(Constants.drawableColorChange);
-        password.setOnFocusChangeListener(Constants.drawableColorChange);
-        mobile.setOnFocusChangeListener(Constants.drawableColorChange);
+        /**
+         * Setting the drawable height and color for edit texts
+         */
+        Constants.drawableScaleColorChange(this, name, R.drawable.userlogin);
+        Constants.drawableScaleColorChange(this, email, R.drawable.maillogin);
+        Constants.drawableScaleColorChange(this, password, R.drawable.passwordlogin);
+        Constants.drawableScaleColorChange(this, mobile, R.drawable.phonelogin);
 
         /**Forgot Password**/
         forgotPassword.setOnTouchListener(new View.OnTouchListener() {
@@ -237,110 +237,6 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
             }
         });
 
-
-        /**
-         * Setting the drawable heights for both edit texts
-         */
-        final ScaleDrawable userIcon = new ScaleDrawable(getResources().getDrawable(R.drawable.userlogin), Gravity.CENTER, 1F, 1F) {
-            @Override
-            public int getIntrinsicHeight() {
-                return (int) (name.getHeight() * IMAGE_SCALE_RATIO);
-            }
-
-            @Override
-            public int getIntrinsicWidth() {
-                return (int) (name.getHeight() * IMAGE_SCALE_RATIO);
-            }
-        };
-        userIcon.setLevel(10000);
-        name.setCompoundDrawables(null, null, userIcon, null);
-        name.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-            @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                try {
-                    name.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, userIcon, null);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        final ScaleDrawable emailIcon = new ScaleDrawable(getResources().getDrawable(R.drawable.maillogin), Gravity.CENTER, 1F, 1F) {
-            @Override
-            public int getIntrinsicHeight() {
-                return (int) (email.getHeight() * IMAGE_SCALE_RATIO);
-            }
-
-            @Override
-            public int getIntrinsicWidth() {
-                return (int) (email.getHeight() * IMAGE_SCALE_RATIO);
-            }
-        };
-        emailIcon.setLevel(10000);
-        email.setCompoundDrawables(null, null, userIcon, null);
-        email.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-            @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                try {
-                    email.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, emailIcon, null);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        final ScaleDrawable phoneIcon = new ScaleDrawable(getResources().getDrawable(R.drawable.phonelogin), Gravity.CENTER, 1F, 1F) {
-            @Override
-            public int getIntrinsicHeight() {
-                return (int) (mobile.getHeight() * IMAGE_SCALE_RATIO);
-            }
-
-            @Override
-            public int getIntrinsicWidth() {
-                return (int) (mobile.getHeight() * IMAGE_SCALE_RATIO);
-            }
-        };
-        phoneIcon.setLevel(10000);
-        mobile.setCompoundDrawables(null, null, userIcon, null);
-        mobile.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-            @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                try {
-                    mobile.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, phoneIcon, null);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-
-        final ScaleDrawable passwordIcon = new ScaleDrawable(getResources().getDrawable(R.drawable.passwordlogin), Gravity.CENTER, 1F, 1F) {
-            @Override
-            public int getIntrinsicHeight() {
-                return (int) (password.getHeight() * IMAGE_SCALE_RATIO);
-            }
-
-            @Override
-            public int getIntrinsicWidth() {
-                return (int) (password.getHeight() * IMAGE_SCALE_RATIO);
-            }
-        };
-        passwordIcon.setLevel(10000);
-        password.setCompoundDrawables(null, null, userIcon, null);
-        password.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-            @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                try {
-                    password.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, passwordIcon, null);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
 
         /**
          * Setting Cloud motion animation
@@ -379,6 +275,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         });
     }
 
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -401,36 +298,20 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         }
     }
 
-    public boolean isValidPassword(String pass) {
-        if (pass.isEmpty()) {
-            password.setError("Password cannot be empty");
-            return false;
-        }
-        if (pass.length() < 6) {
-            password.setError("Password must be at least 6 characters");
-            return false;
-        }
-        return true;
-    }
-
     private void loginUser() {
         if (view_open == LOGIN) {
             userEmail = email.getText().toString();
             userPassword = password.getText().toString();
-
-//            Log.e("Error", userEmail);
 
             if (userEmail.equalsIgnoreCase("skip")) {
                 getSharedPreferences(Constants.PREF_NAME, MODE_PRIVATE).edit().putString(Constants.PREF_DATA_PASS, "OK").apply();
                 startActivity(new Intent(this, NavigationDrawer.class));
                 finish();
                 return;
-
-            }
-
-            if (userEmail.isEmpty()) {
+            }if (userEmail.isEmpty()) {
+                email.setCompoundDrawables(null,null,null,null);
                 email.setError("Email is required");
-            } else if (!validatePassword(userPassword, "SignIn")) {
+            } else if (userPassword.length()<6){
                 Toast.makeText(getApplicationContext(), "Oops... Looks like you forgot to enter the password", Toast.LENGTH_LONG).show();
             } else {
                 login(userEmail, userPassword);
@@ -449,30 +330,29 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         new SignUpService(Constants.ServerUrls.login, this).execute(data);
     }
 
-    public boolean validatePassword(String password, String tag) {
-        return true;
-    }
-
     /**
      * SignUp using signup form
      */
     public void signUpUser() {
         if (view_open == SIGNUP) {
-            Log.e("normal signIn", "inside if");
             userName = name.getText().toString();
             userEmail = email.getText().toString();
             userPassword = password.getText().toString();
             userMobile = mobile.getText().toString();
 
             if (userName.isEmpty()) {
+                name.setCompoundDrawables(null, null, null, null);
                 name.setError("Name required");
             } else if (!Constants.isValidEmailId(userEmail)) {
+                email.setCompoundDrawables(null, null, null, null);
                 email.setError("Invalid Email ID");
-            } else if (!isValidPassword(userPassword)) {
+            } else if (userPassword.length() < 6) {
+                password.setCompoundDrawables(null, null, null, null);
                 password.setError("Password must be ateast 6 characters");
-            } else if (userMobile.isEmpty() || userMobile.length() != 10)
-                mobile.setError("Mobile Number should be 10 digits");
-            else {
+            } else if (userMobile.length() != 10) {
+                mobile.setCompoundDrawables(null, null, null, null);
+                mobile.setError("Mobile Number should be of 10 digits");
+            } else {
                 Log.e("normal signIn", "going to signup");
                 signUp(name.getText().toString(), email.getText().toString(), mobile.getText().toString(), password.getText().toString());
             }
@@ -486,10 +366,10 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     /**
      * Actual SignUp Code
      *
-     * @param userName      username
-     * @param userEmail     useremail
-     * @param userContact   mobile no.
-     * @param userPassword  password
+     * @param userName     username
+     * @param userEmail    useremail
+     * @param userContact  mobile no.
+     * @param userPassword password
      */
 
     public void signUp(String userName, String userEmail, final String userContact, String userPassword) {
@@ -504,8 +384,8 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         data.put(Constants.POST_EMAIL, userEmail);
         data.put(Constants.POST_MOBILE, userContact);
         data.put(Constants.POST_PASSWORD, userPassword);
-        data.put(Constants.POST_COVERPIC,"");
-        data.put(Constants.POST_PROFILEPIC,"");
+        data.put(Constants.POST_COVERPIC, "");
+        data.put(Constants.POST_PROFILEPIC, "");
         Log.e("normal signIn", "going to signupservice");
         new SignUpService(Constants.ServerUrls.signUp, this).execute(data);
     }
