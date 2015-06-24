@@ -181,6 +181,7 @@
                 android:focusableInTouchMode="true"
                 android:gravity="center_vertical"
                 android:hint=""
+                android:imeOptions="actionSearch"
                 android:inputType="textAutoComplete"
                 android:paddingLeft="15dp"
                 android:textColor="@color/loginEditText2TextColor"
