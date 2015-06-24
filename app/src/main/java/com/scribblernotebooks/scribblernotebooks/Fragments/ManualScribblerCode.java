@@ -134,7 +134,7 @@ public class ManualScribblerCode extends Fragment {
             okay.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mContext.getSharedPreferences("Illustrations",Context.MODE_PRIVATE).edit().putBoolean("showInstruct",false);
+                    mContext.getSharedPreferences("Illustrations",Context.MODE_PRIVATE).edit().putBoolean("showInstruct",false).apply();
                     instruct.setVisibility(View.GONE);
                 }
             });
