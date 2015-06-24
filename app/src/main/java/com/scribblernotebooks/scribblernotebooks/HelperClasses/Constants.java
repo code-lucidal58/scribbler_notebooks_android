@@ -1,5 +1,6 @@
 package com.scribblernotebooks.scribblernotebooks.HelperClasses;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -7,11 +8,16 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ScaleDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Pair;
 import android.util.Patterns;
+import android.view.Gravity;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
@@ -149,18 +155,60 @@ public class Constants {
      */
     public static final String[] sharedPrefTags = {Constants.PREF_DATA_NAME, Constants.PREF_DATA_EMAIL,
             Constants.PREF_DATA_MOBILE, Constants.PREF_DATA_LOCATION};
-    public static View.OnFocusChangeListener drawableColorChange = new View.OnFocusChangeListener() {
-        @Override
-        public void onFocusChange(View v, boolean hasFocus) {
-            EditText e = (EditText) v;
-            if (!hasFocus) {
-                if (!e.getText().toString().isEmpty()) {
-                    Drawable d = e.getCompoundDrawables()[2];
-                    d.setColorFilter(Color.parseColor("#ff13657b"), PorterDuff.Mode.MULTIPLY);
+
+    public static void drawableScaleColorChange(final Context context,final EditText editText, final int drawableImage){
+        scaleEditTextImage(context,editText,drawableImage);
+        editText.getCompoundDrawables()[2].clearColorFilter();
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                scaleEditTextImage(context,editText,drawableImage);
+                if(s.toString().isEmpty()||s.toString().equals("")){
+                    editText.getCompoundDrawables()[2].clearColorFilter();
+                }
+                else{
+                    editText.getCompoundDrawables()[2].setColorFilter(R.color.darkerBlue, PorterDuff.Mode.MULTIPLY);
                 }
             }
-        }
-    };
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+    }
+    public static void scaleEditTextImage(Context context, final EditText editText, int drawableImage) {
+        final double IMAGE_SCALE_RATIO = 0.6;
+        final ScaleDrawable icon = new ScaleDrawable(context.getResources().getDrawable(drawableImage), Gravity.CENTER, 1F, 1F) {
+            @Override
+            public int getIntrinsicHeight() {
+                return (int) (editText.getHeight() * IMAGE_SCALE_RATIO);
+            }
+
+            @Override
+            public int getIntrinsicWidth() {
+                return (int) (editText.getHeight() * IMAGE_SCALE_RATIO);
+            }
+        };
+        icon.setLevel(10000);
+        editText.setCompoundDrawables(null, null, icon, null);
+        editText.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                try {
+                    editText.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, icon, null);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
 
 public static boolean saveUserDetails(Context context, User user) {
         if (user == null)

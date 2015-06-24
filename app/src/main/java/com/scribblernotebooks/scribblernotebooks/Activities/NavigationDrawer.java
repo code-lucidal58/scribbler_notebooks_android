@@ -54,41 +54,40 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class NavigationDrawer extends AppCompatActivity implements ProfileFragment.OnFragmentInteractionListener,
-        ManualScribblerCode.OnFragmentInteractionListener{
+        ManualScribblerCode.OnFragmentInteractionListener {
 
 
     OnNavKeyPressed keyListener;
 
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-    private final static String TAG="NavigationActivity";
+    private final static String TAG = "NavigationActivity";
     public DrawerLayout mDrawerLayout;
     public static GoogleApiClient mGoogleApiClient;
     public View mainView;
     View decorView;
 
     TelephonyManager telephonyManager;
-    String deviceId="";
+    String deviceId = "";
     String url = "";
     Fragment fragment;
     static Context sContext;
 
 
     GoogleCloudMessaging gcm;
-    AtomicInteger msg_id=new AtomicInteger();
+    AtomicInteger msg_id = new AtomicInteger();
     String regId;
-    String SENDER_ID="872898499478";
-
+    String SENDER_ID = "872898499478";
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        sContext=getApplicationContext();
+        sContext = getApplicationContext();
 
-        telephonyManager=(TelephonyManager)getSystemService(TELEPHONY_SERVICE);
-        deviceId=telephonyManager.getDeviceId();
+        telephonyManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+        deviceId = telephonyManager.getDeviceId();
 
-        if(!checkPlayServices()){
+        if (!checkPlayServices()) {
             Toast.makeText(this, "Google play services not installed on your device. Notification won't be shown", Toast.LENGTH_LONG).show();
         }
         /** Save the whole view in a variable to pass into different modules of the app */
@@ -97,17 +96,15 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
 
 
         /**Registering user with GCM service**/
-        if(!checkPlayServices()){
-            Toast.makeText(this,"Google play services not installed on your device. Notification won't be shown",Toast.LENGTH_LONG).show();
-        }
-        else{
-            gcm=GoogleCloudMessaging.getInstance(getApplicationContext());
-            regId=getRegistrationId(getApplicationContext());
+        if (!checkPlayServices()) {
+            Toast.makeText(this, "Google play services not installed on your device. Notification won't be shown", Toast.LENGTH_LONG).show();
+        } else {
+            gcm = GoogleCloudMessaging.getInstance(getApplicationContext());
+            regId = getRegistrationId(getApplicationContext());
 //            Log.e("GCM","Registered "+regId);
-            if(regId.isEmpty()){
+            if (regId.isEmpty()) {
                 registerInBackground();
-            }
-            else{
+            } else {
                 sendToServer(regId);
             }
         }
@@ -149,29 +146,15 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
         /**Get Data from the external Barcode scanner or internal Barcode Scanner */
         try {
             url = getIntent().getData().toString();
-            Log.e("Url",url+"-------------------"+getApplication().getPackageName());
-
-            if(url.contains(getApplication().getPackageName())){
-                Uri uri=getIntent().getData();
-//              market://details?id=com.scribblernotebooks.scribblernotebooks&id=4
-
-                String dealCode=uri.getQueryParameter("dealId");
-                Log.e("DealCode",dealCode);
-
-                if(!dealCode.isEmpty()) {
-                    ManualScribblerCode msc = new ManualScribblerCode();
-                    Log.e("Calling","Calling Popup");
-                    msc.getDealDetails(dealCode,this);
-                }
-                else
-                {
-                    Toast.makeText(getApplicationContext(),"Invalid Scribbler code",Toast.LENGTH_LONG).show();
-                }
-            }
-            else{
-                Intent i=new Intent(Intent.ACTION_VIEW);
-                i.setData(Uri.parse(url));
-                finish();
+            Uri uri = getIntent().getData();
+            String dealCode = uri.getQueryParameter("dealId");
+            Log.e("DealCode", dealCode);
+            if (!dealCode.isEmpty()) {
+                ManualScribblerCode msc = new ManualScribblerCode();
+                Log.e("Calling", "Calling Popup");
+                msc.getDealDetails(dealCode, this);
+            } else {
+                Toast.makeText(getApplicationContext(), "Invalid Scribbler code", Toast.LENGTH_LONG).show();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -179,9 +162,9 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
 
         startService(new Intent(this, LocationRetreiver.class));
 //        MixpanelAPI mixpanelAPI=Constants.getMixPanelInstance(this);
-        JSONObject props=new JSONObject();
+        JSONObject props = new JSONObject();
         try {
-            props.put("Location",getSharedPreferences(Constants.PREF_NAME,MODE_PRIVATE).getString(Constants.PREF_DATA_LOCATION,""));
+            props.put("Location", getSharedPreferences(Constants.PREF_NAME, MODE_PRIVATE).getString(Constants.PREF_DATA_LOCATION, ""));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -196,15 +179,15 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
 
     @Override
     public void onBackPressed() {
-        Boolean registered=false;
-        if(keyListener!=null){
-            if(keyListener.onBackKeyPressed()){
-                Log.e("NavigationDrawer","BackKey Event Registered");
-                registered=true;
+        Boolean registered = false;
+        if (keyListener != null) {
+            if (keyListener.onBackKeyPressed()) {
+                Log.e("NavigationDrawer", "BackKey Event Registered");
+                registered = true;
             }
         }
-        if(!registered) {
-            Log.e("NavigationDrawer","BackKey Event Not Registered");
+        if (!registered) {
+            Log.e("NavigationDrawer", "BackKey Event Not Registered");
             if (mDrawerLayout.isDrawerOpen(findViewById(R.id.left_drawer_relative)) || mDrawerLayout.isDrawerOpen(findViewById(R.id.notification_drawer))) {
                 mDrawerLayout.closeDrawers();
             } else if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
@@ -218,9 +201,9 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
     @Override
     protected void onStart() {
         super.onStart();
-        try{
+        try {
             mGoogleApiClient.connect();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -265,6 +248,7 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
 
     /**
      * Function to check if google play services is available on the phone
+     *
      * @return boolean indicating the availability GMS
      */
     private boolean checkPlayServices() {
@@ -283,24 +267,24 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
     }
 
 
-    private String getRegistrationId(Context context){
-        final SharedPreferences gcmSharedPref= getGCMPreferences(context);
-        String regId=gcmSharedPref.getString(Constants.GCM_REG_ID,"");
+    private String getRegistrationId(Context context) {
+        final SharedPreferences gcmSharedPref = getGCMPreferences(context);
+        String regId = gcmSharedPref.getString(Constants.GCM_REG_ID, "");
 //        Log.e("GCM","Pref "+regId);
-        if(regId.isEmpty()){
+        if (regId.isEmpty()) {
             return "";
         }
-        int registeredVersion=gcmSharedPref.getInt(Constants.GCM_APP_VERSION,Integer.MIN_VALUE);
-        int currentVersion=getAppVersion(context);
-        if(registeredVersion!=currentVersion){
-            Log.i(TAG,"App version changed");
+        int registeredVersion = gcmSharedPref.getInt(Constants.GCM_APP_VERSION, Integer.MIN_VALUE);
+        int currentVersion = getAppVersion(context);
+        if (registeredVersion != currentVersion) {
+            Log.i(TAG, "App version changed");
             return "";
         }
         return regId;
     }
 
-    private SharedPreferences getGCMPreferences(Context context){
-        return getSharedPreferences(Constants.PREF_GCM_NAME,MODE_PRIVATE);
+    private SharedPreferences getGCMPreferences(Context context) {
+        return getSharedPreferences(Constants.PREF_GCM_NAME, MODE_PRIVATE);
     }
 
 
@@ -310,39 +294,38 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
         try {
             ProfileFragment profileFragment = (ProfileFragment) getSupportFragmentManager().findFragmentById(R.id.content_frame);
             profileFragment.onActivityResult(requestCode, resultCode, data);
-        }catch (ClassCastException e){
+        } catch (ClassCastException e) {
             e.printStackTrace();
         }
     }
 
     /**
      * Registers the application with GCM servers asynchronously.
-     * <p>
+     * <p/>
      * Stores the registration ID and app versionCode in the application's
      * shared preferences.
      */
 
-    private void registerInBackground(){
+    private void registerInBackground() {
         new GCMRegistration().execute();
     }
 
     private class GCMRegistration extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
-            String msg="";
-            Context context=getApplicationContext();
-            try{
-                if(gcm==null){
-                    gcm= GoogleCloudMessaging.getInstance(context);
+            String msg = "";
+            Context context = getApplicationContext();
+            try {
+                if (gcm == null) {
+                    gcm = GoogleCloudMessaging.getInstance(context);
                 }
-                regId=gcm.register(SENDER_ID);
+                regId = gcm.register(SENDER_ID);
 //                Log.e("GCM","Registered "+regId);
-                msg="Device registered "+regId;
+                msg = "Device registered " + regId;
                 sendToServer(regId);
                 showToast(msg);
                 storeRegistrationId(context, regId);
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             return null;
@@ -353,10 +336,10 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
     /**
      * Store user reg id on server
      */
-    public void sendToServer(String gcmkey){
+    public void sendToServer(String gcmkey) {
 
-        User user=Constants.getUser(this);
-        Log.e("User Email for GCM",user.getEmail());
+        User user = Constants.getUser(this);
+        Log.e("User Email for GCM", user.getEmail());
         new LongOperation().execute(user.getEmail(), gcmkey);
     }
 
@@ -365,33 +348,33 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
         @Override
         protected Void doInBackground(String... strings) {
             try {
-                HashMap<String, String> data=new HashMap<>();
-                data.put("email",strings[0]);
-                data.put("gcmkey",strings[1]);
-                data.put("deviceID",deviceId);
+                HashMap<String, String> data = new HashMap<>();
+                data.put("email", strings[0]);
+                data.put("gcmkey", strings[1]);
+                data.put("deviceID", deviceId);
 
-                Log.e("Device ID",deviceId);
+                Log.e("Device ID", deviceId);
 
-                URL url=new URL(Constants.ServerUrls.insertGCM);
-                HttpURLConnection connection=(HttpURLConnection)url.openConnection();
+                URL url = new URL(Constants.ServerUrls.insertGCM);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("POST");
                 connection.setDoOutput(true);
                 connection.setDoInput(true);
                 connection.setConnectTimeout(15000);
                 connection.setReadTimeout(15000);
 
-                OutputStream os=connection.getOutputStream();
-                BufferedWriter writer=new BufferedWriter(new OutputStreamWriter(os,"UTF-8"));
+                OutputStream os = connection.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
                 writer.write(Constants.getPostDataString(data));
                 writer.flush();
                 writer.close();
                 os.close();
 
-                BufferedReader reader=new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                String response=reader.readLine();
-                JSONObject object=new JSONObject(response);
-                Boolean success=Boolean.parseBoolean(object.optString("success"));
-                if(success){
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String response = reader.readLine();
+                JSONObject object = new JSONObject(response);
+                Boolean success = Boolean.parseBoolean(object.optString("success"));
+                if (success) {
 //                    Log.e("GCM","Gcm key sent "+strings[1]);
                 }
 
@@ -404,11 +387,7 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
     }
 
 
-
-
-
-
-    public void showToast(String msg){
+    public void showToast(String msg) {
 //        Toast.makeText(getApplicationContext(),msg,Toast.LENGTH_LONG).show();
     }
 
@@ -417,7 +396,7 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
      * {@code SharedPreferences}.
      *
      * @param context application's context.
-     * @param regId registration ID
+     * @param regId   registration ID
      */
     private void storeRegistrationId(Context context, String regId) {
         final SharedPreferences prefs = getGCMPreferences(context);
@@ -429,8 +408,6 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
         editor.apply();
 //        Log.e("GCM", "After save +" + prefs.getString(Constants.GCM_REG_ID, ""));
     }
-
-
 
 
     /**
@@ -462,6 +439,7 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
         LeftNavigationDrawer.setUserName();
 
     }
+
     @Override
     public void onUserEmailChanged() {
         LeftNavigationDrawer.setUserEmail();
@@ -487,12 +465,11 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
     }
 
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
-        if(item.getItemId()==android.R.id.home){
-            if(getSupportFragmentManager().getBackStackEntryCount()>0){
+        if (item.getItemId() == android.R.id.home) {
+            if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
                 getSupportFragmentManager().popBackStack();
             }
         }
@@ -500,14 +477,13 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
     }
 
 
-    public  interface OnNavKeyPressed{
+    public interface OnNavKeyPressed {
         boolean onBackKeyPressed();
     }
 
-    public void setKeyListener(OnNavKeyPressed onNavKeyPressed){
-        keyListener=onNavKeyPressed;
+    public void setKeyListener(OnNavKeyPressed onNavKeyPressed) {
+        keyListener = onNavKeyPressed;
     }
-
 
 
 }

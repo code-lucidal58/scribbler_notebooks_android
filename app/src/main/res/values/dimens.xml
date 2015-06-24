@@ -26,8 +26,8 @@
     <dimen name="loginButtonHeight">35dp</dimen>
     <dimen name="googlefbbuttonheight">40dp</dimen>
 
-    <dimen name="popup_width">275dp</dimen>
-    <dimen name="popup_button_width">275dp</dimen>
+    <dimen name="popup_width">305dp</dimen>
+    <dimen name="popup_button_width">305dp</dimen>
     <dimen name="privacy_popup_width">300dp</dimen>
 
     <dimen name="sec_activity_horizontal_margin">20dp</dimen>

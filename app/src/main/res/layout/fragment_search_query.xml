@@ -74,7 +74,8 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:background="@color/darkBlue"
-        android:layout_height="100dp"
+        android:layout_height="110dp"
+        android:paddingBottom="10dp"
         android:layout_below="@id/during_searchbar"
         android:divider="@android:color/transparent"
         android:dividerHeight="0dp" />

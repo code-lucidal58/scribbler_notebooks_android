@@ -103,14 +103,15 @@ public class ParseJson {
         Log.e("JSON", "jsonResponse " + jsonResponse);
         try {
             JSONObject jsonObject = new JSONObject(jsonResponse);
-            JSONObject jsonChild = jsonObject.optJSONObject("message");
+            JSONObject jsonChild = jsonObject.optJSONObject(Constants.TAG_DATA);
             String success = jsonObject.optString("success");
 
             String id, title, category, sdesp, ldesp, imgurl;
 
             id = jsonChild.optString(Constants.TAG_ID);
             title = jsonChild.optString(Constants.TAG_DEAL_NAME);
-            category = jsonChild.optString(Constants.TAG_CATEGORY);
+            JSONObject categoryChild = jsonChild.optJSONObject(Constants.TAG_CATEGORY);
+            category=categoryChild.optString("name");
             sdesp = jsonChild.optString(Constants.TAG_SHORT_DESCRIPTION);
             ldesp = jsonChild.optString(Constants.TAG_LONG_DESCRIPTION);
             // Image url http://www.ucarecdn.com/<image UUID>/image.png

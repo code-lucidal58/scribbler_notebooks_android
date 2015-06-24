@@ -57,14 +57,14 @@
             android:text="Category"
             android:id="@+id/dealCategory"
             android:textColor="@color/popupTextColor"
-            android:textSize="14sp"/>
+            android:textSize="13sp"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/dealIcon"
             android:layout_marginTop="5dp"
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:id="@+id/dealDescription"
             android:textColor="@color/popupTextColor"
             android:text="@string/lorem_ipsum"/>

@@ -89,7 +89,7 @@
             android:windowSoftInputMode="adjustPan|stateHidden" >
             <intent-filter>
                 <data
-                    android:host="scribbler.co.in"
+                    android:host="scribbler.com"
                     android:scheme="http" />
 
                 <action android:name="android.intent.action.VIEW" />
@@ -99,8 +99,8 @@
             </intent-filter>
             <intent-filter>
                 <data
-                    android:host="details"
-                    android:scheme="market" />
+                    android:host="deal"
+                    android:scheme="scribbler" />
 
                 <action android:name="android.intent.action.VIEW" />
 

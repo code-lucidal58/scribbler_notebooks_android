@@ -57,11 +57,11 @@
     </string-array>
 
     <string-array name="sort_list">
-        <item>Alphabet</item>
-        <item>City</item>
-        <item>Ends on</item>
-        <item>Latest</item>
-        <item>Location</item>
+        <item>Title</item>
+        <item>Deal Value (Coming Soon)</item>
+        <item>Category (Coming Soon)</item>
+        <item>Location (Coming Soon)</item>
+        <item>Validity (Coming Soon)</item>
     </string-array>
 
     <string-array name="search_list">

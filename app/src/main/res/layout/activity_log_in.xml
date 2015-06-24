@@ -2,231 +2,227 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.scribblernotebooks.scribblernotebooks.LogIn"
-    android:background="@color/darkBlue">
+    android:background="@color/darkBlue"
+    tools:context="com.scribblernotebooks.scribblernotebooks.LogIn">
 
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:layout_marginBottom="-15dp"
         android:layout_alignParentBottom="true"
+        android:layout_marginBottom="-15dp"
         android:src="@drawable/bluehills" />
+
     <ImageView
+        android:id="@+id/cloud1"
         android:layout_width="@dimen/manualCodeCloud1W"
         android:layout_height="@dimen/manualCodeCloud1H"
         android:layout_marginTop="70dp"
-        android:id="@+id/cloud1"
-        android:src="@drawable/clouds"/>
+        android:src="@drawable/clouds" />
 
 
     <ImageView
+        android:id="@+id/cloud2"
         android:layout_width="@dimen/manualCodeCloud2W"
         android:layout_height="@dimen/manualCodeCloud2H"
-        android:id="@+id/cloud2"
-        android:src="@drawable/clouds"/>
+        android:src="@drawable/clouds" />
 
 
     <ImageView
+        android:id="@+id/sun"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
-        android:id="@+id/sun"
+        android:layout_alignBottom="@+id/logo"
         android:layout_marginBottom="-20dp"
         android:layout_marginLeft="-20dp"
-        android:layout_alignBottom="@+id/logo"
-        android:src="@drawable/sun"/>
+        android:src="@drawable/sun" />
 
     <ScrollView
+        android:id="@+id/sl"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_centerInParent="true"
         android:layout_below="@+id/logo"
-        android:layout_centerVertical="true"
-        android:id="@+id/sl">
+        android:layout_centerInParent="true"
+        android:layout_centerVertical="true">
 
         <RelativeLayout
+            android:id="@+id/rl"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:id="@+id/rl"
             android:layout_marginBottom="15dp">
 
-
-
             <LinearLayout
+                android:id="@+id/ll"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:id="@+id/ll"
                 android:layout_centerHorizontal="true"
                 android:animateLayoutChanges="true"
-                android:animationCache="true">
+                android:animationCache="true"
+                android:orientation="vertical">
 
                 <EditText
-                    android:background="@drawable/edit_text1"
-                    android:layout_width="@dimen/login_editText_width"
-                    android:textColorHint="@color/loginEditTextHintColor"
-                    android:layout_height="@dimen/loginEditTextHeight"
                     android:id="@+id/userName"
-                    android:nextFocusUp="@+id/name"
-                    android:textColor="@color/loginEditTextTextColor"
+                    android:layout_width="@dimen/login_editText_width"
+                    android:layout_height="@dimen/loginEditTextHeight"
                     android:layout_marginTop="3dp"
+                    android:background="@drawable/edit_text1"
+                    android:drawableEnd="@drawable/userlogin"
+                    android:drawableRight="@drawable/userlogin"
+                    android:gravity="center_vertical"
+                    android:hint="Name"
+                    android:inputType="textPersonName"
+                    android:nextFocusUp="@+id/name"
+                    android:paddingBottom="2dp"
+                    android:paddingEnd="10dp"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
-                    android:paddingEnd="10dp"
                     android:paddingTop="2dp"
-                    android:paddingBottom="2dp"
+                    android:textColor="@color/loginEditTextTextColor"
+                    android:textColorHint="@color/loginEditTextHintColor"
                     android:textCursorDrawable="@drawable/bootstrap_edit_text_cursor"
-                    android:hint="Name"
-                    android:visibility="gone"
-                    android:drawableRight="@drawable/userlogin"
-                    android:drawableEnd="@drawable/userlogin"
-                    android:gravity="center_vertical"
-                    android:inputType="textPersonName"
-                    android:textSize="@dimen/loginEditTextFontSize"/>
+                    android:textSize="@dimen/loginEditTextFontSize"
+                    android:visibility="gone" />
 
                 <EditText
-                    android:background="@drawable/edit_text1"
+                    android:id="@+id/userEmail"
                     android:layout_width="@dimen/login_editText_width"
                     android:layout_height="@dimen/loginEditTextHeight"
                     android:layout_marginTop="3dp"
-                    android:nextFocusUp="@+id/userName"
-                    android:textColor="@color/loginEditTextTextColor"
-                    android:textColorHint="@color/loginEditTextHintColor"
-                    android:gravity="center_vertical"
-                    android:textCursorDrawable="@drawable/bootstrap_edit_text_cursor"
+                    android:background="@drawable/edit_text1"
                     android:drawableEnd="@drawable/maillogin"
                     android:drawableRight="@drawable/maillogin"
-                    android:id="@+id/userEmail"
+                    android:gravity="center_vertical"
                     android:hint="Email"
-                    android:paddingTop="2dp"
-                    android:paddingBottom="2dp"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingEnd="10dp"
-                    android:nextFocusDown="@+id/userPassword"
                     android:inputType="textEmailAddress"
-                    android:textSize="@dimen/loginEditTextFontSize"/>
+                    android:nextFocusDown="@+id/userPassword"
+                    android:nextFocusUp="@+id/userName"
+                    android:paddingBottom="2dp"
+                    android:paddingEnd="10dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingTop="2dp"
+                    android:textColor="@color/loginEditTextTextColor"
+                    android:textColorHint="@color/loginEditTextHintColor"
+                    android:textCursorDrawable="@drawable/bootstrap_edit_text_cursor"
+                    android:textSize="@dimen/loginEditTextFontSize" />
 
                 <EditText
-                    android:background="@drawable/edit_text1"
-                    android:layout_width="@dimen/login_editText_width"
-                    android:layout_height="@dimen/loginEditTextHeight"
                     android:id="@+id/userPassword"
-                    android:nextFocusUp="@+id/userEmail"
+                    android:layout_width="@dimen/login_editText_width"
+                    android:layout_height="@dimen/loginEditTextHeight"
+                    android:layout_marginTop="3dp"
+                    android:background="@drawable/edit_text1"
+                    android:drawableEnd="@drawable/passwordlogin"
+                    android:drawableRight="@drawable/passwordlogin"
+                    android:gravity="center_vertical"
+                    android:hint="Password"
+                    android:inputType="textPassword"
+                    android:paddingBottom="2dp"
+                    android:paddingEnd="10dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingTop="2dp"
                     android:textColor="@color/loginEditTextTextColor"
                     android:textColorHint="@color/loginEditTextHintColor"
-                    android:layout_marginTop="3dp"
-                    android:paddingTop="2dp"
-                    android:paddingBottom="2dp"
-                    android:paddingRight="10dp"
                     android:textCursorDrawable="@drawable/bootstrap_edit_text_cursor"
-                    android:paddingEnd="10dp"
-                    android:hint="Password"
-                    android:drawableRight="@drawable/passwordlogin"
-                    android:drawableEnd="@drawable/passwordlogin"
-                    android:gravity="center_vertical"
-                    android:paddingLeft="10dp"
-                    android:inputType="textPassword"
-                    android:textSize="@dimen/loginEditTextFontSize"/>
+                    android:textSize="@dimen/loginEditTextFontSize" />
 
                 <EditText
-                    android:background="@drawable/edit_text1"
-                    android:layout_width="@dimen/login_editText_width"
-                    android:textColorHint="@color/loginEditTextHintColor"
-                    android:layout_height="@dimen/loginEditTextHeight"
                     android:id="@+id/userPhone"
-                    android:textCursorDrawable="@drawable/bootstrap_edit_text_cursor"
-                    android:nextFocusUp="@+id/userPassword"
-                    android:textColor="@color/loginEditTextTextColor"
+                    android:layout_width="@dimen/login_editText_width"
+                    android:layout_height="@dimen/loginEditTextHeight"
                     android:layout_marginTop="3dp"
-                    android:paddingTop="2dp"
-                    android:paddingBottom="2dp"
-                    android:paddingRight="10dp"
-                    android:paddingEnd="10dp"
-                    android:hint="Mobile Number"
-                    android:drawableRight="@drawable/phonelogin"
+                    android:background="@drawable/edit_text1"
                     android:drawableEnd="@drawable/phonelogin"
+                    android:drawableRight="@drawable/phonelogin"
                     android:gravity="center_vertical"
-                    android:paddingLeft="10dp"
+                    android:hint="Mobile Number"
                     android:inputType="phone"
+                    android:paddingBottom="2dp"
+                    android:paddingEnd="10dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingTop="2dp"
+                    android:textColor="@color/loginEditTextTextColor"
+                    android:textColorHint="@color/loginEditTextHintColor"
+                    android:textCursorDrawable="@drawable/bootstrap_edit_text_cursor"
                     android:textSize="@dimen/loginEditTextFontSize"
-
-                    android:visibility="gone"/>
+                    android:visibility="gone" />
 
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/ll2"
                 android:layout_width="@dimen/login_editText_width"
                 android:layout_height="@dimen/loginEditTextHeight"
-                android:orientation="horizontal"
                 android:layout_below="@+id/ll"
-                android:animateLayoutChanges="true"
-                android:layout_marginTop="5dp"
                 android:layout_centerHorizontal="true"
-                android:id="@+id/ll2">
+                android:layout_marginTop="5dp"
+                android:animateLayoutChanges="true"
+                android:orientation="horizontal">
 
                 <Button
-                    android:background="@drawable/scanner_button"
+                    android:id="@+id/signIn"
                     style="@style/font"
                     android:layout_width="@dimen/half_login_editText_width"
                     android:layout_height="@dimen/loginButtonHeight"
+                    android:background="@drawable/scanner_button"
                     android:text="Log In"
                     android:textColor="#FFF"
-                    android:textSize="@dimen/loginEditTextFontSize"
-                    android:id="@+id/signIn"/>
+                    android:textSize="@dimen/loginEditTextFontSize" />
 
                 <Button
-                    android:background="@drawable/scanner_button"
+                    android:id="@+id/signUp"
                     style="@style/font"
                     android:layout_width="@dimen/half_login_editText_width"
                     android:layout_height="@dimen/loginButtonHeight"
+                    android:layout_marginLeft="5dp"
+                    android:background="@drawable/scanner_button"
                     android:text="Sign Up"
                     android:textColor="#FFF"
-                    android:layout_marginLeft="5dp"
-                    android:textSize="@dimen/loginEditTextFontSize"
-                    android:id="@+id/signUp"/>
+                    android:textSize="@dimen/loginEditTextFontSize" />
 
             </LinearLayout>
 
             <TextView
+                android:id="@+id/forgotPassword"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/forgotPassword"
-                android:textColor="#FFF"
                 android:layout_alignLeft="@+id/ll2"
-                android:layout_marginTop="5dp"
-                android:textSize="12sp"
                 android:layout_below="@+id/ll2"
-                android:text="Forgot Password? Click Here"/>
+                android:layout_marginTop="5dp"
+                android:text="Forgot Password? Click Here"
+                android:textColor="#FFF"
+                android:textSize="12sp" />
 
 
             <TextView
+                android:id="@+id/or"
                 style="@style/font"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/forgotPassword"
-                android:textSize="12sp"
                 android:layout_marginTop="10dp"
                 android:text="------   OR   ------"
                 android:textColor="#FFF"
-                android:id="@+id/or"/>
+                android:textSize="12sp" />
 
-                <com.google.android.gms.common.SignInButton
-                    android:id="@+id/sign_in_button"
-                    android:layout_width="@dimen/login_editText_width"
-                    android:layout_height="@dimen/googlefbbuttonheight"
-                    android:layout_below="@id/or"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="5dp"/>
+            <com.google.android.gms.common.SignInButton
+                android:id="@+id/sign_in_button"
+                android:layout_width="@dimen/login_editText_width"
+                android:layout_height="@dimen/googlefbbuttonheight"
+                android:layout_below="@id/or"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="5dp" />
 
-                <com.facebook.login.widget.LoginButton
-                    android:layout_width="@dimen/login_editText_width"
-                    android:layout_height="@dimen/googlefbbuttonheight"
-                    android:layout_centerHorizontal="true"
-                    android:layout_below="@id/sign_in_button"
-                    android:id="@+id/login_button"
-                    android:layout_marginTop="5dp" />
+            <com.facebook.login.widget.LoginButton
+                android:id="@+id/login_button"
+                android:layout_width="@dimen/login_editText_width"
+                android:layout_height="@dimen/googlefbbuttonheight"
+                android:layout_below="@id/sign_in_button"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="5dp" />
 
         </RelativeLayout>
 
@@ -234,11 +230,11 @@
 
 
     <ImageView
+        android:id="@+id/logo"
         android:layout_width="wrap_content"
         android:layout_height="75dp"
-        android:layout_marginTop="25dp"
         android:layout_centerHorizontal="true"
-        android:id="@+id/logo"
-        android:src="@drawable/logo_200"/>
+        android:layout_marginTop="25dp"
+        android:src="@drawable/logo_200" />
 
 </RelativeLayout>

@@ -8,7 +8,7 @@
     <color name="colorAccent">#ff49a3c8</color>
     <color name="windowBackground">#EEE</color>
 
-    <color name="popupBackgroundColor">#ffd7ff00</color>
+    <color name="popupBackgroundColor">#fff7ff2f</color>
 
     <color name="darkerBlue">#ff12495c</color>
     <color name="lighterBlue">#ff29b2dd</color>
@@ -58,7 +58,7 @@
     <color name="hour1800">#ff12495c</color>
     <color name="hour2100">#ff181818</color>
     <color name="hour0000">#ff000000</color>
-    <color name="popupTextColor">#ff104858</color>
+    <color name="popupTextColor">#ff0b2833</color>
     <color name="popupHintColor">#8e104858</color>
 
 
