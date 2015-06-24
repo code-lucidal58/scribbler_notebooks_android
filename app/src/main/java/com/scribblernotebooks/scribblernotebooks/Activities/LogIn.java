@@ -1,19 +1,13 @@
 package com.scribblernotebooks.scribblernotebooks.Activities;
 
-import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.ScaleDrawable;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -77,14 +71,11 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     int screenWidth;
     int screenHeight;
     ImageView sun, cloud1, cloud2;
-
     Boolean fromApi = false;
 
     private static final int RC_SIGN_IN = 0;
-
     private boolean mIntentInProgress;
     private boolean mSignInClicked;
-
 
     SharedPreferences userPrefs;
     ProgressDialog progressDialog;
@@ -308,10 +299,11 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                 startActivity(new Intent(this, NavigationDrawer.class));
                 finish();
                 return;
-            }if (userEmail.isEmpty()) {
-                email.setCompoundDrawables(null,null,null,null);
+            }
+            if (userEmail.isEmpty()) {
+                email.setCompoundDrawables(null, null, null, null);
                 email.setError("Email is required");
-            } else if (userPassword.length()<6){
+            } else if (userPassword.length() < 6) {
                 Toast.makeText(getApplicationContext(), "Oops... Looks like you forgot to enter the password", Toast.LENGTH_LONG).show();
             } else {
                 login(userEmail, userPassword);
@@ -341,7 +333,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
             userMobile = mobile.getText().toString();
 
             if (userName.isEmpty()) {
-                name.setCompoundDrawables(null, null, null, null);
+                name.setCompoundDrawables(null,null,null,null);
                 name.setError("Name required");
             } else if (!Constants.isValidEmailId(userEmail)) {
                 email.setCompoundDrawables(null, null, null, null);
