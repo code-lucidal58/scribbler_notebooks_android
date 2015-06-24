@@ -28,7 +28,6 @@ public class ClaimedDeals extends android.support.v4.app.Fragment {
 
     private static final String TITLE = "title";
 
-    OnFragmentInteractionListener mListener;
     RecyclerView recyclerView;
     Context context;
     Toolbar appbar;
@@ -107,33 +106,6 @@ public class ClaimedDeals extends android.support.v4.app.Fragment {
         han.close();
         recyclerView.setAdapter(adapter);
         return v;
-    }
-
-
-    /**
-     * Auto-generated methods
-     *
-     * @param uri
-     */
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    public interface OnFragmentInteractionListener {
-        public void onFragmentInteraction(Uri uri);
     }
 
 }

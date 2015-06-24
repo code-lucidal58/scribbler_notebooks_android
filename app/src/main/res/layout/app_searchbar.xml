@@ -169,7 +169,7 @@
             android:layout_gravity="center"
             android:layout_weight="3.4">
 
-            <EditText
+            <AutoCompleteTextView
                 android:id="@+id/selectedQuery"
                 android:layout_width="match_parent"
                 android:layout_height="35dp"

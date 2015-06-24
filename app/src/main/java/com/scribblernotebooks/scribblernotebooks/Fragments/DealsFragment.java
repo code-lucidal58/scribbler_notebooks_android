@@ -27,6 +27,8 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -43,6 +45,7 @@ import com.scribblernotebooks.scribblernotebooks.Adapters.RecyclerDealsAdapter;
 import com.scribblernotebooks.scribblernotebooks.Adapters.SearchListAdapter;
 import com.scribblernotebooks.scribblernotebooks.CustomListeners.HidingScrollListener;
 import com.scribblernotebooks.scribblernotebooks.CustomListeners.RecyclerItemClickListener;
+import com.scribblernotebooks.scribblernotebooks.Handlers.UserHandler;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Categories;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Deal;
@@ -76,6 +79,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
 
     public int ACTION_SEARCH = 1;
     public int ACTION_DEFAULT = 0;
+    int action=0;
     ArrayList<Categories> categoryList = null;
 
     RecyclerView recyclerView;
@@ -113,7 +117,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
     LinearLayout originalLayout, replacedLayout;
     ImageView selectedIcon;
     TextView selectionIconName;
-    EditText selectedIconQuery;
+    AutoCompleteTextView selectedIconQuery;
     Boolean isOptionOpened = false;
     SearchListAdapter searchListAdapter, querySearchListAdapter;
 
@@ -201,7 +205,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
         replacedLayout = (LinearLayout) searchbar.findViewById(R.id.replacedLinearLayout);
         selectedIcon = (ImageView) searchbar.findViewById(R.id.selectedIcon);
         selectionIconName = (TextView) searchbar.findViewById(R.id.selectedIcon_name);
-        selectedIconQuery = (EditText) searchbar.findViewById(R.id.selectedQuery);
+        selectedIconQuery = (AutoCompleteTextView) searchbar.findViewById(R.id.selectedQuery);
         loadingProgressLayout = (LinearLayout) v.findViewById(R.id.loadingProgress);
         loadingCharacter = (ImageView) loadingProgressLayout.findViewById(R.id.loadingCharacter);
         loadingMessage = (TextView) loadingProgressLayout.findViewById(R.id.loadingMessage);
@@ -276,6 +280,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
 
             @Override
             public void onMoved(int distance) {
+                showToolbarOptions();
                 toolbarContainer.setTranslationY(-distance);
             }
 
@@ -356,6 +361,8 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
      */
     public void showToolbarOptions() {
         isOptionOpened = false;
+        String[] suggestions1 = new String[0];
+        selectedIconQuery.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, suggestions1));
 //        recyclerView.setPadding(swipeRefreshLayout.getPaddingLeft(), initialTopPadding, swipeRefreshLayout.getPaddingRight(), swipeRefreshLayout.getPaddingBottom());
         if (parametersChanged) {
             dealsList.clear();
@@ -365,7 +372,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
             if (!searchQuery.isEmpty()) {
                 new LongOperation(ACTION_SEARCH).execute(String.valueOf(page), "", searchQuery, "");
             } else {
-                new LongOperation().execute(String.valueOf(page), category, searchQuery, sort);
+                new LongOperation(action).execute(String.valueOf(page), category, searchQuery, sort);
             }
             parametersChanged = false;
         }
@@ -382,6 +389,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
      * Hide the category, search, scan and sort options and show the corresponding menu
      */
     public void hideToolbarOptions(String tag1) {
+        Log.e("DealFragment", "Isloading: " + isloading + " isEmpty:" + isEmpty);
         if (isloading || isEmpty) {
             return;
         }
@@ -393,6 +401,14 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
         replacedLayout.setVisibility(View.VISIBLE);
         //originalLayout.setVisibility(View.GONE);
         selectedIconQuery.setText("");
+        if (tag.equalsIgnoreCase("search")) {
+            UserHandler handler = new UserHandler(getActivity());
+            String[] suggestions = handler.getSuggestions();
+            handler.close();
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, suggestions);
+            selectedIconQuery.setAdapter(adapter);
+            selectedIconQuery.setThreshold(1);
+        }
         ArrayList<String> suggestionList = new ArrayList<>();
         replacedLayout.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -593,7 +609,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
     }
 
     public void LoadNextPage() {
-        new LongOperation().execute(String.valueOf(page), category, searchQuery);
+        new LongOperation(action).execute(String.valueOf(page), category, searchQuery,sort);
     }
 
     @Override
@@ -625,6 +641,8 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
             this.action = action;
         }
 
+        String search = "";
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -634,6 +652,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
             }
             isloading = true;
             if (page == 1) {
+                isEmpty = true;
                 try {
                     recyclerView.setAdapter(null);
                 } catch (Exception e) {
@@ -654,11 +673,13 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
             try {
                 String page = queries[0];
                 String searchQuery = queries[2];
+                search = searchQuery;
                 String category = queries[1];
                 String sort = queries[3];
 
                 User user = Constants.getUser(context);
                 URL url;
+                Log.e("DealsFragment", "Action: " + action);
                 if (action == ACTION_DEFAULT)
                     url = new URL(Constants.ServerUrls.dealList + "?token=" + user.getToken() + "&page=" + page + "&category=" + category + "&searchQuery=" + searchQuery + "&sortBy=" + sort);
                 else
@@ -689,7 +710,12 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
 
             try {
                 if (s.isEmpty()) {
-                    isEmpty = true;
+                    Log.e("DealsFragment", "Is Empty1: " + isEmpty);
+                    if(dealsList.isEmpty())
+                    {
+                        isEmpty = true;
+                    }
+                    Log.e("DealsFragment", "Is Empty2: " + isEmpty);
                     loadingBar.setVisibility(View.GONE);
                     loadingCharacter.setImageResource(R.drawable.child_searching_slept);
                     loadingMessage.setText(getResources().getString(R.string.dealListLoadingError));
@@ -697,6 +723,15 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+            }
+            isEmpty = false;
+
+            Log.e("DealsFragment", "Is Empty3: " + isEmpty);
+            if (action == ACTION_SEARCH) {
+                Log.e("Deal Fragment", "Adding Suggestion");
+                UserHandler handler = new UserHandler(getActivity());
+                handler.addSuggestions(search);
+                handler.close();
             }
 
             loadingProgressLayout.setVisibility(View.GONE);
@@ -707,10 +742,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
             isEmpty = false;
 
             DealListResponse dealListResponse = ParseJson.getParsedData(s);
-            if (dealListResponse == null) {
-                finished = true;
-                return;
-            }
+            Log.e("DealFragment", "Response: " + dealListResponse.getPageCount() + dealListResponse.getCurrentPage() + dealListResponse.getDealCount());
             dealsList1 = dealListResponse.getDealList();
 
             page = dealListResponse.getCurrentPage();
@@ -719,7 +751,10 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
                 dealsList.clear();
             }
             if (dealListResponse.getCurrentPage() == dealListResponse.getPageCount()) {
+                Log.e("DealFragment", "Finished");
                 finished = true;
+            }else{
+                finished=false;
             }
             if (!finished) {
                 page += 1;
@@ -740,7 +775,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
             } else {
                 Log.e("Running", "Not First Time");
                 adapter = new RecyclerDealsAdapter(dealsList, context);
-                recyclerView.scrollToPosition((dealListResponse.getCurrentPage()-1)*PAGE_LIMIT);
+                recyclerView.scrollToPosition((dealListResponse.getCurrentPage() - 1) * PAGE_LIMIT);
                 adapter.notifyDataSetChanged();
             }
             setAdapterHolder();
@@ -778,15 +813,9 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
      * Run AsyncTask Only after phone is connected to internet
      */
     public void runAsyncTask() {
-        if (!Constants.isNetworkAvailable(getActivity())) {
-//            noConnectionText.setVisibility(View.VISIBLE);
-            swipeRefreshLayout.setRefreshing(false);
-        } else {
-//            noConnectionText.setVisibility(View.GONE);
-            //Get response from server
-            new CategoriesRetriever().execute();
-            new LongOperation().execute(String.valueOf(page), category, searchQuery, sort);
-        }
+        new CategoriesRetriever().execute();
+        new LongOperation(action).execute("1", category, searchQuery, sort);
+
     }
 
     void setAdapterHolder() {
@@ -862,7 +891,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
                     JSONArray list = data.optJSONArray("dealcategories");
                     for (int i = 0; i < list.length(); i++) {
                         JSONObject categoryObject = list.optJSONObject(i);
-                        Log.e("CategoryList", categoryObject.optString("name"));
+//                        Log.e("CategoryList", categoryObject.optString("name"));
                         Categories categories = new Categories(categoryObject.optString("_id"), categoryObject.optString("name"));
                         categoryList.add(categories);
                     }

@@ -54,7 +54,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class NavigationDrawer extends AppCompatActivity implements ProfileFragment.OnFragmentInteractionListener,
-        ManualScribblerCode.OnFragmentInteractionListener, ClaimedDeals.OnFragmentInteractionListener{
+        ManualScribblerCode.OnFragmentInteractionListener{
 
 
     OnNavKeyPressed keyListener;
@@ -340,9 +340,6 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
                 msg="Device registered "+regId;
                 sendToServer(regId);
                 showToast(msg);
-                //TODO: send registration id to backend server
-
-
                 storeRegistrationId(context, regId);
             }
             catch (Exception e){
@@ -395,7 +392,7 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
                 JSONObject object=new JSONObject(response);
                 Boolean success=Boolean.parseBoolean(object.optString("success"));
                 if(success){
-                    Log.e("GCM","Gcm key sent "+strings[1]);
+//                    Log.e("GCM","Gcm key sent "+strings[1]);
                 }
 
             } catch (Exception e) {
@@ -425,7 +422,7 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
     private void storeRegistrationId(Context context, String regId) {
         final SharedPreferences prefs = getGCMPreferences(context);
         int appVersion = getAppVersion(context);
-        Log.e("GCM", "Saving regId on app version " + appVersion);
+//        Log.e("GCM", "Saving regId on app version " + appVersion);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(Constants.GCM_REG_ID, regId);
         editor.putInt(Constants.GCM_APP_VERSION, appVersion);
