@@ -125,4 +125,8 @@
         <!--android:layout_margin="10dp"-->
         <!--/>-->
 
+    <include
+        layout="@layout/layout_nav_instruction"
+        android:id="@+id/instruction"/>
+
 </RelativeLayout>
