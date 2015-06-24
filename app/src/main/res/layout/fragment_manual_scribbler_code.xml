@@ -125,8 +125,15 @@
         <!--android:layout_margin="10dp"-->
         <!--/>-->
 
-    <include
-        layout="@layout/layout_nav_instruction"
-        android:id="@+id/instruction"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/instruction"
+        android:visibility="gone">
+
+        <include
+            layout="@layout/layout_nav_instruction"/>
+    </RelativeLayout>
+
 
 </RelativeLayout>
