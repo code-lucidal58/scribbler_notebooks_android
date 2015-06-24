@@ -10,13 +10,13 @@
         android:layout_height="50dp"
         android:orientation="horizontal"
         android:padding="5dp"
-        android:background="@color/lighterBlue"
+        android:background="@color/darkerBlue"
         android:id="@+id/ll">
 
         <ImageView
             android:layout_width="50dp"
             android:layout_height="match_parent"
-            android:src="@drawable/n1"
+            android:src="@drawable/n4"
             android:id="@+id/iv"/>
 
         <TextView
@@ -38,8 +38,9 @@
             android:layout_height="wrap_content"
             android:text="Clear"
             android:textSize="16sp"
-            android:background="@color/lighterBlue"
+            android:background="@color/darkerBlue"
             android:layout_alignParentEnd="true"
+            android:textColor="@color/notificationDrawerTitleColor"
             android:layout_alignParentRight="true"
             android:id="@+id/clearNotifs"/>
 

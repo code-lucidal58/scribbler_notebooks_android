@@ -354,6 +354,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
      */
     public void showToolbarOptions() {
         isOptionOpened = false;
+        recyclerView.setPadding(swipeRefreshLayout.getPaddingLeft(), initialTopPadding, swipeRefreshLayout.getPaddingRight(), swipeRefreshLayout.getPaddingBottom());
         if(parametersChanged){
             dealsList.clear();
             Log.e("DealFragment", "ShowToolbarOptions " + page + " " + category + " " + searchQuery + " " + sort);
@@ -367,6 +368,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
 //        toolbarContainer.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).start();
     }
 
+    int initialTopPadding=0;
     String tag;
     /**
      * Hide the category, search, scan and sort options and show the corresponding menu
@@ -377,6 +379,9 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
         }
         isOptionOpened = true;
         tag=tag1;
+        int height=replacedLayout.getHeight();
+        initialTopPadding=recyclerView.getPaddingTop();
+        recyclerView.setPadding(swipeRefreshLayout.getPaddingLeft(), 70+55+200, swipeRefreshLayout.getPaddingRight(), swipeRefreshLayout.getPaddingBottom());
 //        toolbarContainer.animate().translationY(-mToolbarHeight).setInterpolator(new AccelerateInterpolator(2)).start();
         toolbarContainer.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).start();
         replacedLayout.setVisibility(View.VISIBLE);

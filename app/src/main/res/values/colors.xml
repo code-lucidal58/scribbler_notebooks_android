@@ -12,7 +12,7 @@
 
     <color name="darkerBlue">#ff12495c</color>
     <color name="lighterBlue">#ff29b2dd</color>
-    <color name="notificationDrawerTitleColor">#000</color>
+    <color name="notificationDrawerTitleColor">#FFF</color>
 
     <color name="darkBlueRippleColor">#c617839e</color>
     <!--<color name="loginEditTextBackground">#000</color>-->
