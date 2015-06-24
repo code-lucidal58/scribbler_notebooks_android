@@ -24,20 +24,25 @@ import java.util.HashMap;
 public class ParseJson {
 
     public static DealListResponse getParsedData(String response) {
-        DealListResponse result=null;
+        DealListResponse result = null;
         try {
             JSONObject jsonChild = new JSONObject(response);
             String success = jsonChild.optString("success");
             if (success.equalsIgnoreCase("false")) {
                 return null;
             }
-
-            JSONObject data=jsonChild.optJSONObject(Constants.TAG_DATA);
-            JSONArray jsonArray=data.optJSONArray(Constants.TAG_DEALS);
-
-            int pageCount=Integer.parseInt(data.optString("pages"));
-            int dealCount=Integer.parseInt(data.optString("count"));
-            int currentPage=Integer.parseInt(data.optString("currentPage"));
+            JSONArray jsonArray;
+            JSONObject data;
+            int pageCount = 0, dealCount = 0, currentPage = 1;
+            try {
+                data = jsonChild.optJSONObject(Constants.TAG_DATA);
+                jsonArray = data.optJSONArray(Constants.TAG_DEALS);
+                pageCount = Integer.parseInt(data.optString("pages"));
+                dealCount = Integer.parseInt(data.optString("count"));
+                currentPage = Integer.parseInt(data.optString("currentPage"));
+            } catch (Exception e) {
+                jsonArray = jsonChild.optJSONArray(Constants.TAG_DATA);
+            }
 
             ArrayList<Deal> dealsList = null;
             int lengthJsonArr = jsonArray.length();
@@ -51,10 +56,10 @@ public class ParseJson {
                 /****Fetch node values****/
                 Deal deal = parseSingleDeal(jsonChildNode.toString());
                 dealsList.add(deal);
-
             }
 
-            result=new DealListResponse(dealsList,pageCount,dealCount, currentPage);
+
+            result = new DealListResponse(dealsList, pageCount, dealCount, currentPage);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -66,17 +71,17 @@ public class ParseJson {
         Deal deal = new Deal();
         try {
             JSONObject jsonChild = new JSONObject(jsonResponse);
-            String id, title, category, sdesp, ldesp, imgurl,code;
+            String id, title, category, sdesp, ldesp, imgurl, code;
 
-            id=jsonChild.optString("_id");
+            id = jsonChild.optString("_id");
             title = jsonChild.optString(Constants.TAG_DEAL_NAME);
-            JSONObject categoryDetail=jsonChild.optJSONObject(Constants.TAG_CATEGORY);
+            JSONObject categoryDetail = jsonChild.optJSONObject(Constants.TAG_CATEGORY);
             category = categoryDetail.optString("name");
             sdesp = jsonChild.optString(Constants.TAG_SHORT_DESCRIPTION);
             ldesp = jsonChild.optString(Constants.TAG_LONG_DESCRIPTION);
-            code= jsonChild.optString(Constants.TAG_CODE);
+            code = jsonChild.optString(Constants.TAG_CODE);
 //            imgurl = "http://www.ucarecdn.com/" + jsonChild.optString(Constants.TAG_IMAGE_URL) + "/image.png";
-            imgurl=jsonChild.optString(Constants.TAG_IMAGE_UUID);
+            imgurl = jsonChild.optString(Constants.TAG_IMAGE_UUID);
             deal.setId(id);
             deal.setTitle(title);
             deal.setCategory(category);
@@ -116,7 +121,7 @@ public class ParseJson {
 //            } else {
 //                imgurl = "http://www.ucarecdn.com/" + jsonChild.optString(Constants.TAG_IMAGE_UUID) + "/image.png";
 //            }
-            imgurl=jsonChild.optString(Constants.TAG_IMAGE_UUID);
+            imgurl = jsonChild.optString(Constants.TAG_IMAGE_UUID);
 
             deal.setId(id);
             deal.setTitle(title);
@@ -140,16 +145,16 @@ public class ParseJson {
             HashMap<String, String> parsedData = new HashMap<>();
             parsedData.put(Constants.POST_SUCCESS, object.optString(Constants.POST_SUCCESS));
 
-            JSONObject data=object.optJSONObject(Constants.POST_DATA);
+            JSONObject data = object.optJSONObject(Constants.POST_DATA);
 //            parsedData.put(Constants.POST_ERROR, object.optString(Constants.POST_ERROR));
 //            parsedData.put(Constants.POST_MIXPANELID, object.optString(Constants.POST_MIXPANELID));
-            parsedData.put(Constants.POST_MIXPANELID,data.getString(Constants.POST_MIXPANELID));
-            parsedData.put(Constants.POST_EMAIL,data.getString(Constants.POST_EMAIL));
-            parsedData.put(Constants.POST_MOBILE,data.getString(Constants.POST_MOBILE));
+            parsedData.put(Constants.POST_MIXPANELID, data.getString(Constants.POST_MIXPANELID));
+            parsedData.put(Constants.POST_EMAIL, data.getString(Constants.POST_EMAIL));
+            parsedData.put(Constants.POST_MOBILE, data.getString(Constants.POST_MOBILE));
             parsedData.put(Constants.POST_TOKEN, data.optString(Constants.POST_TOKEN));
             parsedData.put(Constants.POST_IS_NEW, data.optString(Constants.POST_IS_NEW));
-            JSONObject name=data.getJSONObject(Constants.POST_NAME);
-            parsedData.put(Constants.POST_NAME,name.getString(Constants.POST_NAME_FIRST)+" "+name.getString(Constants.POST_NAME_LAST));
+            JSONObject name = data.getJSONObject(Constants.POST_NAME);
+            parsedData.put(Constants.POST_NAME, name.getString(Constants.POST_NAME_FIRST) + " " + name.getString(Constants.POST_NAME_LAST));
             return parsedData;
         } catch (JSONException e) {
             e.printStackTrace();
@@ -159,23 +164,23 @@ public class ParseJson {
 
     public static HashMap<String, String> parseSignupResponse(String response) {
         try {
-            Log.e("sigup","parsesignupresponse");
+            Log.e("sigup", "parsesignupresponse");
             JSONObject object = new JSONObject(response);
             HashMap<String, String> parsedData = new HashMap<>();
 
             parsedData.put(Constants.POST_SUCCESS, object.optString(Constants.POST_SUCCESS));
-            JSONObject data=object.optJSONObject(Constants.POST_DATA);
+            JSONObject data = object.optJSONObject(Constants.POST_DATA);
 
-            parsedData.put(Constants.POST_MIXPANELID,data.getString(Constants.POST_MIXPANELID));
-            parsedData.put(Constants.POST_EMAIL,data.getString(Constants.POST_EMAIL));
-            parsedData.put(Constants.POST_MOBILE,data.getString(Constants.POST_MOBILE));
+            parsedData.put(Constants.POST_MIXPANELID, data.getString(Constants.POST_MIXPANELID));
+            parsedData.put(Constants.POST_EMAIL, data.getString(Constants.POST_EMAIL));
+            parsedData.put(Constants.POST_MOBILE, data.getString(Constants.POST_MOBILE));
             parsedData.put(Constants.POST_TOKEN, data.optString(Constants.POST_TOKEN));
             parsedData.put(Constants.POST_IS_NEW, data.optString(Constants.POST_IS_NEW));
-            JSONObject name=data.getJSONObject(Constants.POST_NAME);
+            JSONObject name = data.getJSONObject(Constants.POST_NAME);
             try {
-                parsedData.put(Constants.POST_NAME,name.getString(Constants.POST_NAME_FIRST)+" "+name.getString(Constants.POST_NAME_LAST));
-            }catch (JSONException e){
-                parsedData.put(Constants.POST_NAME,name.getString(Constants.POST_NAME_FIRST));
+                parsedData.put(Constants.POST_NAME, name.getString(Constants.POST_NAME_FIRST) + " " + name.getString(Constants.POST_NAME_LAST));
+            } catch (JSONException e) {
+                parsedData.put(Constants.POST_NAME, name.getString(Constants.POST_NAME_FIRST));
             }
 
             return parsedData;

@@ -100,10 +100,7 @@ public class ManualScribblerCode extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mContext = getActivity().getApplicationContext();
-        user=Constants.getUser(mContext);
 
-        this.mContext = sContext;
 
         //Initialize Google API code
         mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
@@ -124,6 +121,9 @@ public class ManualScribblerCode extends Fragment {
         //Inflate view
         final View v = inflater.inflate(R.layout.fragment_manual_scribbler_code, container, false);
 
+        mContext = getActivity().getApplicationContext();
+        this.mContext = sContext;
+        user=Constants.getUser(mContext);
         //View Setup
         root = (RelativeLayout) v.findViewById(R.id.manualRoot);
         back = (LinearLayout) v.findViewById(R.id.backToScan);
@@ -157,36 +157,36 @@ public class ManualScribblerCode extends Fragment {
         /**
          * Setting up notification icon animation
          */
-        CyclicTransitionDrawable cyclicTransitionDrawable = new CyclicTransitionDrawable(new Drawable[]{
-                getResources().getDrawable(R.drawable.n1),
-                getResources().getDrawable(R.drawable.n2),
-                getResources().getDrawable(R.drawable.n3),
-                getResources().getDrawable(R.drawable.n4),
-                getResources().getDrawable(R.drawable.n5),
-                getResources().getDrawable(R.drawable.n6),
-                getResources().getDrawable(R.drawable.n7),
-                getResources().getDrawable(R.drawable.n8),
-        });
+//        CyclicTransitionDrawable cyclicTransitionDrawable = new CyclicTransitionDrawable(new Drawable[]{
+//                getResources().getDrawable(R.drawable.n1),
+//                getResources().getDrawable(R.drawable.n2),
+//                getResources().getDrawable(R.drawable.n3),
+//                getResources().getDrawable(R.drawable.n4),
+//                getResources().getDrawable(R.drawable.n5),
+//                getResources().getDrawable(R.drawable.n6),
+//                getResources().getDrawable(R.drawable.n7),
+//                getResources().getDrawable(R.drawable.n8),
+//        });
 //        notificationIcon.setImageDrawable(cyclicTransitionDrawable);
-        cyclicTransitionDrawable.startTransition(NOTIFICATION_ICON_TRANSITION_DURATION, 0);
-        final Animation dance = AnimationUtils.loadAnimation(mContext, R.anim.dancing_notification_icon);
-        dance.setFillEnabled(true);
-        dance.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-//                notificationIcon.startAnimation(dance);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
+//        cyclicTransitionDrawable.startTransition(NOTIFICATION_ICON_TRANSITION_DURATION, 0);
+//        final Animation dance = AnimationUtils.loadAnimation(getActivity(), R.anim.dancing_notification_icon);
+//        dance.setFillEnabled(true);
+//        dance.setAnimationListener(new Animation.AnimationListener() {
+//            @Override
+//            public void onAnimationStart(Animation animation) {
+//
+//            }
+//
+//            @Override
+//            public void onAnimationEnd(Animation animation) {
+////                notificationIcon.startAnimation(dance);
+//            }
+//
+//            @Override
+//            public void onAnimationRepeat(Animation animation) {
+//
+//            }
+//        });
 //        notificationIcon.startAnimation(dance);
 
 

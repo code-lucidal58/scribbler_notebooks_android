@@ -20,11 +20,13 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -70,9 +72,11 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
 
     private static final String URL_STRING = "url";
     private static final String TITLE = "title";
-    int PAGE_LIMIT=5;
+    int PAGE_LIMIT = 5;
 
-    ArrayList<Categories> categoryList=null;
+    public int ACTION_SEARCH = 1;
+    public int ACTION_DEFAULT = 0;
+    ArrayList<Categories> categoryList = null;
 
     RecyclerView recyclerView;
     ArrayList<Deal> dealsList = new ArrayList<>();
@@ -85,25 +89,24 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
     int mToolbarHeight;
     DrawerLayout mDrawerLayout;
     RelativeLayout mDrawer;
-//    TextView noConnectionText;
+    //    TextView noConnectionText;
     SwipeRefreshLayout swipeRefreshLayout;
     Boolean reload;
     ShakeEventManager shakeEventManager = null;
 
-    Boolean finished=false;
-    Boolean isFirst=true;
+    Boolean finished = false;
+    Boolean isFirst = true;
 
-    String category = "", searchQuery = "", sort="";
+    String category = "", searchQuery = "", sort = "";
 
     private String url, title;
 
-    final int DEAL_DETAIL_REQUEST_CODE=50;
+    final int DEAL_DETAIL_REQUEST_CODE = 50;
 
-    Boolean parametersChanged=false;
+    Boolean parametersChanged = false;
 
-    Boolean isloading=true;
-    Boolean isEmpty=true;
-
+    Boolean isloading = true;
+    Boolean isEmpty = true;
 
 
     RecyclerView suggestions;
@@ -122,7 +125,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
     private boolean loading = true;
     int pastVisibleItems, visibleItemCount, totalItemCount;
 
-    int page=1, dealCount=0, pageCount=0;
+    int page = 1, dealCount = 0, pageCount = 0;
 
     /**
      * Setting statically the new fragment
@@ -199,10 +202,10 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
         selectedIcon = (ImageView) searchbar.findViewById(R.id.selectedIcon);
         selectionIconName = (TextView) searchbar.findViewById(R.id.selectedIcon_name);
         selectedIconQuery = (EditText) searchbar.findViewById(R.id.selectedQuery);
-        loadingProgressLayout=(LinearLayout)v.findViewById(R.id.loadingProgress);
-        loadingCharacter=(ImageView)loadingProgressLayout.findViewById(R.id.loadingCharacter);
-        loadingMessage=(TextView)loadingProgressLayout.findViewById(R.id.loadingMessage);
-        loadingBar=(ProgressBar)loadingProgressLayout.findViewById(R.id.loadingBar);
+        loadingProgressLayout = (LinearLayout) v.findViewById(R.id.loadingProgress);
+        loadingCharacter = (ImageView) loadingProgressLayout.findViewById(R.id.loadingCharacter);
+        loadingMessage = (TextView) loadingProgressLayout.findViewById(R.id.loadingMessage);
+        loadingBar = (ProgressBar) loadingProgressLayout.findViewById(R.id.loadingBar);
 
         category.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -268,7 +271,6 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
 
 
-
         /**Dynamically Changing the recycler view content*/
         recyclerView.addOnScrollListener(new HidingScrollListener(context) {
 
@@ -322,12 +324,12 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
 //                        Toast.makeText(context, "Shaken", Toast.LENGTH_SHORT).show();
                         reload = true;
                         runAsyncTask();
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
             });
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return v;
@@ -337,7 +339,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         try {
-            if(requestCode==DEAL_DETAIL_REQUEST_CODE) {
+            if (requestCode == DEAL_DETAIL_REQUEST_CODE) {
                 adapter = new RecyclerDealsAdapter(dealsList, context);
                 setAdapterHolder();
                 recyclerView.setAdapter(adapter);
@@ -354,13 +356,18 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
      */
     public void showToolbarOptions() {
         isOptionOpened = false;
-        recyclerView.setPadding(swipeRefreshLayout.getPaddingLeft(), initialTopPadding, swipeRefreshLayout.getPaddingRight(), swipeRefreshLayout.getPaddingBottom());
-        if(parametersChanged){
+//        recyclerView.setPadding(swipeRefreshLayout.getPaddingLeft(), initialTopPadding, swipeRefreshLayout.getPaddingRight(), swipeRefreshLayout.getPaddingBottom());
+        if (parametersChanged) {
             dealsList.clear();
             Log.e("DealFragment", "ShowToolbarOptions " + page + " " + category + " " + searchQuery + " " + sort);
-            page=1;
+            page = 1;
             new CategoriesRetriever().execute();
-            new LongOperation().execute(String.valueOf(page), category, searchQuery, sort);
+            if (!searchQuery.isEmpty()) {
+                new LongOperation(ACTION_SEARCH).execute(String.valueOf(page), "", searchQuery, "");
+            } else {
+                new LongOperation().execute(String.valueOf(page), category, searchQuery, sort);
+            }
+            parametersChanged = false;
         }
         replacedLayout.setVisibility(View.GONE);
         originalLayout.setVisibility(View.VISIBLE);
@@ -368,69 +375,67 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
 //        toolbarContainer.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).start();
     }
 
-    int initialTopPadding=0;
+    int initialTopPadding = 0;
     String tag;
+
     /**
      * Hide the category, search, scan and sort options and show the corresponding menu
      */
     public void hideToolbarOptions(String tag1) {
-        if(isloading || isEmpty){
+        if (isloading || isEmpty) {
             return;
         }
         isOptionOpened = true;
-        tag=tag1;
-        int height=replacedLayout.getHeight();
-        initialTopPadding=recyclerView.getPaddingTop();
-        recyclerView.setPadding(swipeRefreshLayout.getPaddingLeft(), 70+55+200, swipeRefreshLayout.getPaddingRight(), swipeRefreshLayout.getPaddingBottom());
-//        toolbarContainer.animate().translationY(-mToolbarHeight).setInterpolator(new AccelerateInterpolator(2)).start();
+        tag = tag1;
+        int height = replacedLayout.getHeight();
+
         toolbarContainer.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).start();
         replacedLayout.setVisibility(View.VISIBLE);
         //originalLayout.setVisibility(View.GONE);
-        suggestions.setVisibility(View.VISIBLE);
         selectedIconQuery.setText("");
         ArrayList<String> suggestionList = new ArrayList<>();
         replacedLayout.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!selectedIconQuery.getText().toString().isEmpty()){
+                if (!selectedIconQuery.getText().toString().isEmpty()) {
                     selectedIconQuery.setText("");
                 }
-                switch (tag){
+                switch (tag) {
                     case "category":
-                        category="";
+                        category = "";
                         break;
                     case "search":
-                        searchQuery="";
+                        searchQuery = "";
                         break;
                     case "sort":
-                        sort="";
+                        sort = "";
                         break;
                 }
-                Log.e("DealFragment","Search Cleared "+page+" "+category+" "+searchQuery+" "+sort);
+                Log.e("DealFragment", "Search Cleared " + page + " " + category + " " + searchQuery + " " + sort);
             }
         });
 
         replacedLayout.findViewById(R.id.searchIcon).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EditText view=(EditText)replacedLayout.findViewById(R.id.selectedQuery);
-                String text=view.getText().toString();
-                switch (tag){
+                EditText view = (EditText) replacedLayout.findViewById(R.id.selectedQuery);
+                String text = view.getText().toString();
+                switch (tag) {
                     case "category":
-                        category=text;
-                        Log.e("DealFragment","Category Changed "+category);
+                        category = text;
+                        Log.e("DealFragment", "Category Changed " + category);
                         break;
                     case "search":
-                        searchQuery=text;
-                        Log.e("DealFragment","SearchQuery Changed "+searchQuery);
+                        searchQuery = text;
+                        Log.e("DealFragment", "SearchQuery Changed " + searchQuery);
                         break;
                     case "sort":
-                        sort=text;
-                        Log.e("DealFragment","Sort Changed "+sort);
+                        sort = text;
+                        Log.e("DealFragment", "Sort Changed " + sort);
                         break;
                 }
-                Log.e("DealFragment","Search Clicked "+page+" "+category+" "+searchQuery+" "+sort);
-                parametersChanged=true;
+                Log.e("DealFragment", "Search Clicked " + page + " " + category + " " + searchQuery + " " + sort);
+                parametersChanged = true;
                 showToolbarOptions();
             }
         });
@@ -440,6 +445,11 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
                 selectedIcon.setImageDrawable(getResources().getDrawable(R.drawable.category));
                 selectionIconName.setText("Category");
                 selectedIconQuery.setHint("Enter Category...");
+
+//                initialTopPadding=recyclerView.getPaddingTop();
+//                recyclerView.setPadding(swipeRefreshLayout.getPaddingLeft(), 70 + 55 + 200, swipeRefreshLayout.getPaddingRight(), swipeRefreshLayout.getPaddingBottom());
+
+                suggestions.setVisibility(View.VISIBLE);
                 break;
             case "search":
                 selectedIcon.setImageDrawable(getResources().getDrawable(R.drawable.search));
@@ -452,19 +462,23 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
                 selectionIconName.setText("Sort");
                 selectedIconQuery.setHint("Sort by...");
                 suggestionList = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.sort_list)));
+
+//                initialTopPadding=recyclerView.getPaddingTop();
+//                recyclerView.setPadding(swipeRefreshLayout.getPaddingLeft(), 70+55+200, swipeRefreshLayout.getPaddingRight(), swipeRefreshLayout.getPaddingBottom());
+                suggestions.setVisibility(View.VISIBLE);
                 break;
             default:
                 break;
         }
-        if(tag.equalsIgnoreCase("category")){
-            CategoryListAdapter categoryListAdapter=new CategoryListAdapter(categoryList, tag);
+        if (tag.equalsIgnoreCase("category")) {
+            CategoryListAdapter categoryListAdapter = new CategoryListAdapter(categoryList, tag);
             suggestions.setAdapter(categoryListAdapter);
-        }else {
+        } else {
             searchListAdapter = new SearchListAdapter(suggestionList, tag);
             suggestions.setAdapter(searchListAdapter);
         }
 
-        querySearchListAdapter = new SearchListAdapter(suggestionList,tag);
+        querySearchListAdapter = new SearchListAdapter(suggestionList, tag);
         selectedIconQuery.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -473,17 +487,17 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 ArrayList<String> result = querySearchListAdapter.searchResult(s);
-                searchListAdapter = new SearchListAdapter(result,tag);
+                searchListAdapter = new SearchListAdapter(result, tag);
                 suggestions.setAdapter(searchListAdapter);
-                switch (tag){
+                switch (tag) {
                     case "category":
-                        category=s.toString();
+                        category = s.toString();
                         break;
                     case "search":
-                        searchQuery=s.toString();
+                        searchQuery = s.toString();
                         break;
                     case "sort":
-                        sort=s.toString();
+                        sort = s.toString();
                         break;
                 }
             }
@@ -495,6 +509,22 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
         });
 
 
+        selectedIconQuery.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    switch (tag) {
+                        case "search":
+                            searchQuery = v.getText().toString();
+                            parametersChanged = true;
+                            Log.e("DealFragment", "SearchQuery set to " + searchQuery);
+                            showToolbarOptions();
+                    }
+
+                }
+                return false;
+            }
+        });
 
         suggestions.addOnItemTouchListener(new RecyclerItemClickListener(context, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
@@ -504,22 +534,22 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
                     case "category":
                         ArrayList<Categories> categories = categoryList;
                         category = categories.get(position).getId();
-                        parametersChanged=true;
-                        Log.e("DealFragment","Category set to "+category);
+                        parametersChanged = true;
+                        Log.e("DealFragment", "Category set to " + category);
                         showToolbarOptions();
                         break;
                     case "search":
-                        list = Arrays.asList(getResources().getStringArray(R.array.search_list));
-                        searchQuery = list.get(position);
-                        parametersChanged=true;
-                        Log.e("DealFragment","SearchQuery set to "+searchQuery);
-                        showToolbarOptions();
+//                        list = Arrays.asList(getResources().getStringArray(R.array.search_list));
+//                        searchQuery = list.get(position);
+//                        parametersChanged=true;
+//                        Log.e("DealFragment","SearchQuery set to "+searchQuery);
+//                        showToolbarOptions();
                         break;
                     case "sort":
                         list = Arrays.asList(getResources().getStringArray(R.array.sort_list));
                         sort = list.get(position);
-                        parametersChanged=true;
-                        Log.e("DealFragment","Sort set to "+sort);
+                        parametersChanged = true;
+                        Log.e("DealFragment", "Sort set to " + sort);
                         showToolbarOptions();
                         break;
                     default:
@@ -551,7 +581,6 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
     }
 
 
-
     /**
      * To change to number of columns in the deal list. 1 when portrait and 2 when landscape
      *
@@ -569,13 +598,13 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
 
     @Override
     public boolean onBackKeyPressed() {
-        Log.e("Deal NavigationDrawer","Back key passed");
-        if(isOptionOpened){
-            Log.e("DealavigationDrawer","Back key passed"+true);
+        Log.e("Deal NavigationDrawer", "Back key passed");
+        if (isOptionOpened) {
+            Log.e("DealavigationDrawer", "Back key passed" + true);
             showToolbarOptions();
             return true;
         }
-        Log.e("Deal NavigationDrawer","Back key passed "+false);
+        Log.e("Deal NavigationDrawer", "Back key passed " + false);
         return false;
     }
 
@@ -586,6 +615,16 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
     public class LongOperation extends AsyncTask<String, Void, String> {
         Boolean isFeatured = false;
 
+        int action;
+
+        public LongOperation() {
+            this(0);
+        }
+
+        public LongOperation(int action) {
+            this.action = action;
+        }
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -593,11 +632,11 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
 //                progressDialog.show();
                 reload = false;
             }
-            isloading=true;
-            if(page==1) {
-                try{
+            isloading = true;
+            if (page == 1) {
+                try {
                     recyclerView.setAdapter(null);
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 loadingProgressLayout.setVisibility(View.VISIBLE);
@@ -616,28 +655,15 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
                 String page = queries[0];
                 String searchQuery = queries[2];
                 String category = queries[1];
-                String sort=queries[3];
+                String sort = queries[3];
 
                 User user = Constants.getUser(context);
-
-                HashMap<String, String> data = new HashMap<>();
-                data.put("page", page);
-                if(category!=null) {
-                    if (!category.isEmpty())
-                        data.put("category", category);
-                }
-                if(searchQuery!=null) {
-                    if (!searchQuery.isEmpty())
-                        data.put("searchQuery", searchQuery);
-                }
-                if(sort!=null) {
-                    if (!sort.isEmpty())
-                        data.put("sortBy", searchQuery);
-                }
-                data.put("token", user.getToken());
-
-                URL url = new URL(Constants.ServerUrls.dealList+"?token="+user.getToken()+"&page="+page+"&category="+category+"&searchQuery="+searchQuery+"&sortBy="+sort);
-                Log.e("DealFragment","Url: "+url.toString());
+                URL url;
+                if (action == ACTION_DEFAULT)
+                    url = new URL(Constants.ServerUrls.dealList + "?token=" + user.getToken() + "&page=" + page + "&category=" + category + "&searchQuery=" + searchQuery + "&sortBy=" + sort);
+                else
+                    url = new URL(Constants.ServerUrls.searchDeal + "?searchQuery=" + searchQuery + "&page=" + page);
+                Log.e("DealFragment", "Url: " + url.toString());
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
                 connection.setReadTimeout(15000);
@@ -656,8 +682,8 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
 
         @Override
         protected void onPostExecute(String s) {
-            isloading=false;
-            Log.e("DealFragment","Response "+s);
+            isloading = false;
+            Log.e("DealFragment", "Response " + s);
 //            progressDialog.dismiss();
             swipeRefreshLayout.setRefreshing(false);
 
@@ -669,57 +695,52 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
                     loadingMessage.setText(getResources().getString(R.string.dealListLoadingError));
                     return;
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
             loadingProgressLayout.setVisibility(View.GONE);
 
             JSONObject object = null;
-            ArrayList<Deal> dealsList1=null;
+            ArrayList<Deal> dealsList1 = null;
 
-            if(page==1){
-                Log.e("DealFragment","Running for first time. Clearing original list");
+            isEmpty = false;
+
+            DealListResponse dealListResponse = ParseJson.getParsedData(s);
+            if (dealListResponse == null) {
+                finished = true;
+                return;
+            }
+            dealsList1 = dealListResponse.getDealList();
+
+            page = dealListResponse.getCurrentPage();
+            if (page == 1) {
+                Log.e("DealFragment", "Running for first time. Clearing original list");
                 dealsList.clear();
             }
-            isEmpty=false;
-
-            try {
-                object = new JSONObject(s);
-                DealListResponse dealListResponse= ParseJson.getParsedData(s);
-                if(dealListResponse==null){
-                    finished=true;
-                    return;
-                }
-                dealsList1 =dealListResponse.getDealList();
-
-                if(dealsList1==null){
-                    finished=true;
-                    Log.e("DealFragment","Finished = true");
-                }
-                if(!finished) {
-                    page = dealListResponse.getCurrentPage()+1;
-                    Log.e("DealFragment","Finished =false, Page="+page);
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
+            if (dealListResponse.getCurrentPage() == dealListResponse.getPageCount()) {
+                finished = true;
+            }
+            if (!finished) {
+                page += 1;
+                Log.e("DealFragment", "Finished =false, Page=" + page);
             }
 
             try {
                 dealsList.addAll(dealsList1);
-                Log.e("DealFragment","Deal list added to original" );
-            }catch (Exception e){
-                Log.e("DealFragment","Error adding deals to original list");
+                Log.e("DealFragment", "Deal list added to original");
+            } catch (Exception e) {
+                Log.e("DealFragment", "Error adding deals to original list");
                 e.printStackTrace();
             }
 
-            if(page==1) {
-                Log.e("Running","First Time");
+            if (page == 1) {
+                Log.e("Running", "First Time");
                 adapter = new RecyclerDealsAdapter(dealsList, context);
-            }else {
-                Log.e("Running","Not First Time");
+            } else {
+                Log.e("Running", "Not First Time");
                 adapter = new RecyclerDealsAdapter(dealsList, context);
-//                recyclerView.scrollToPosition(Integer.parseInt(page)*PAGE_LIMIT);
+                recyclerView.scrollToPosition((dealListResponse.getCurrentPage()-1)*PAGE_LIMIT);
                 adapter.notifyDataSetChanged();
             }
             setAdapterHolder();
@@ -735,7 +756,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
             if (shakeEventManager != null) {
                 shakeEventManager.resume();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         reload = true;
@@ -748,7 +769,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
 
         try {
             shakeEventManager.pause();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -767,7 +788,8 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
             new LongOperation().execute(String.valueOf(page), category, searchQuery, sort);
         }
     }
-    void setAdapterHolder(){
+
+    void setAdapterHolder() {
         adapter.setItemClickListener(new RecyclerDealsAdapter.onItemClickListener() {
             @Override
             public void onItemClick(int position, ArrayList<Deal> deals) {
@@ -776,7 +798,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
         });
 
 
-        if(adapter.getItemCount()<5){
+        if (adapter.getItemCount() < 5) {
             return;
         }
 
@@ -796,17 +818,17 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        ((NavigationDrawer)getActivity()).setKeyListener(this);
+        ((NavigationDrawer) getActivity()).setKeyListener(this);
     }
 
-    public void showDealDetail(int position, ArrayList<Deal> deals){
-        Intent i=new Intent(context, DealDetail.class);
+    public void showDealDetail(int position, ArrayList<Deal> deals) {
+        Intent i = new Intent(context, DealDetail.class);
         i.putParcelableArrayListExtra(Constants.PARCELABLE_DEAL_LIST_KEY, deals);
         i.putExtra(Constants.CURRENT_DEAL_INDEX, position);
-        startActivityForResult(i,DEAL_DETAIL_REQUEST_CODE);
+        startActivityForResult(i, DEAL_DETAIL_REQUEST_CODE);
     }
 
-    class CategoriesRetriever extends AsyncTask<Void, Void, String>{
+    class CategoriesRetriever extends AsyncTask<Void, Void, String> {
         @Override
         protected String doInBackground(Void... params) {
             try {
@@ -816,9 +838,9 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
                 connection.setConnectTimeout(5000);
                 connection.setDoInput(true);
 
-                BufferedReader reader=new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 return reader.readLine();
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             return null;
@@ -826,30 +848,30 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
 
         @Override
         protected void onPostExecute(String s) {
-            if(s==null){
+            if (s == null) {
                 Log.e("Category", "Retrieving again");
                 doInBackground();
                 return;
             }
             try {
-                JSONObject jsonObject=new JSONObject(s);
-                if(Boolean.parseBoolean(jsonObject.optString("success"))){
-                    JSONObject data=jsonObject.optJSONObject("data");
-                    categoryList=new ArrayList<>();
+                JSONObject jsonObject = new JSONObject(s);
+                if (Boolean.parseBoolean(jsonObject.optString("success"))) {
+                    JSONObject data = jsonObject.optJSONObject("data");
+                    categoryList = new ArrayList<>();
 
-                    JSONArray list=data.optJSONArray("dealcategories");
-                    for(int i=0;i<list.length();i++){
-                        JSONObject categoryObject=list.optJSONObject(i);
-                        Log.e("CategoryList",categoryObject.optString("name"));
-                        Categories categories=new Categories(categoryObject.optString("_id"),categoryObject.optString("name"));
+                    JSONArray list = data.optJSONArray("dealcategories");
+                    for (int i = 0; i < list.length(); i++) {
+                        JSONObject categoryObject = list.optJSONObject(i);
+                        Log.e("CategoryList", categoryObject.optString("name"));
+                        Categories categories = new Categories(categoryObject.optString("_id"), categoryObject.optString("name"));
                         categoryList.add(categories);
                     }
 
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
-            } catch (NullPointerException n){
-                Log.e("Category","Null reposne recieved and tried to parse");
+            } catch (NullPointerException n) {
+                Log.e("Category", "Null reposne recieved and tried to parse");
             }
             super.onPostExecute(s);
         }

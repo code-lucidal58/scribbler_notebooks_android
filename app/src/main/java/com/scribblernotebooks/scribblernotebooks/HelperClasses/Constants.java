@@ -55,6 +55,7 @@ public class Constants {
         public static String dealDetail = websiteUrl + "deal/";
         public static String dealList = websiteUrl + "deal";
 
+        public static String searchDeal=websiteUrl+"search";
         public static String likeDeal = websiteUrl + "like-deal/";
         public static String shareDeal = websiteUrl + "shareDeal";
 

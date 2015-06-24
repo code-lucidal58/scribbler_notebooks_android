@@ -21,10 +21,14 @@ public class UserHandler extends SQLiteOpenHelper {
 
     public static final String TABLE_NAME="userLikedDeals";
     public static final String SHARED_TABLE_NAME="userLikedDeals";
+    public static final String SUGGESTION_TABLE="suggestionTable";
+    public static final String SUGGESTIONS="suggestions";
     final String CREATE_TABLE="CREATE TABLE  IF NOT EXISTS "+TABLE_NAME+" (" +
             DEAL_ID+" VARCHAR(255))";
     final String CREATE_SHARED_TABLE="CREATE TABLE  IF NOT EXISTS "+SHARED_TABLE_NAME+" (" +
             DEAL_ID+" VARCHAR(255))";
+    final String CREATE_SUGGESTION_TABLE="CREATE TABLE  IF NOT EXISTS "+SUGGESTION_TABLE+" (" +
+            SUGGESTIONS+" VARCHAR(255))";
 
     public UserHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
