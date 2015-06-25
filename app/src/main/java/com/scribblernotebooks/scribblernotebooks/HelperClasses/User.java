@@ -9,14 +9,6 @@ public class User {
     String name="", email="", mobile="", coverImage="", profilePic="", token="", mixpanelId="", location="", college="";
     List<String> likedDeals;
 
-    public String getCollege() {
-        return college;
-    }
-
-    public void setCollege(String college) {
-        this.college = college;
-    }
-
     public User(String name, String email, String mobile, String token, String mixpanelId) {
         this.name = name;
         this.email = email;
@@ -53,6 +45,14 @@ public class User {
         this.profilePic = profilePic;
         this.token = token;
         this.mixpanelId = mixpanelId;
+    }
+
+    public String getCollege() {
+        return college;
+    }
+
+    public void setCollege(String college) {
+        this.college = college;
     }
 
     public String getName() {
