@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -16,6 +17,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.text.Layout;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -33,6 +35,7 @@ import android.widget.TextView;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
 import com.scribblernotebooks.scribblernotebooks.Activities.ScannerActivity;
+import com.scribblernotebooks.scribblernotebooks.CustomViews.CollegePopUp;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.CyclicTransitionDrawable;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.DealPopup;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
@@ -42,10 +45,16 @@ import com.scribblernotebooks.scribblernotebooks.HelperClasses.ShakeEventManager
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.User;
 import com.scribblernotebooks.scribblernotebooks.R;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class ManualScribblerCode extends Fragment {
@@ -66,12 +75,8 @@ public class ManualScribblerCode extends Fragment {
     int screenHeight;
 
     Deal currentDeal = null;
-
     RelativeLayout root;
-
     ShakeEventManager shakeEventManager;
-
-
     ImageView sun, cloud1, cloud2;
 
     int NOTIFICATION_ICON_TRANSITION_DURATION = 1000;
@@ -125,6 +130,7 @@ public class ManualScribblerCode extends Fragment {
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         //Inflate view
         final View v = inflater.inflate(R.layout.fragment_manual_scribbler_code, container, false);
+        CollegePopUp collegePopUp=new CollegePopUp(mContext);
 
         //View Setup
         if (mContext.getSharedPreferences("Illustrations", Context.MODE_PRIVATE).getBoolean("showInstruct", false)) {
@@ -138,6 +144,10 @@ public class ManualScribblerCode extends Fragment {
                     instruct.setVisibility(View.GONE);
                 }
             });
+        }
+        SharedPreferences sharedPreferences=mContext.getSharedPreferences("collegePopup", Context.MODE_PRIVATE);
+        if(sharedPreferences.getBoolean("show",true)){
+            collegePopUp.show();
         }
         root = (RelativeLayout) v.findViewById(R.id.manualRoot);
         back = (LinearLayout) v.findViewById(R.id.backToScan);
@@ -383,67 +393,6 @@ public class ManualScribblerCode extends Fragment {
 
     }
 
-    /**
-     * Popup for College name
-     */
-    public void collegePopup() {
-        response = "";
-
-        new AsyncTask<String, Void, String>() {
-
-            @Override
-            protected String doInBackground(String... params) {
-                try {
-                    //TODO:Modify url to send token and deal id
-//                    URL url=Constants.getDealDetailsURL(params[0]);
-                    user = Constants.getUser(mContext);
-                    URL url = Constants.getDealDetailsURL(params[0], user.getToken());
-                    Log.e("Url ", url.toString());
-                    if (url == null)
-                        return null;
-                    Log.e("Deal Url", url.toString());
-
-                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                    connection.setRequestMethod("GET");
-                    connection.setReadTimeout(15000);
-                    connection.setConnectTimeout(15000);
-                    connection.setDoInput(true);
-
-                    BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                    return in.readLine();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return "";
-            }
-
-            @Override
-            protected void onPostExecute(String s) {
-                super.onPostExecute(s);
-                if (progressDialog != null) {
-                    if (progressDialog.isShowing())
-                        progressDialog.dismiss();
-                }
-                if (s.isEmpty()) {
-                    return;
-                }
-                DealPopup dealPopup = new DealPopup(mContext);
-                Log.e("Deal", "Response " + s);
-
-                Deal deal = ParseJson.parseSingleDealDetail(s);
-
-                Log.e("Deals 2", deal.getId() + deal.getTitle() + deal.getCategory() + deal.getLongDescription() + deal.getShortDescription());
-                dealPopup.setTitle(deal.getTitle());
-                dealPopup.setCategory(deal.getCategory());
-                dealPopup.setDescription(deal.getLongDescription());
-                dealPopup.setImage(deal.getImageUrl());
-                dealPopup.setCurrentDeal(deal);
-                dealPopup.show();
-
-                currentDeal = deal;
-            }
-        }.execute(dealCode);
-    }
 
     /**
      * Auto-generated methods

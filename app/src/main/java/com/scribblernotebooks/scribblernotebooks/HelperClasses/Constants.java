@@ -5,9 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ScaleDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -48,8 +46,8 @@ public class Constants {
 
 
     public static class ServerUrls {
-        public static String host="http://192.168.1.117:3000/";
-        public static String websiteUrl = host+"api/";
+        public static String host = "http://192.168.1.117:3000/";
+        public static String websiteUrl = host + "api/";
         //User Module
         public static String signUp = websiteUrl + "signup";
         public static String login = websiteUrl + "signin";
@@ -62,15 +60,15 @@ public class Constants {
         public static String dealDetail = websiteUrl + "deal/";
         public static String dealList = websiteUrl + "deal";
 
-        public static String searchDeal=websiteUrl+"search";
+        public static String searchDeal = websiteUrl + "search";
         public static String likeDeal = websiteUrl + "like-deal/";
         public static String shareDeal = websiteUrl + "shareDeal";
 
         public static String dealCategories = websiteUrl + "deal-category";
+        public static String collegeList = websiteUrl + "colleges";
 
-        public static String privacyPolicy=host+"privacyPolicy";
-        public static String termsAndConditions=host+"terms";
-
+        public static String privacyPolicy = host + "privacyPolicy";
+        public static String termsAndConditions = host + "terms";
 
 
     }
@@ -118,7 +116,7 @@ public class Constants {
     public static final String PREF_DATA_PASS = "password";
     public static final String PREF_DATA_USER_TOKEN = "userToken";
     public static final String PREF_DATA_MIXPANEL_USER_ID = "mixpanelUserId";
-    public static final String PREF_DATA_COLLEGE="college";
+    public static final String PREF_DATA_COLLEGE = "college";
 
     public static final String INTENT_ID_NAME = "idName";
     public static final String INTENT_ID_VALUE = "idValue";
@@ -127,6 +125,8 @@ public class Constants {
 
     public static final String POST_SUCCESS = "success";
     public static final String POST_DATA = "data";
+    public static final String POST_COUNT = "count";
+    public static final String POST_COLLEGES = "colleges";
     public static final String POST_IS_NEW = "isNew";
     public static final String POST_ERROR = "error";
     public static final String POST_TOKEN = "token";
@@ -164,12 +164,13 @@ public class Constants {
 
     /**
      * Change color of editTexts
+     *
      * @param context
      * @param editText
      * @param drawableImage
      */
-    public static void drawableScaleColorChange(final Context context,final EditText editText, final int drawableImage){
-        scaleEditTextImage(context,editText,drawableImage);
+    public static void drawableScaleColorChange(final Context context, final EditText editText, final int drawableImage) {
+        scaleEditTextImage(context, editText, drawableImage);
         editText.getCompoundDrawables()[2].clearColorFilter();
         editText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -178,15 +179,15 @@ public class Constants {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                scaleEditTextImage(context,editText,drawableImage);
-                if(s.toString().isEmpty()||s.toString().equals("")){
+                scaleEditTextImage(context, editText, drawableImage);
+                if (s.toString().isEmpty() || s.toString().equals("")) {
                     editText.getCompoundDrawables()[2].clearColorFilter();
-                }
-                else{
+                } else {
                     editText.getCompoundDrawables()[2].setColorFilter(context.getResources()
                             .getColor(R.color.darkerBlue), PorterDuff.Mode.MULTIPLY);
                 }
             }
+
             @Override
             public void afterTextChanged(Editable s) {
             }
@@ -195,6 +196,7 @@ public class Constants {
 
     /**
      * Scale the drawables in editText
+     *
      * @param context
      * @param editText
      * @param drawableImage
@@ -227,7 +229,7 @@ public class Constants {
         });
     }
 
-public static boolean saveUserDetails(Context context, User user) {
+    public static boolean saveUserDetails(Context context, User user) {
         if (user == null)
             return false;
         SharedPreferences userPrefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
@@ -271,18 +273,18 @@ public static boolean saveUserDetails(Context context, User user) {
         try {
             if (!user.getMixpanelId().isEmpty())
                 editor.putString(PREF_DATA_MIXPANEL_USER_ID, user.getMixpanelId());
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         try {
             if (!user.getCollege().isEmpty())
                 editor.putString(PREF_DATA_COLLEGE, user.getCollege());
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-            editor.apply();
-            return true;
-        }
+        editor.apply();
+        return true;
+    }
 
     public static User getUser(Context context) {
         SharedPreferences userPref;
@@ -295,9 +297,9 @@ public static boolean saveUserDetails(Context context, User user) {
         String mixPanelId = userPref.getString(Constants.PREF_DATA_MIXPANEL_USER_ID, "");
         String token = userPref.getString(Constants.PREF_DATA_USER_TOKEN, "");
         String location = userPref.getString(Constants.PREF_DATA_LOCATION, "");
-        String college=userPref.getString(Constants.PREF_DATA_COLLEGE,"");
+        String college = userPref.getString(Constants.PREF_DATA_COLLEGE, "");
 
-        User user=new User(name, email, mobile, coverPic, profilePic, token, mixPanelId);
+        User user = new User(name, email, mobile, coverPic, profilePic, token, mixPanelId);
         user.setLocation(location);
         user.setCollege(college);
         return user;
@@ -487,7 +489,6 @@ public static boolean saveUserDetails(Context context, User user) {
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
-
 
 
 }

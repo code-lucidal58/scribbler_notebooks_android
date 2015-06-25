@@ -861,6 +861,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
             try {
                 URL url = new URL(Constants.ServerUrls.dealCategories);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
                 connection.setReadTimeout(10000);
                 connection.setConnectTimeout(5000);
                 connection.setDoInput(true);
