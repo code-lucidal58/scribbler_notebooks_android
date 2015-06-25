@@ -156,13 +156,18 @@ public class Constants {
     public static final String[] sharedPrefTags = {Constants.PREF_DATA_NAME, Constants.PREF_DATA_EMAIL,
             Constants.PREF_DATA_MOBILE, Constants.PREF_DATA_LOCATION};
 
+    /**
+     * Change color of editTexts
+     * @param context
+     * @param editText
+     * @param drawableImage
+     */
     public static void drawableScaleColorChange(final Context context,final EditText editText, final int drawableImage){
         scaleEditTextImage(context,editText,drawableImage);
         editText.getCompoundDrawables()[2].clearColorFilter();
         editText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
@@ -172,16 +177,22 @@ public class Constants {
                     editText.getCompoundDrawables()[2].clearColorFilter();
                 }
                 else{
-                    editText.getCompoundDrawables()[2].setColorFilter(R.color.darkerBlue, PorterDuff.Mode.MULTIPLY);
+                    editText.getCompoundDrawables()[2].setColorFilter(context.getResources()
+                            .getColor(R.color.darkerBlue), PorterDuff.Mode.MULTIPLY);
                 }
             }
-
             @Override
             public void afterTextChanged(Editable s) {
-
             }
         });
     }
+
+    /**
+     * Scale the drawables in editText
+     * @param context
+     * @param editText
+     * @param drawableImage
+     */
     public static void scaleEditTextImage(Context context, final EditText editText, int drawableImage) {
         final double IMAGE_SCALE_RATIO = 0.6;
         final ScaleDrawable icon = new ScaleDrawable(context.getResources().getDrawable(drawableImage), Gravity.CENTER, 1F, 1F) {

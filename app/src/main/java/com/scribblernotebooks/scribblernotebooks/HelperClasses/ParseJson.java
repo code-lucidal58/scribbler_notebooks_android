@@ -164,10 +164,11 @@ public class ParseJson {
     }
 
     public static HashMap<String, String> parseSignupResponse(String response) {
+        HashMap<String, String> parsedData=null;
         try {
             Log.e("sigup", "parsesignupresponse");
             JSONObject object = new JSONObject(response);
-            HashMap<String, String> parsedData = new HashMap<>();
+            parsedData = new HashMap<>();
 
             parsedData.put(Constants.POST_SUCCESS, object.optString(Constants.POST_SUCCESS));
             JSONObject data = object.optJSONObject(Constants.POST_DATA);
@@ -188,6 +189,6 @@ public class ParseJson {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return null;
+        return parsedData;
     }
 }
