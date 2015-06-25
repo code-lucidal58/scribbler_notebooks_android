@@ -20,7 +20,7 @@
 
     <string name="dealListLoading">Noting down deals for you...\nPlease Wait...</string>
     <string name="dealListLoadingError">ZZzzz...\nSorry! I just slept while noting down. \n\nShake me or Pull me down to try again</string>
-
+    <string name="noDealsClaimed">We are very sorry that you could not get a deal you wanted. \n\nWe are constantly updating the deals. \n\nSo keep Shaking...</string>
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>
     <string name="title_section3">Section 3</string>

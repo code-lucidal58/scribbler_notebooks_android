@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class DealListResponse {
     ArrayList<Deal> dealList=null;
     int dealCount=0;
-    int pageCount=0;
+    int pageCount=1;
     int currentPage=1;
 
     public DealListResponse(ArrayList<Deal> dealList, int pageCount, int dealCount, int currentPage) {

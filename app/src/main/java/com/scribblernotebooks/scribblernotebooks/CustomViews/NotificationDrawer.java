@@ -2,6 +2,7 @@ package com.scribblernotebooks.scribblernotebooks.CustomViews;
 
 import android.content.Context;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
@@ -49,6 +50,9 @@ public class NotificationDrawer {
         DrawerLayout mDrawerLayout=(DrawerLayout)mainView.findViewById(R.id.drawer_layout);
         final RelativeLayout mDrawer=(RelativeLayout)mainView.findViewById(R.id.notification_drawer);
 
+        Log.e("NotificationDrawer","Initial List Retrieving");
+        notificationList=retrieveNotifications();
+
         mDrawerLayout.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
@@ -57,6 +61,7 @@ public class NotificationDrawer {
                     refreshed=false;
                 }
                 if ((slideOffset != 0 )  && drawerView==mDrawer && !refreshed) {
+                    Log.e("NotificationDrawer","Updating Notifications");
                     notificationList = retrieveNotifications();
                     drawerListAdapter = new NotificationDrawerListAdapter(mContext, notificationList);
                     notificationsListView.setAdapter(drawerListAdapter);
@@ -71,6 +76,7 @@ public class NotificationDrawer {
                 handler.open();
                 handler.deleteTable(NotificationDataHandler.TABLE_NAME_DEFAULT);
                 handler.close();
+                Log.e("NotificationDrawer","Cliked Clear");
                 notificationList=retrieveNotifications();
                 drawerListAdapter = new NotificationDrawerListAdapter(mContext, notificationList);
                 notificationsListView.setAdapter(drawerListAdapter);
@@ -85,6 +91,7 @@ public class NotificationDrawer {
     }
 
     protected ArrayList<Notifications> retrieveNotifications(){
+        Log.e("NotificationDrawer","Retrieving Notifications");
         ArrayList<Notifications> notificationsArrayList=new ArrayList<>();
         NotificationDataHandler notifHandler=new NotificationDataHandler(mContext);
         notifHandler.open();
@@ -92,6 +99,7 @@ public class NotificationDrawer {
         notifHandler.close();
         refreshed=true;
         if(notificationsArrayList.isEmpty()){
+            Log.e("NotificationDrawer","No notifications.");
             notificationsArrayList.add(new Notifications(0, "You do not have any notifications", ""));
         }
         return notificationsArrayList;

@@ -124,6 +124,7 @@ public class Deal implements Parcelable {
 
                 try {
                     URL url = new URL(Constants.ServerUrls.likeDeal+id+"/"+email+"/"+liked+"?token="+token);
+                    Log.e("Deal","Liking deal url:"+url.toString());
                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                     connection.setConnectTimeout(15000);
                     connection.setReadTimeout(15000);

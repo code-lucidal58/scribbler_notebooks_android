@@ -708,8 +708,9 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
 //            progressDialog.dismiss();
             swipeRefreshLayout.setRefreshing(false);
 
+            DealListResponse dealListResponse = ParseJson.getParsedData(s);
             try {
-                if (s.isEmpty()) {
+                if (s.isEmpty() || dealListResponse==null) {
                     Log.e("DealsFragment", "Is Empty1: " + isEmpty);
                     if(dealsList.isEmpty())
                     {
@@ -741,7 +742,6 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
 
             isEmpty = false;
 
-            DealListResponse dealListResponse = ParseJson.getParsedData(s);
             Log.e("DealFragment", "Response: " + dealListResponse.getPageCount() + dealListResponse.getCurrentPage() + dealListResponse.getDealCount());
             dealsList1 = dealListResponse.getDealList();
 

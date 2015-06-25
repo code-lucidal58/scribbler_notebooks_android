@@ -185,24 +185,38 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="@dimen/login_editText_width"
+                android:layout_height="wrap_content"
+                android:id="@+id/texts"
+                android:layout_alignLeft="@+id/ll2"
+                android:layout_alignStart="@+id/ll2"
+                android:layout_below="@+id/ll2"
+                android:layout_marginTop="5dp"
+                android:orientation="vertical">
             <TextView
                 android:id="@+id/forgotPassword"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignLeft="@+id/ll2"
-                android:layout_below="@+id/ll2"
-                android:layout_marginTop="5dp"
                 android:text="Forgot Password? Click Here"
                 android:textColor="#FFF"
                 android:textSize="12sp" />
-
+            <TextView
+                android:id="@+id/termsAndConditions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:text="By Clicking Sign Up, you agree to accept our \nTerms and Conditions"
+                android:textColor="#FFF"
+                android:textSize="11sp" />
+        </LinearLayout>
 
             <TextView
                 android:id="@+id/or"
                 style="@style/font"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/forgotPassword"
+                android:layout_below="@id/texts"
                 android:layout_marginTop="10dp"
                 android:text="------   OR   ------"
                 android:textColor="#FFF"
