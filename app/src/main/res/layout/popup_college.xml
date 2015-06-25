@@ -16,15 +16,29 @@
         android:textColor="#FFF"
         android:textSize="20sp" />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:padding="3dp"
+        android:textSize="16sp"
+        android:text="To give you deals specially for your college, enter your college below. You can skip this and enter afterwards in the profile settings."
+        android:textColor="#000"/>
+
     <AutoCompleteTextView
         android:id="@+id/college"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:hint="Your College"
+        android:paddingLeft="3dp"
+        android:paddingRight="3dp"
+        android:textSize="15sp"
         android:layout_marginTop="10dp" />
 
     <TableRow
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="3dp"
         android:weightSum="2">
 
         <Button
@@ -32,6 +46,10 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:layout_marginRight="3dp"
+            android:layout_marginEnd="3dp"
+            android:textColor="#FFF"
+            android:background="@drawable/scanner_button"
             android:text="Skip" />
 
         <Button
@@ -39,6 +57,10 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Okay"
+            android:textColor="#FFF"
+            android:layout_marginLeft="3dp"
+            android:layout_marginStart="3dp"
+            android:background="@drawable/scanner_button"
             android:id="@+id/okay"/>
 
     </TableRow>

@@ -15,13 +15,13 @@ import com.scribblernotebooks.scribblernotebooks.R;
  * Created by Aanisha on 25-Jun-15.
  * PopUp to get College from User
  */
-public class GetCollegePopUp extends Dialog implements View.OnClickListener{
+public class CollegePopUp extends Dialog implements View.OnClickListener{
     ArrayAdapter<String> arrayAdapter;
     AutoCompleteTextView collegeName;
     Button skip,okay;
     String[] college;
 
-    public GetCollegePopUp(Context context) {
+    public CollegePopUp(Context context) {
         super(context);
     }
 
