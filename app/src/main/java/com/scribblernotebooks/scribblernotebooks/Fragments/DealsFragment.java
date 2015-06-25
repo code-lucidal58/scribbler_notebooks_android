@@ -727,6 +727,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
             }
             isEmpty = false;
 
+
             Log.e("DealsFragment", "Is Empty3: " + isEmpty);
             if (action == ACTION_SEARCH) {
                 Log.e("Deal Fragment", "Adding Suggestion");
@@ -740,9 +741,6 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
             JSONObject object = null;
             ArrayList<Deal> dealsList1 = null;
 
-            isEmpty = false;
-
-            Log.e("DealFragment", "Response: " + dealListResponse.getPageCount() + dealListResponse.getCurrentPage() + dealListResponse.getDealCount());
             dealsList1 = dealListResponse.getDealList();
 
             page = dealListResponse.getCurrentPage();

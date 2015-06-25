@@ -197,6 +197,31 @@
 
                 </TableRow>
 
+                <TableRow android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="@dimen/tableRowHeight"
+                        android:layout_height="@dimen/tableRowHeight"
+                        android:layout_weight="1"
+                        android:padding="7dp"
+                        android:src="@drawable/icon_college" />
+
+                    <EditText
+                        android:id="@+id/et_college"
+                        android:layout_height="@dimen/tableRowHeight"
+                        android:layout_weight="10"
+                        android:background="@color/profileBackgroundColor"
+                        android:gravity="center_vertical"
+                        android:hint="College"
+                        android:focusable="false"
+                        android:clickable="false"
+                        android:focusableInTouchMode="false"
+                        android:textColor="@color/profileBackgroundEditTextTextColor"
+                        android:textColorHint="@color/profileBackgroundEditTextHintColor"
+                        android:textSize="@dimen/profileEditTextFontSize" />
+
+                </TableRow>
+
 
             </TableLayout>
 

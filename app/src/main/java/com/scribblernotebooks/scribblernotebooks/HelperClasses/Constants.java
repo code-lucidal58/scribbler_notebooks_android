@@ -48,7 +48,8 @@ public class Constants {
 
 
     public static class ServerUrls {
-        public static String websiteUrl = "http://192.168.1.117:3000/api/";
+        public static String host="http://192.168.1.117:3000/";
+        public static String websiteUrl = host+"api/";
         //User Module
         public static String signUp = websiteUrl + "signup";
         public static String login = websiteUrl + "signin";
@@ -66,6 +67,10 @@ public class Constants {
         public static String shareDeal = websiteUrl + "shareDeal";
 
         public static String dealCategories = websiteUrl + "deal-category";
+
+        public static String privacyPolicy=host+"privacyPolicy";
+        public static String termsAndConditions=host+"terms";
+
 
 
     }
@@ -113,6 +118,7 @@ public class Constants {
     public static final String PREF_DATA_PASS = "password";
     public static final String PREF_DATA_USER_TOKEN = "userToken";
     public static final String PREF_DATA_MIXPANEL_USER_ID = "mixpanelUserId";
+    public static final String PREF_DATA_COLLEGE="college";
 
     public static final String INTENT_ID_NAME = "idName";
     public static final String INTENT_ID_VALUE = "idValue";
@@ -268,6 +274,12 @@ public static boolean saveUserDetails(Context context, User user) {
         }catch (Exception e){
             e.printStackTrace();
         }
+        try {
+            if (!user.getCollege().isEmpty())
+                editor.putString(PREF_DATA_COLLEGE, user.getCollege());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
             editor.apply();
             return true;
         }
@@ -283,8 +295,12 @@ public static boolean saveUserDetails(Context context, User user) {
         String mixPanelId = userPref.getString(Constants.PREF_DATA_MIXPANEL_USER_ID, "");
         String token = userPref.getString(Constants.PREF_DATA_USER_TOKEN, "");
         String location = userPref.getString(Constants.PREF_DATA_LOCATION, "");
+        String college=userPref.getString(Constants.PREF_DATA_COLLEGE,"");
 
-        return new User(name, email, mobile, coverPic, profilePic, token, mixPanelId);
+        User user=new User(name, email, mobile, coverPic, profilePic, token, mixPanelId);
+        user.setLocation(location);
+        user.setCollege(college);
+        return user;
     }
 
 

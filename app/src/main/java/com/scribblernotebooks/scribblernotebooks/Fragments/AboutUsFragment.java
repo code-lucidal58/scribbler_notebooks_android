@@ -23,6 +23,8 @@ import com.scribblernotebooks.scribblernotebooks.Activities.AboutScribblerNotebo
 import com.scribblernotebooks.scribblernotebooks.Activities.FeedbackActivity;
 import com.scribblernotebooks.scribblernotebooks.Adapters.AboutUsAdapter;
 import com.scribblernotebooks.scribblernotebooks.CustomListeners.RecyclerItemClickListener;
+import com.scribblernotebooks.scribblernotebooks.CustomViews.TermsPopup;
+import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.R;
 
 import java.util.Arrays;
@@ -97,9 +99,17 @@ public class AboutUsFragment extends Fragment {
                         break;
                     case 1:
                         //TODO: terms and conditions
+                        TermsPopup popup=new TermsPopup(getActivity());
+                        popup.setUrl(Constants.ServerUrls.termsAndConditions);
+                        popup.setTitle("Terms & Conditions");
+                        popup.show();
                         break;
                     case 2:
                         //TODO: privacy policy
+                        TermsPopup popup1=new TermsPopup(getActivity());
+                        popup1.setUrl(Constants.ServerUrls.privacyPolicy);
+                        popup1.setTitle("Privacy Policy");
+                        popup1.show();
                         break;
                     case 3:
                         startActivity(new Intent(mContext, FeedbackActivity.class));
