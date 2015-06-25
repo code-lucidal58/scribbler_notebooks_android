@@ -425,10 +425,6 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
     }
 
 
-    public void onFragmentInteraction() {
-
-    }
-
     @Override
     public void onFragmentInteraction(Uri uri) {
 
@@ -436,29 +432,28 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
 
     @Override
     public void onUserNameChanged() {
-        LeftNavigationDrawer.setUserName();
+        LeftNavigationDrawer.setUserName(this, mainView);
 
     }
 
     @Override
     public void onUserEmailChanged() {
-        LeftNavigationDrawer.setUserEmail();
+        LeftNavigationDrawer.setUserEmail(this, mainView);
     }
 
     @Override
     public void onUserDPChanged() {
-        LeftNavigationDrawer.setUserProfilePic();
+        LeftNavigationDrawer.setUserProfilePic(this, mainView);
     }
 
     @Override
     public void onUserCoverChanged() {
-        LeftNavigationDrawer.setUserCover();
+        LeftNavigationDrawer.setUserCover(this, mainView);
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        ;
         getMenuInflater().inflate(R.menu.menu_navigation_drawer, menu);
         return super.onCreateOptionsMenu(menu);
 

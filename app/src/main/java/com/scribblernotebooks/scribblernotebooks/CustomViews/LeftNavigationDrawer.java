@@ -45,17 +45,13 @@ import java.util.ArrayList;
 public class LeftNavigationDrawer {
     View mainView = null;
     Context mContext;
-    static Context sContext;
-    static View sMainView;
 
-    String userName, userPhotoUrl, userCoverUrl;
 
     RecyclerView mDrawerList;
     TextView uName, userEmail;
     ImageView uPhoto, uCoverPic;
     RelativeLayout mDrawer;
     NavigationRecyclerAdapter navigationRecyclerAdapter;
-    SharedPreferences sharedPreferences;
     Fragment fragment;
     FrameLayout userDetailsHolder;
     DrawerLayout mDrawerLayout;
@@ -85,8 +81,6 @@ public class LeftNavigationDrawer {
         this.navigationDrawerActivity = navigationDrawerActivity;
         this.mainView = activityView;
         this.mContext = context;
-        sContext = context;
-        sMainView = activityView;
 
         /**Configurations for image caching library */
         imageLoaderConfiguration = new ImageLoaderConfiguration.Builder(this.mContext).build();
@@ -136,10 +130,10 @@ public class LeftNavigationDrawer {
         });
 
 
-        LeftNavigationDrawer.setUserName();
-        LeftNavigationDrawer.setUserEmail();
-        LeftNavigationDrawer.setUserCover();
-        LeftNavigationDrawer.setUserProfilePic();
+        LeftNavigationDrawer.setUserName(mContext, mainView);
+        LeftNavigationDrawer.setUserEmail(mContext, mainView);
+        LeftNavigationDrawer.setUserCover(mContext, mainView);
+        LeftNavigationDrawer.setUserProfilePic(mContext, mainView);
 
 
         /**Setting navigation Drawer**/
@@ -235,21 +229,21 @@ public class LeftNavigationDrawer {
         });
     }
 
-    public static void setUserName() {
-        SharedPreferences sharedPreferences = sContext.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
-        ((TextView) sMainView.findViewById(R.id.userName)).setText(sharedPreferences.getString(Constants.PREF_DATA_NAME, "Name"));
+    public static void setUserName(Context context, View parentView) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
+        ((TextView) parentView.findViewById(R.id.userName)).setText(sharedPreferences.getString(Constants.PREF_DATA_NAME, "Name"));
     }
 
-    public static void setUserEmail() {
-        SharedPreferences sharedPreferences = sContext.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
-        ((TextView) sMainView.findViewById(R.id.userEmail)).setText(sharedPreferences.getString(Constants.PREF_DATA_EMAIL, "user@domain.com"));
+    public static void setUserEmail(Context context, View parentView) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
+        ((TextView) parentView.findViewById(R.id.userEmail)).setText(sharedPreferences.getString(Constants.PREF_DATA_EMAIL, "user@domain.com"));
     }
 
-    public static void setUserCover() {
-        SharedPreferences sharedPreferences = sContext.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
+    public static void setUserCover(Context context, View parentView) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
         /**Loading and caching image from url*/
         String coverUrl = sharedPreferences.getString(Constants.PREF_DATA_COVER_PIC, "");
-        ImageView uCoverPic = (ImageView) sMainView.findViewById(R.id.userCover);
+        ImageView uCoverPic = (ImageView) parentView.findViewById(R.id.userCover);
         if (!coverUrl.isEmpty()) {
             if (coverUrl.contains("http") || coverUrl.contains("ftp")) {
                 ImageLoader.getInstance().displayImage(coverUrl, uCoverPic, sdisplayImageOptionsCover, simageLoadingListener);
@@ -259,11 +253,11 @@ public class LeftNavigationDrawer {
         }
     }
 
-    public static void setUserProfilePic() {
-        SharedPreferences sharedPreferences = sContext.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
+    public static void setUserProfilePic(Context context, View parentView) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
         /**Loading and caching image from url*/
         String picUrl = sharedPreferences.getString(Constants.PREF_DATA_PHOTO, "");
-        ImageView uPic = (ImageView) sMainView.findViewById(R.id.userPhoto);
+        ImageView uPic = (ImageView) parentView.findViewById(R.id.userPhoto);
         if (!picUrl.isEmpty()) {
             if (picUrl.contains("http") || picUrl.contains("ftp")) {
                 ImageLoader.getInstance().displayImage(picUrl, uPic, sdisplayImageOptions, simageLoadingListener);

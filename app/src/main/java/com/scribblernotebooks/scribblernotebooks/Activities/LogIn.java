@@ -56,7 +56,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     private static final int REQ_SIGN_IN_REQUIRED = 55664;
 
     EditText name, email, mobile, password;
-    TextView forgotPassword;
+    TextView forgotPassword,termsAndConditions;
     Button signIn, signUp;
     String userName = "", userEmail = "", userPassword, userMobile;
     SignInButton signInButton;
@@ -185,6 +185,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         signIn = (Button) findViewById(R.id.signIn);
         signUp = (Button) findViewById(R.id.signUp);
         forgotPassword = (TextView) findViewById(R.id.forgotPassword);
+        termsAndConditions=(TextView)findViewById(R.id.termsAndConditions);
         signInButton = (SignInButton) findViewById(R.id.sign_in_button);
         signInButton.setOnClickListener(this);
         signInButton.setSize(SignInButton.SIZE_WIDE);
@@ -203,7 +204,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         Constants.drawableScaleColorChange(this, mobile, R.drawable.phonelogin);
 
         /**Forgot Password**/
-        forgotPassword.setOnTouchListener(new View.OnTouchListener() {
+        View.OnTouchListener colorChanger=new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 TextView t = (TextView) v;
@@ -220,11 +221,20 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                 }
                 return false;
             }
-        });
+        };
+        forgotPassword.setOnTouchListener(colorChanger);
         forgotPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 new ForgotPasswordPopup(LogIn.this).show();
+            }
+        });
+
+        termsAndConditions.setOnTouchListener(colorChanger);
+        termsAndConditions.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO: Show terms and conditions
             }
         });
 
@@ -312,6 +322,8 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         }
         name.setVisibility(View.GONE);
         mobile.setVisibility(View.GONE);
+        forgotPassword.setVisibility(View.VISIBLE);
+        termsAndConditions.setVisibility(View.GONE);
         view_open = LOGIN;
     }
 
@@ -352,6 +364,8 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         }
         name.setVisibility(View.VISIBLE);
         mobile.setVisibility(View.VISIBLE);
+        forgotPassword.setVisibility(View.GONE);
+        termsAndConditions.setVisibility(View.VISIBLE);
         view_open = SIGNUP;
     }
 

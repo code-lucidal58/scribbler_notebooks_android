@@ -33,7 +33,7 @@ public class ParseJson {
             }
             JSONArray jsonArray;
             JSONObject data;
-            int pageCount = 0, dealCount = 0, currentPage = 1;
+            int pageCount = 1, dealCount = 0, currentPage = 1;
             try {
                 data = jsonChild.optJSONObject(Constants.TAG_DATA);
                 jsonArray = data.optJSONArray(Constants.TAG_DEALS);
