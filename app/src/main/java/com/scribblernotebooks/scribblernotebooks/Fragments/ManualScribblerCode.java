@@ -340,24 +340,11 @@ public class ManualScribblerCode extends Fragment {
                         return null;
                     Log.e("Deal Url", url.toString());
 
-//                    HashMap<String, String> data=new HashMap<String, String>();
-//                    data.put("token",user.getToken());
-//                    data.put("id",params[0]);
-
                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                     connection.setRequestMethod("GET");
                     connection.setReadTimeout(15000);
                     connection.setConnectTimeout(15000);
                     connection.setDoInput(true);
-
-//                    connection.connect();
-
-//                    OutputStream os=connection.getOutputStream();
-//                    BufferedWriter writer=new BufferedWriter(new OutputStreamWriter(os,"UTF-8"));
-//                    writer.write(Constants.getPostDataString(data));
-//                    writer.flush();
-//                    writer.close();
-//                    os.close();
 
                     BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                     return in.readLine();
@@ -396,11 +383,14 @@ public class ManualScribblerCode extends Fragment {
 
     }
 
+    /**
+     *
+     */
+
 
     /**
      * Auto-generated methods
      */
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
