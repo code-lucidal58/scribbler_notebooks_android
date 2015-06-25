@@ -49,6 +49,9 @@ public class CollegePopUp extends Dialog implements View.OnClickListener{
         int id=v.getId();
         switch(id){
             case R.id.skip:
+                break;
+            case R.id.okay:
+                break;
         }
 
     }
