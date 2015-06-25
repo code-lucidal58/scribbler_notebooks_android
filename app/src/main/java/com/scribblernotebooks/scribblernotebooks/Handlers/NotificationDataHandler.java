@@ -89,7 +89,7 @@ public class NotificationDataHandler {
         if(c.moveToFirst()) {
             do {
                 Notifications notif = new Notifications();
-                notif.setNotificationId(c.getInt(0));
+                notif.setNotificationId(c.getString(0));
                 notif.setNotificationText(c.getString(1));
                 notif.setNotificationImgUrl(c.getString(2));
                 notifications.add(notif);

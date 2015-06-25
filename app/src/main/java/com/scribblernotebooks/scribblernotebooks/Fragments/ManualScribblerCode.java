@@ -387,62 +387,63 @@ public class ManualScribblerCode extends Fragment {
      * Popup for College name
      */
     public void collegePopup() {
-        response = "";
-
-        new AsyncTask<String, Void, String>() {
-
-            @Override
-            protected String doInBackground(String... params) {
-                try {
-                    //TODO:Modify url to send token and deal id
-//                    URL url=Constants.getDealDetailsURL(params[0]);
-                    user = Constants.getUser(mContext);
-                    URL url = Constants.getDealDetailsURL(params[0], user.getToken());
-                    Log.e("Url ", url.toString());
-                    if (url == null)
-                        return null;
-                    Log.e("Deal Url", url.toString());
-
-                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                    connection.setRequestMethod("GET");
-                    connection.setReadTimeout(15000);
-                    connection.setConnectTimeout(15000);
-                    connection.setDoInput(true);
-
-                    BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                    return in.readLine();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return "";
-            }
-
-            @Override
-            protected void onPostExecute(String s) {
-                super.onPostExecute(s);
-                if (progressDialog != null) {
-                    if (progressDialog.isShowing())
-                        progressDialog.dismiss();
-                }
-                if (s.isEmpty()) {
-                    return;
-                }
-                DealPopup dealPopup = new DealPopup(mContext);
-                Log.e("Deal", "Response " + s);
-
-                Deal deal = ParseJson.parseSingleDealDetail(s);
-
-                Log.e("Deals 2", deal.getId() + deal.getTitle() + deal.getCategory() + deal.getLongDescription() + deal.getShortDescription());
-                dealPopup.setTitle(deal.getTitle());
-                dealPopup.setCategory(deal.getCategory());
-                dealPopup.setDescription(deal.getLongDescription());
-                dealPopup.setImage(deal.getImageUrl());
-                dealPopup.setCurrentDeal(deal);
-                dealPopup.show();
-
-                currentDeal = deal;
-            }
-        }.execute(dealCode);
+//        response = "";
+//
+//        new AsyncTask<String, Void, String>() {
+//
+//            Pro
+//            @Override
+//            protected String doInBackground(String... params) {
+//                try {
+//                    //TODO:Modify url to send token and deal id
+////                    URL url=Constants.getDealDetailsURL(params[0]);
+//                    user = Constants.getUser(mContext);
+//                    URL url = Constants.getDealDetailsURL(params[0], user.getToken());
+//                    Log.e("Url ", url.toString());
+//                    if (url == null)
+//                        return null;
+//                    Log.e("Deal Url", url.toString());
+//
+//                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+//                    connection.setRequestMethod("GET");
+//                    connection.setReadTimeout(15000);
+//                    connection.setConnectTimeout(15000);
+//                    connection.setDoInput(true);
+//
+//                    BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+//                    return in.readLine();
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//                return "";
+//            }
+//
+//            @Override
+//            protected void onPostExecute(String s) {
+//                super.onPostExecute(s);
+//                if (progressDialog != null) {
+//                    if (progressDialog.isShowing())
+//                        progressDialog.dismiss();
+//                }
+//                if (s.isEmpty()) {
+//                    return;
+//                }
+//                DealPopup dealPopup = new DealPopup(mContext);
+//                Log.e("Deal", "Response " + s);
+//
+//                Deal deal = ParseJson.parseSingleDealDetail(s);
+//
+//                Log.e("Deals 2", deal.getId() + deal.getTitle() + deal.getCategory() + deal.getLongDescription() + deal.getShortDescription());
+//                dealPopup.setTitle(deal.getTitle());
+//                dealPopup.setCategory(deal.getCategory());
+//                dealPopup.setDescription(deal.getLongDescription());
+//                dealPopup.setImage(deal.getImageUrl());
+//                dealPopup.setCurrentDeal(deal);
+//                dealPopup.show();
+//
+//                currentDeal = deal;
+//            }
+//        }.execute();
     }
 
     /**

@@ -100,7 +100,7 @@ public class NotificationDrawer {
         refreshed=true;
         if(notificationsArrayList.isEmpty()){
             Log.e("NotificationDrawer","No notifications.");
-            notificationsArrayList.add(new Notifications(0, "You do not have any notifications", ""));
+            notificationsArrayList.add(new Notifications("0", "You do not have any notifications", ""));
         }
         return notificationsArrayList;
     }
