@@ -5,22 +5,22 @@ package com.scribblernotebooks.scribblernotebooks.HelperClasses;
  */
 public class Notifications {
 
-    int id;
+    String id;
     String text,url;
 
     public Notifications() {
-        this.id=Integer.MIN_VALUE;
+        this.id=String.valueOf(Integer.MIN_VALUE);
         this.text="";
         this.url="";
     }
 
-    public Notifications(int id, String text, String url) {
+    public Notifications(String  id, String text, String url) {
         this.id=id;
         this.text=text;
         this.url=url;
     }
 
-    public void setNotificationId(int id){
+    public void setNotificationId(String  id){
         this.id=id;
     }
 
@@ -32,7 +32,7 @@ public class Notifications {
         this.url=url;
     }
 
-    public int getNotificationId(){
+    public String getNotificationId(){
         return this.id;
     }
 

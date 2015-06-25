@@ -69,7 +69,7 @@ public class NotificationDataHandler {
         dbhelper.close();
     }
 
-    public long insertData(String TABLE_NAME,int notificationId,String notificationText, String notificationImgurl){
+    public long insertData(String TABLE_NAME,String notificationId,String notificationText, String notificationImgurl){
         db.execSQL(CREATE_TABLE_DEFAULT);
         db.execSQL(CREATE_TABLE_ALL);
 

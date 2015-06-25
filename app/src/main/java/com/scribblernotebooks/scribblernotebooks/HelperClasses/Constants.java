@@ -118,6 +118,11 @@ public class Constants {
     public static final String PREF_DATA_MIXPANEL_USER_ID = "mixpanelUserId";
     public static final String PREF_DATA_COLLEGE = "college";
 
+    public static final String PREF_SURVEY_EXISTS="isSurveyPresent";
+    public static final String PREF_SURVEY_ID="surveyId";
+    public static final String PREF_SURVEY_QUESTION="surveyQuestion";
+    public static final String PREF_SURVEY_OPTIONS="surveyOptions";
+
     public static final String INTENT_ID_NAME = "idName";
     public static final String INTENT_ID_VALUE = "idValue";
     public static final String FACEBOOKID = "facebookId";

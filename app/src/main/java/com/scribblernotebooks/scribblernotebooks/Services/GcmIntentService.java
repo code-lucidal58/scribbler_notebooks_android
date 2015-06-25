@@ -16,6 +16,7 @@ import com.scribblernotebooks.scribblernotebooks.Handlers.NotificationDataHandle
 import com.scribblernotebooks.scribblernotebooks.R;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 
@@ -54,7 +55,11 @@ public class GcmIntentService extends IntentService {
                 try {
                     if (extras.getString("message").isEmpty())
                         return;
-                    sendNotification(extras.getString("message"));
+                    try{
+                        executeOperations(extras.getString("message"));
+                    }catch (JSONException e){
+                        e.printStackTrace();
+                    }
                     Log.i(TAG, "Received: " + extras.toString());
                 }catch (Exception e){
                     e.printStackTrace();
@@ -66,32 +71,62 @@ public class GcmIntentService extends IntentService {
     }
 
     // Put the message into a notification and post it.
-    private void sendNotification(String msg) {
+    private void executeOperations(String response) throws Exception{
+        /**
+         * {type: "notification", notification:{id:"Some Id", text: "Notification Text", imgurl: "Image Url"}}
+         * {type: "survey", survey:{id: "Some Id", questionText: "Question Text", options:["Option 1","Option 2"...]}}
+         * {type: "setting", preference:" The Preference to be edited", value: "The preference value to be saved"}
+         */
+
+        JSONObject responseObject=new JSONObject(response);
+        String type=responseObject.getString("type");
+        switch (type){
+            case "notification":
+                handleNotification(responseObject);
+                break;
+            case "survey":
+                handleSurvey(responseObject);
+                break;
+            case "setting":
+                break;
+        }
+
+    }
+
+    private void handleSurvey(JSONObject responseObject) throws Exception{
+        JSONObject surveyObject=responseObject.getJSONObject("survey");
+        String id=surveyObject.optString("id");
+        String question=surveyObject.optString("questionText");
+        JSONArray optionsArray=surveyObject.getJSONArray("options");
+        String[] optionList=new String[optionsArray.length()];
+        for(int i=0;i<optionsArray.length();i++){
+            optionList[i]=optionsArray.getString(i);
+        }
+        sendSurvey(id, question, optionList);
+    }
+
+    private void sendSurvey(String id, String question, String[] optionList){
+
+    }
+
+
+    private void handleNotification(JSONObject responseObject) throws Exception{
+        JSONObject notificationObject=responseObject.getJSONObject("notification");
+        String id=notificationObject.optString("id");
+        String text=notificationObject.optString("text");
+        String imgurl=notificationObject.optString("imgurl");
+        addNotification(id,text,imgurl);
+    }
+
+    private void addNotification(String id,String text, String url){
         mNotificationManager = (NotificationManager)
                 this.getSystemService(Context.NOTIFICATION_SERVICE);
-
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, NavigationDrawer.class), 0);
-
-
         NotificationDataHandler notifHandler = new NotificationDataHandler(this);
+
         notifHandler.open();
-        String text = "";
-        try {
-            JSONObject jsonObject = new JSONObject(msg);
-            JSONArray jsonArray = jsonObject.optJSONArray("notification");
-            JSONObject jsonChild = jsonArray.optJSONObject(0);
-            int id = Integer.parseInt(jsonChild.optString("id"));
-            text = jsonChild.optString("text");
-            String url = jsonChild.optString("imgurl");
-            notifHandler.insertData(NotificationDataHandler.TABLE_NAME_DEFAULT, id, text, url);
-            notifHandler.insertData(NotificationDataHandler.TABLE_NAME_ALL, id, text, url);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        notifHandler.insertData(NotificationDataHandler.TABLE_NAME_DEFAULT, id, text, url);
+        notifHandler.insertData(NotificationDataHandler.TABLE_NAME_ALL, id, text, url);
         notifHandler.close();
-
-
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.n1)
@@ -99,10 +134,10 @@ public class GcmIntentService extends IntentService {
                         .setStyle(new NotificationCompat.BigTextStyle()
                                 .bigText(text))
                         .setContentText(text);
-
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
+                new Intent(this, NavigationDrawer.class), 0);
         mBuilder.setContentIntent(contentIntent);
         mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
-
 
     }
 }
