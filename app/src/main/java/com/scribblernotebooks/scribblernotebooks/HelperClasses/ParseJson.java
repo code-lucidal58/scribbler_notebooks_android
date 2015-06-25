@@ -44,7 +44,7 @@ public class ParseJson {
                 jsonArray = jsonChild.optJSONArray(Constants.TAG_DATA);
             }
 
-            ArrayList<Deal> dealsList = null;
+            ArrayList<Deal> dealsList = new ArrayList<>();
             int lengthJsonArr = jsonArray.length();
 
             for (int i = 0; i < lengthJsonArr; i++) {
@@ -59,6 +59,7 @@ public class ParseJson {
             }
 
 
+            Log.e("ParseJSON Response",pageCount+" "+dealCount+" "+currentPage+" "+dealsList.toString());
             result = new DealListResponse(dealsList, pageCount, dealCount, currentPage);
 
         } catch (JSONException e) {

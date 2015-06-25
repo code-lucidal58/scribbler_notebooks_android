@@ -6,12 +6,21 @@ import java.util.List;
  * Created by Jibin_ism on 13-Jun-15.
  */
 public class User {
-    String name="", email="", mobile="", coverImage="", profilePic="", token="", mixpanelId="", location="";
+    String name="", email="", mobile="", coverImage="", profilePic="", token="", mixpanelId="", location="", college="";
     List<String> likedDeals;
+
+    public String getCollege() {
+        return college;
+    }
+
+    public void setCollege(String college) {
+        this.college = college;
+    }
 
     public User(String name, String email, String mobile, String token, String mixpanelId) {
         this.name = name;
         this.email = email;
+
         this.token = token;
         this.mixpanelId = mixpanelId;
         this.mobile = mobile;

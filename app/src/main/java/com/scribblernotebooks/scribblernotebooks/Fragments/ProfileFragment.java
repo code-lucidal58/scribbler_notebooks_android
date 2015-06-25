@@ -77,7 +77,7 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
 
     User user;
 
-    EditText userName, userEmail, userPass, userMob, userLocation;
+    EditText userName, userEmail, userPass, userMob, userLocation, userCollege;
 
     public DisplayImageOptions displayImageOptions, displayImageOptionsCover;
     public ImageLoadingListener imageLoadingListener;
@@ -153,6 +153,7 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
         userPass = (EditText) v.findViewById(R.id.et_password);
         userMob = (EditText) v.findViewById(R.id.et_mobile);
         userLocation = (EditText) v.findViewById(R.id.et_location);
+        userCollege = (EditText) v.findViewById(R.id.et_college);
 
         appbar.setTitleTextColor(Color.WHITE);
 
@@ -163,13 +164,15 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
         user=Constants.getUser(getActivity());
         userName.setText(user.getName());
         userEmail.setText(user.getEmail());
-        userLocation.setText(userPref.getString(Constants.PREF_DATA_LOCATION,""));
+        userLocation.setText(user.getLocation());
         userMob.setText(user.getMobile());
+        userCollege.setText(user.getCollege());
 
         imageChanger(userName);
         imageChanger(userMob);
         imageChanger(userEmail);
         imageChanger(userPass);
+        imageChanger(userCollege);
 
 
         for(int i=0;i<signInButton.getChildCount();i++){
