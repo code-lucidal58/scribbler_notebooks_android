@@ -70,6 +70,7 @@ public class Constants {
         public static String privacyPolicy = host + "privacyPolicy";
         public static String termsAndConditions = host + "terms";
 
+        public static String surveySubmit=websiteUrl+"survey";
 
     }
 
@@ -124,6 +125,7 @@ public class Constants {
     public static final String PREF_SHOW_MOBILE="showMobileVerfication";
     public static final String PREF_SHOW_INSTRUCTIONS="showInstructions";
 
+    public static final String SURVEY_PREF_NAME="surveyPref";
 
     public static final String PREF_SURVEY_EXISTS="isSurveyPresent";
     public static final String PREF_SURVEY_ID="surveyId";

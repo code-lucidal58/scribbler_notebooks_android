@@ -53,8 +53,7 @@ import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
-public class NavigationDrawer extends AppCompatActivity implements ProfileFragment.OnFragmentInteractionListener,
-        ManualScribblerCode.OnFragmentInteractionListener {
+public class NavigationDrawer extends AppCompatActivity implements ProfileFragment.OnFragmentInteractionListener{
 
 
     OnNavKeyPressed keyListener;

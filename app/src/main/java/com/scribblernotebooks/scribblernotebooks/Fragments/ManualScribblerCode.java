@@ -33,6 +33,7 @@ import com.scribblernotebooks.scribblernotebooks.Activities.MobileVerification;
 import com.scribblernotebooks.scribblernotebooks.Activities.ScannerActivity;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.CollegePopUp;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.DealPopup;
+import com.scribblernotebooks.scribblernotebooks.CustomViews.SurveyDialog;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Deal;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.ParseJson;
@@ -45,6 +46,10 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ManualScribblerCode extends Fragment {
 
@@ -76,7 +81,6 @@ public class ManualScribblerCode extends Fragment {
 
     private OnFragmentInteractionListener mListener;
     SharedPreferences sharedPreferences;
-
     /**
      * Statically initiating the Manual Code input fragment for the navigation drawer
      *
@@ -143,6 +147,15 @@ public class ManualScribblerCode extends Fragment {
         if (sharedPreferences.getBoolean(Constants.PREF_SHOW_COLLEGE, true)) {
             collegePopUp.show();
         }
+
+        SharedPreferences surveyPref=mContext.getSharedPreferences(Constants.SURVEY_PREF_NAME, Context.MODE_PRIVATE);
+        if(surveyPref.getBoolean(Constants.PREF_SURVEY_EXISTS,false)){
+            SurveyDialog dialog=SurveyDialog.newInstance(surveyPref.getString(Constants.PREF_SURVEY_ID, ""),
+                    surveyPref.getString(Constants.PREF_SURVEY_QUESTION, ""),
+                    surveyPref.getStringSet(Constants.PREF_SURVEY_OPTIONS, null));
+            dialog.show(getFragmentManager(), "SURVEY");
+        }
+
         root = (RelativeLayout) v.findViewById(R.id.manualRoot);
         back = (LinearLayout) v.findViewById(R.id.backToScan);
         textView = (TextView) back.findViewById(R.id.textView);
@@ -233,6 +246,11 @@ public class ManualScribblerCode extends Fragment {
                     case MotionEvent.ACTION_UP:
                         setDrawable(back, getResources().getDrawable(R.drawable.scan_enabled));
                         startActivity(new Intent(mContext, ScannerActivity.class));
+//                        Set<String> s=new HashSet<>();
+//                        s.add("Male");
+//                        s.add("Female");
+//                        SurveyDialog surveyDialog=SurveyDialog.newInstance("123","What is your gender?",s);
+//                        surveyDialog.show(getFragmentManager(),"SURVEY");
                         break;
                     default:
                         setDrawable(back, getResources().getDrawable(R.drawable.scan_enabled));
@@ -387,35 +405,4 @@ public class ManualScribblerCode extends Fragment {
 
     }
 
-
-    /**
-     * Auto-generated methods
-     */
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
-    }
 }

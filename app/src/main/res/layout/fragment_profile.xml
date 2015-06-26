@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/profileBackgroundColor"
-    tools:context="com.scribblernotebooks.scribblernotebooks.ProfileFragment">
+    tools:context="com.scribblernotebooks.scribblernotebooks.ProfileFragment"
+    android:clickable="false">
 
     <ScrollView
         android:id="@+id/sl"
@@ -52,24 +53,46 @@
 
             </FrameLayout>
 
-            <TextView
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/fl"
-                android:text="Basic Information"
-                android:background="@color/darkBlue"
-                android:minHeight="25dp"
+                android:layout_height="35dp"
+                android:orientation="horizontal"
+                android:id="@+id/l2"
                 android:gravity="center_vertical"
-                android:textSize="18sp"
-                android:paddingLeft="10dp"
-                android:textColor="#FFF"
-                android:id="@+id/t1"/>
+                android:background="@color/darkBlue"
+                android:layout_below="@+id/fl">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="35dp"
+                    android:text="Basic Information"
+                    android:minHeight="25dp"
+                    android:gravity="center_vertical"
+                    android:textSize="18sp"
+                    android:paddingRight="10dp"
+                    android:paddingLeft="10dp"
+                    android:textColor="#FFF"
+                    android:id="@+id/t1"/>
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="35dp"
+                    android:layout_gravity="end"
+                    android:background="@drawable/scanner_button"
+                    android:text="Save"
+                    android:textColor="#FFF"
+                    android:layout_centerHorizontal="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:id="@+id/save"/>
+
+            </RelativeLayout>
 
             <TableLayout
                 android:id="@+id/table"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/t1">
+                android:layout_below="@id/l2">
 
                 <TableRow android:orientation="horizontal">
 
@@ -165,6 +188,9 @@
                         android:background="@color/profileBackgroundColor"
                         android:gravity="center_vertical"
                         android:text="Change Password"
+                        android:clickable="false"
+                        android:focusableInTouchMode="false"
+                        android:focusable="false"
                         android:textStyle="italic"
                         android:textColor="@color/profileBackgroundEditTextTextColor"
                         android:textColorHint="@color/profileBackgroundEditTextHintColor"
@@ -213,9 +239,9 @@
                         android:background="@color/profileBackgroundColor"
                         android:gravity="center_vertical"
                         android:hint="College"
-                        android:focusable="false"
-                        android:clickable="false"
-                        android:focusableInTouchMode="false"
+                        android:focusable="true"
+                        android:clickable="true"
+                        android:focusableInTouchMode="true"
                         android:textColor="@color/profileBackgroundEditTextTextColor"
                         android:textColorHint="@color/profileBackgroundEditTextHintColor"
                         android:textSize="@dimen/profileEditTextFontSize" />
@@ -231,6 +257,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:layout_below="@+id/table"
+                android:id="@+id/l1"
                 android:orientation="vertical">
 
 
