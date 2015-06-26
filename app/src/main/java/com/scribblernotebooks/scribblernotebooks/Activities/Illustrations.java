@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.scribblernotebooks.scribblernotebooks.Adapters.IllustrationsPageAdapter;
+import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.R;
 
 public class Illustrations extends AppCompatActivity {
@@ -22,8 +23,8 @@ public class Illustrations extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        sharedPreferences= getSharedPreferences("Illustrations",MODE_PRIVATE);
-        if(!sharedPreferences.getBoolean("firstTime",true)){
+        sharedPreferences= getSharedPreferences(Constants.PREF_ONE_TIME_NAME,MODE_PRIVATE);
+        if(!sharedPreferences.getBoolean(Constants.PREF_SHOW_ILLUSTRATION,true)){
             startActivity(new Intent(this,LogIn.class));
             finish();
         }

@@ -2,6 +2,7 @@ package com.scribblernotebooks.scribblernotebooks.CustomViews;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -37,6 +38,7 @@ public class CollegePopUp extends Dialog {
     AutoCompleteTextView collegeName;
     Button skip, okay;
     ArrayList<String> college;
+    SharedPreferences sharedPreferences;
 
     public CollegePopUp(Context context) {
         super(context);
@@ -50,6 +52,7 @@ public class CollegePopUp extends Dialog {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.popup_college);
+        sharedPreferences = getContext().getSharedPreferences(Constants.PREF_ONE_TIME_NAME, Context.MODE_PRIVATE);
         collegeName = (AutoCompleteTextView) findViewById(R.id.college);
         skip = (Button) findViewById(R.id.skip);
         okay = (Button) findViewById(R.id.okay);
@@ -74,13 +77,14 @@ public class CollegePopUp extends Dialog {
                 }
             }
         });
-        getContext().getSharedPreferences("collegePopup", Context.MODE_PRIVATE).edit().putBoolean("show", false).apply();
+        onBackPressed();
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        getContext().getSharedPreferences("collegePopup", Context.MODE_PRIVATE).edit().putBoolean("show", false).apply();
+        dialog.dismiss();
+        sharedPreferences.edit().putBoolean(Constants.PREF_SHOW_COLLEGE, false).apply();
     }
 
     /**
