@@ -12,6 +12,7 @@ import android.graphics.PorterDuff;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.widget.DrawerLayout;
@@ -23,8 +24,10 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -40,8 +43,12 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.auth.GoogleAuthException;
+import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
@@ -59,6 +66,7 @@ import com.scribblernotebooks.scribblernotebooks.Services.SignUpService;
 
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -66,6 +74,7 @@ import java.util.regex.Pattern;
 public class ProfileFragment extends android.support.v4.app.Fragment implements View.OnClickListener,
         GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener {
 
+    private static final int REQ_SIGN_IN_REQUIRED = 55664;
 
     final String TAG = "ProfileFragment";
     ImageView userPic, userCoverPic;
@@ -76,6 +85,8 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
     SharedPreferences.Editor userPrefEditor;
 
     User user;
+
+    Button save;
 
     EditText userName, userEmail, userPass, userMob, userLocation, userCollege;
 
@@ -154,11 +165,14 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
         userMob = (EditText) v.findViewById(R.id.et_mobile);
         userLocation = (EditText) v.findViewById(R.id.et_location);
         userCollege = (EditText) v.findViewById(R.id.et_college);
+        save=(Button)v.findViewById(R.id.save);
 
         appbar.setTitleTextColor(Color.WHITE);
 
         progressDialog = new ProgressDialog(getActivity(),R.style.Theme_AppCompat_Dialog);
         signInButton.setOnClickListener(this);
+
+        save.setOnClickListener(this);
 
         /** setting values*/
         user=Constants.getUser(getActivity());
@@ -201,11 +215,14 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
             }
         }
 
-        userPass.setOnClickListener(new View.OnClickListener() {
+        userPass.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
-                ChangePassword dialog=new ChangePassword();
-                dialog.show(getActivity().getSupportFragmentManager(),"Change Password");
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction()==MotionEvent.ACTION_UP) {
+                    ChangePassword dialog = new ChangePassword();
+                    dialog.show(getActivity().getSupportFragmentManager(), "Change Password");
+                }
+                return true;
             }
         });
 
@@ -258,6 +275,8 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
                 /**
                  * Current SDK uses GraphAPI to retrieve data from facebook
                  */
+                final String token = loginResult.getAccessToken().getToken();
+                Log.e("fb access token", token);
                 GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
                     @Override
                     public void onCompleted(JSONObject jsonObject, GraphResponse graphResponse) {
@@ -270,6 +289,7 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
                         saveUserDetails(name, email, userdp, coverPic);
                         setCoverPic(coverPic);
                         setProfilePic(userdp);
+                        loginSocial(Constants.POST_METHOD_FACEBOOK, token);
                     }
                 });
                 Bundle parameters = new Bundle();
@@ -364,15 +384,21 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
                     break;
             }
         }
+
+        if (requestCode == REQ_SIGN_IN_REQUIRED && resultCode == Activity.RESULT_OK) {
+            // We had to sign in - now we can finish off the token request.
+            Log.e("Google Token", "On Activity Result");
+            new GetGooglePlusToken(getActivity(), mGoogleApiClient).execute();
+        }
         if (requestCode != COVER_PIC_REQUEST_CODE && requestCode != PROFILE_PIC_REQUEST_CODE && requestCode != RC_SIGN_IN) {
             callbackManager.onActivityResult(requestCode, resultCode, data);
 
         }
     }
 
-//    /**
-//     * GoogleAPI callbacks. Called after sign in
-//     */
+    /**
+     * GoogleAPI callbacks. Called after sign in
+     */
     @Override
     public void onConnected(Bundle arg0) {
         Log.e(TAG, "Google Connected");
@@ -419,10 +445,10 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
             }
         }
     }
-//
-//    /**
-//     * Handling clicks on buttons
-//     */
+
+    /**
+     * Handling clicks on buttons
+     */
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -440,8 +466,25 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
                     toast.show();
                 }
                 break;
+            case R.id.save:
+                saveDetails();
+                break;
         }
     }
+
+    public void saveDetails(){
+        User user=new User();
+        user.setName(userName.getText().toString());
+        user.setEmail(userEmail.getText().toString());
+        user.setCollege(userCollege.getText().toString());
+        user.setLocation(userLocation.getText().toString());
+        user.setMobile(userLocation.getText().toString());
+        Constants.saveUserDetails(getActivity(), user);
+        mListener.onUserNameChanged();
+        mListener.onUserEmailChanged();
+    }
+
+
 
     /**
      * Check if phone is connected to internet
@@ -497,16 +540,13 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
                 if(currentPerson.hasCover()) {
                     userCover = currentPerson.getCover().getCoverPhoto().getUrl();
                 }
+                userName.setText(personName);
+                this.userEmail.setText(userEmail);
                 setCoverPic(userCover);
-                setProfilePic(personImageUrl);
+                setProfilePic(s);
 
-                HashMap<String, String> data=new HashMap<>();
-                data.put(Constants.POST_EMAIL,userEmail);
-                data.put(Constants.GOOGLEID,userId);
-                data.put(Constants.POST_COVERPIC,userCover);
-                data.put(Constants.POST_PROFILEPIC,s);
 
-                new SignUpService(Constants.ServerUrls.linkSocialAccount,getActivity()).execute(data);
+                sendGoogleMethodAndToken(mGoogleApiClient);
 
 
             } else {
@@ -669,6 +709,62 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
         void onUserDPChanged();
 
         void onUserCoverChanged();
+    }
+
+    void sendGoogleMethodAndToken(GoogleApiClient googleApiClient) {
+        new GetGooglePlusToken(getActivity(), googleApiClient).execute();
+    }
+    public class GetGooglePlusToken extends AsyncTask<Void, Void, String> {
+        Context context;
+        private GoogleApiClient mGoogleApiClient;
+        private String TAG = this.getClass().getSimpleName();
+
+        public GetGooglePlusToken(Context context, GoogleApiClient mGoogleApiClient) {
+            this.context = context;
+            this.mGoogleApiClient = mGoogleApiClient;
+            Log.e("GoogleClient", "Constructor");
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            String token = null;
+            try {
+                String scope = "oauth2:" + Scopes.PLUS_LOGIN + " " + Scopes.PLUS_ME +
+                        " https://www.googleapis.com/auth/userinfo.email ";
+                token = GoogleAuthUtil.getToken(
+                        getActivity(),
+                        Plus.AccountApi.getAccountName(mGoogleApiClient),
+                        scope);
+            } catch (IOException transientEx) {
+                // Network or server error, try later
+                Log.e(TAG, transientEx.toString());
+            } catch (UserRecoverableAuthException e) {
+                // Recover (with e.getIntent())
+                Log.e(TAG, "UserRecoverableAuthException");
+                startActivityForResult(e.getIntent(), REQ_SIGN_IN_REQUIRED);
+            } catch (GoogleAuthException authEx) {
+                // The call is not ever expected to succeed
+                // assuming you have already verified that
+                // Google Play services is installed.
+                Log.e(TAG, authEx.toString());
+            }
+            return token;
+        }
+
+        @Override
+        protected void onPostExecute(String response) {
+            Log.e(TAG, "Google access token = " + response);
+
+            loginSocial(Constants.POST_METHOD_GOOGLE,response);
+        }
+    }
+
+    public void loginSocial(String method, String accessToken) {
+        HashMap<String, String> data = new HashMap<>();
+        data.put(Constants.POST_METHOD, method);
+        data.put(Constants.POST_ACCESS_TOKEN, accessToken);
+        data.put(Constants.POST_TOKEN,getActivity().getSharedPreferences(Constants.PREF_NAME,Context.MODE_PRIVATE).getString(Constants.PREF_DATA_USER_TOKEN,""));
+        new SignUpService(Constants.ServerUrls.linkSocialAccount, getActivity()).execute(data);
     }
 
 }

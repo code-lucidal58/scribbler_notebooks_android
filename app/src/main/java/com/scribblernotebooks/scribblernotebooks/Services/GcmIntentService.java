@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -13,11 +14,16 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.scribblernotebooks.scribblernotebooks.Activities.NavigationDrawer;
 import com.scribblernotebooks.scribblernotebooks.BroadcastRecievers.GcmBroadcastReceiver;
 import com.scribblernotebooks.scribblernotebooks.Handlers.NotificationDataHandler;
+import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 
 public class GcmIntentService extends IntentService {
@@ -73,9 +79,9 @@ public class GcmIntentService extends IntentService {
     // Put the message into a notification and post it.
     private void executeOperations(String response) throws Exception {
         /**
-         * {type: "notification", notification:{id:"Some Id", text: "Notification Text", imgurl: "Image Url"}}
+         * {type: "notification", notification:{id:"Some Id",notificationTitle:"Some Title", notificationText: "Notification Text", imgurl: "Image Url"}}
          * {type: "survey", survey:{id: "Some Id", questionText: "Question Text", options:["Option 1","Option 2"...]}}
-         * {type: "setting", preference:" The Preference to be edited", value: "The preference value to be saved"}
+         * {type: "setting", preferenceName: "Preference Name", preference:" The Preference to be edited", value: "The preference value to be saved"}
          */
 
         JSONObject responseObject = new JSONObject(response);
@@ -88,9 +94,20 @@ public class GcmIntentService extends IntentService {
                 handleSurvey(responseObject);
                 break;
             case "setting":
+                handleSetting(responseObject);
                 break;
         }
 
+    }
+
+    private void handleSetting(JSONObject responseObject) throws Exception{
+        String pref=responseObject.optString("preferenceName");
+        String prefValue=responseObject.optString("value");
+        String prefName=responseObject.optString("preference");
+        SharedPreferences sharedPreferences=getSharedPreferences(pref, MODE_PRIVATE);
+        SharedPreferences.Editor editor=sharedPreferences.edit();
+        editor.putString(prefName, prefValue);
+        editor.apply();
     }
 
     private void handleSurvey(JSONObject responseObject) throws Exception {
@@ -106,7 +123,13 @@ public class GcmIntentService extends IntentService {
     }
 
     private void sendSurvey(String id, String question, String[] optionList) {
-
+        SharedPreferences.Editor surveyPref=getSharedPreferences(Constants.SURVEY_PREF_NAME,MODE_PRIVATE).edit();
+        surveyPref.putBoolean(Constants.PREF_SURVEY_EXISTS, true);
+        surveyPref.putString(Constants.PREF_SURVEY_ID, id);
+        surveyPref.putString(Constants.PREF_SURVEY_QUESTION, question);
+        Set<String> options=new HashSet<>(Arrays.asList(optionList));
+        surveyPref.putStringSet(Constants.PREF_SURVEY_OPTIONS, options);
+        surveyPref.apply();
     }
 
 
@@ -114,12 +137,13 @@ public class GcmIntentService extends IntentService {
         JSONObject notificationObject = responseObject.getJSONObject("notification");
         Log.e("ResponseObject", notificationObject.toString());
         String id = notificationObject.optString("id");
+        String title=notificationObject.optString("notificationTitle");
         String text = notificationObject.optString("notificationText");
         String imgurl = notificationObject.optString("imgurl");
-        addNotification(id, text, imgurl);
+        addNotification(id,title, text, imgurl);
     }
 
-    private void addNotification(String id, String text, String url) {
+    private void addNotification(String id,String title, String text, String url) {
         Log.e("Notification", id +" text: "+text +" url: "+ url);
         mNotificationManager = (NotificationManager)
                 this.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -132,7 +156,7 @@ public class GcmIntentService extends IntentService {
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.n4)
-                        .setContentTitle("Forgot To Shake?")
+                        .setContentTitle(title)
                         .setStyle(new NotificationCompat.BigTextStyle()
                                 .bigText(text))
                         .setContentText(text)

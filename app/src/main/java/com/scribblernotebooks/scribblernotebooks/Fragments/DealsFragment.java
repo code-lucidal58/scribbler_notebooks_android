@@ -702,7 +702,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
         }
 
         @Override
-        protected void onPostExecute(String s) {
+        protected void onPostExecute(String s){
             isloading = false;
             Log.e("DealFragment", "Response " + s);
 //            progressDialog.dismiss();
@@ -727,57 +727,61 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
             }
             isEmpty = false;
 
-
-            Log.e("DealsFragment", "Is Empty3: " + isEmpty);
-            if (action == ACTION_SEARCH) {
-                Log.e("Deal Fragment", "Adding Suggestion");
-                UserHandler handler = new UserHandler(getActivity());
-                handler.addSuggestions(search);
-                handler.close();
-            }
-
-            loadingProgressLayout.setVisibility(View.GONE);
-
-            JSONObject object = null;
-            ArrayList<Deal> dealsList1 = null;
-
-            dealsList1 = dealListResponse.getDealList();
-
-            page = dealListResponse.getCurrentPage();
-            if (page == 1) {
-                Log.e("DealFragment", "Running for first time. Clearing original list");
-                dealsList.clear();
-            }
-            if (dealListResponse.getCurrentPage() == dealListResponse.getPageCount()) {
-                Log.e("DealFragment", "Finished");
-                finished = true;
-            }else{
-                finished=false;
-            }
-            if (!finished) {
-                page += 1;
-                Log.e("DealFragment", "Finished =false, Page=" + page);
-            }
-
             try {
-                dealsList.addAll(dealsList1);
-                Log.e("DealFragment", "Deal list added to original");
-            } catch (Exception e) {
-                Log.e("DealFragment", "Error adding deals to original list");
-                e.printStackTrace();
-            }
 
-            if (page == 1) {
-                Log.e("Running", "First Time");
-                adapter = new RecyclerDealsAdapter(dealsList, context);
-            } else {
-                Log.e("Running", "Not First Time");
-                adapter = new RecyclerDealsAdapter(dealsList, context);
-                recyclerView.scrollToPosition((dealListResponse.getCurrentPage() - 1) * PAGE_LIMIT);
-                adapter.notifyDataSetChanged();
+                Log.e("DealsFragment", "Is Empty3: " + isEmpty);
+                if (action == ACTION_SEARCH) {
+                    Log.e("Deal Fragment", "Adding Suggestion");
+                    UserHandler handler = new UserHandler(getActivity());
+                    handler.addSuggestions(search);
+                    handler.close();
+                }
+
+                loadingProgressLayout.setVisibility(View.GONE);
+
+                JSONObject object = null;
+                ArrayList<Deal> dealsList1 = null;
+
+                dealsList1 = dealListResponse.getDealList();
+
+                page = dealListResponse.getCurrentPage();
+                if (page == 1) {
+                    Log.e("DealFragment", "Running for first time. Clearing original list");
+                    dealsList.clear();
+                }
+                if (dealListResponse.getCurrentPage() == dealListResponse.getPageCount()) {
+                    Log.e("DealFragment", "Finished");
+                    finished = true;
+                } else {
+                    finished = false;
+                }
+                if (!finished) {
+                    page += 1;
+                    Log.e("DealFragment", "Finished =false, Page=" + page);
+                }
+
+                try {
+                    dealsList.addAll(dealsList1);
+                    Log.e("DealFragment", "Deal list added to original");
+                } catch (Exception e) {
+                    Log.e("DealFragment", "Error adding deals to original list");
+                    e.printStackTrace();
+                }
+
+                if (page == 1) {
+                    Log.e("Running", "First Time");
+                    adapter = new RecyclerDealsAdapter(dealsList, context);
+                } else {
+                    Log.e("Running", "Not First Time");
+                    adapter = new RecyclerDealsAdapter(dealsList, context);
+                    recyclerView.scrollToPosition((dealListResponse.getCurrentPage() - 1) * PAGE_LIMIT);
+                    adapter.notifyDataSetChanged();
+                }
+                setAdapterHolder();
+                recyclerView.setAdapter(adapter);
+            }catch (NullPointerException e){
+                e.getStackTrace();
             }
-            setAdapterHolder();
-            recyclerView.setAdapter(adapter);
         }
     }
 

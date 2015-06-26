@@ -6,7 +6,7 @@ import java.util.ArrayList;
  * Created by Jibin_ism on 22-Jun-15.
  */
 public class DealListResponse {
-    ArrayList<Deal> dealList=null;
+    ArrayList<Deal> dealList=new ArrayList<>();
     int dealCount=0;
     int pageCount=1;
     int currentPage=1;

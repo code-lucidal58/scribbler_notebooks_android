@@ -38,6 +38,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.ForgotPasswordPopup;
+import com.scribblernotebooks.scribblernotebooks.CustomViews.TermsPopup;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.User;
 import com.scribblernotebooks.scribblernotebooks.R;
@@ -235,6 +236,10 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
             @Override
             public void onClick(View v) {
                 //TODO: Show terms and conditions
+                TermsPopup popup=new TermsPopup(LogIn.this);
+                popup.setTitle("Terms & Conditions");
+                popup.setUrl(Constants.ServerUrls.termsAndConditions);
+                popup.show();
             }
         });
 
@@ -445,7 +450,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     }
 
 
-    class GetGooglePlusToken extends AsyncTask<Void, Void, String> {
+    public class GetGooglePlusToken extends AsyncTask<Void, Void, String> {
         Context context;
         private GoogleApiClient mGoogleApiClient;
         private String TAG = this.getClass().getSimpleName();
@@ -485,6 +490,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         @Override
         protected void onPostExecute(String response) {
             Log.e(TAG, "Google access token = " + response);
+            loginSocial(Constants.POST_METHOD_GOOGLE,response);
         }
     }
 
@@ -605,6 +611,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         HashMap<String, String> data = new HashMap<>();
         data.put(Constants.POST_METHOD, method);
         data.put(Constants.POST_ACCESS_TOKEN, accessToken);
+        data.put(Constants.POST_TOKEN,getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE).getString(Constants.PREF_DATA_USER_TOKEN,""));
         new SignUpService(Constants.ServerUrls.login, this).execute(data);
     }
 

@@ -70,6 +70,7 @@ public class Constants {
         public static String privacyPolicy = host + "privacyPolicy";
         public static String termsAndConditions = host + "terms";
 
+        public static String surveySubmit=websiteUrl+"survey";
 
     }
 
@@ -118,6 +119,7 @@ public class Constants {
     public static final String PREF_DATA_MIXPANEL_USER_ID = "mixpanelUserId";
     public static final String PREF_DATA_COLLEGE = "college";
 
+    public static final String SURVEY_PREF_NAME="surveyPref";
     public static final String PREF_SURVEY_EXISTS="isSurveyPresent";
     public static final String PREF_SURVEY_ID="surveyId";
     public static final String PREF_SURVEY_QUESTION="surveyQuestion";
