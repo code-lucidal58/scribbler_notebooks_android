@@ -14,19 +14,14 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
-import android.text.Layout;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -34,9 +29,9 @@ import android.widget.TextView;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
+import com.scribblernotebooks.scribblernotebooks.Activities.MobileVerification;
 import com.scribblernotebooks.scribblernotebooks.Activities.ScannerActivity;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.CollegePopUp;
-import com.scribblernotebooks.scribblernotebooks.CustomViews.CyclicTransitionDrawable;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.DealPopup;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Deal;
@@ -45,16 +40,10 @@ import com.scribblernotebooks.scribblernotebooks.HelperClasses.ShakeEventManager
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.User;
 import com.scribblernotebooks.scribblernotebooks.R;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 
 public class ManualScribblerCode extends Fragment {
@@ -86,6 +75,7 @@ public class ManualScribblerCode extends Fragment {
     private GoogleApiClient mGoogleApiClient;
 
     private OnFragmentInteractionListener mListener;
+    SharedPreferences sharedPreferences;
 
     /**
      * Statically initiating the Manual Code input fragment for the navigation drawer
@@ -128,25 +118,29 @@ public class ManualScribblerCode extends Fragment {
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
+        sharedPreferences=mContext.getSharedPreferences(Constants.PREF_ONE_TIME_NAME, Context.MODE_PRIVATE);
+        //to verify mobile
+        if (sharedPreferences.getBoolean(Constants.PREF_SHOW_MOBILE, true)) {
+            startActivity(new Intent(mContext, MobileVerification.class));
+        }
         //Inflate view
         final View v = inflater.inflate(R.layout.fragment_manual_scribbler_code, container, false);
-        CollegePopUp collegePopUp=new CollegePopUp(mContext);
+        CollegePopUp collegePopUp = new CollegePopUp(mContext);
 
         //View Setup
-        if (mContext.getSharedPreferences("Illustrations", Context.MODE_PRIVATE).getBoolean("showInstruct", false)) {
+        if (sharedPreferences.getBoolean(Constants.PREF_SHOW_INSTRUCTIONS, true)) {
             instruct = v.findViewById(R.id.instruction);
             okay = (Button) instruct.findViewById(R.id.okay);
             instruct.setVisibility(View.VISIBLE);
             okay.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mContext.getSharedPreferences("Illustrations", Context.MODE_PRIVATE).edit().putBoolean("showInstruct", false).apply();
+                    sharedPreferences.edit().putBoolean("showInstruct", false).apply();
                     instruct.setVisibility(View.GONE);
                 }
             });
         }
-        SharedPreferences sharedPreferences=mContext.getSharedPreferences("collegePopup", Context.MODE_PRIVATE);
-        if(sharedPreferences.getBoolean("show",true)){
+        if (sharedPreferences.getBoolean(Constants.PREF_SHOW_COLLEGE, true)) {
             collegePopUp.show();
         }
         root = (RelativeLayout) v.findViewById(R.id.manualRoot);

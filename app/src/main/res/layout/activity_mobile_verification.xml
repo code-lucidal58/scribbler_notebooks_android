@@ -1,0 +1,106 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.scribblernotebooks.scribblernotebooks.Activities.MobileVerification">
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/app_bar" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbar"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_horizontal_margin">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/instruct"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/mobileVerify"
+                android:textColor="#000"
+                android:textSize="20sp" />
+
+            <EditText
+                android:id="@+id/otp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/instruct"
+                android:layout_marginTop="20dp"
+                android:inputType="number"
+                android:textColor="@color/darkerBlue"
+                android:textSize="18sp" />
+
+            <TableRow
+                android:id="@+id/tableRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/otp"
+                android:layout_marginTop="20sp"
+                android:weightSum="2">
+
+                <Button
+                    android:id="@+id/skip"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="3dp"
+                    android:layout_marginRight="3dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/scanner_button"
+                    android:text="Skip"
+                    android:textColor="#FFF" />
+
+                <Button
+                    android:id="@+id/okay"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="3dp"
+                    android:layout_marginRight="3dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/scanner_button"
+                    android:text="Okay"
+                    android:textColor="#FFF" />
+            </TableRow>
+
+            <TextView
+                android:id="@+id/changeNo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tableRow"
+                android:layout_marginTop="15sp"
+                android:gravity="right"
+                android:text="Change registered Mobile No."
+                android:textSize="15sp"
+                android:textStyle="italic" />
+
+            <Button
+                android:id="@+id/resend"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/changeNo"
+                android:layout_marginTop="20sp"
+                android:background="#fff"
+                android:text="Resend Code"
+                android:textColor="@color/darkBlue"
+                android:visibility="gone" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/resend"
+                android:layout_marginTop="50dp"
+                android:text="@string/mobileVerifyNote"
+                android:textSize="18sp"
+                android:textStyle="italic" />
+        </RelativeLayout>
+    </ScrollView>
+
+</RelativeLayout>

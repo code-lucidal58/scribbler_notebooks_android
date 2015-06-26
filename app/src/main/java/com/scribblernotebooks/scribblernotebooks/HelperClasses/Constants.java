@@ -118,6 +118,13 @@ public class Constants {
     public static final String PREF_DATA_MIXPANEL_USER_ID = "mixpanelUserId";
     public static final String PREF_DATA_COLLEGE = "college";
 
+    public static final String PREF_ONE_TIME_NAME="OneTimeShow";
+    public static final String PREF_SHOW_ILLUSTRATION="showIllustration";
+    public static final String PREF_SHOW_COLLEGE="showCollegePopup";
+    public static final String PREF_SHOW_MOBILE="showMobileVerfication";
+    public static final String PREF_SHOW_INSTRUCTIONS="showInstructions";
+
+
     public static final String PREF_SURVEY_EXISTS="isSurveyPresent";
     public static final String PREF_SURVEY_ID="surveyId";
     public static final String PREF_SURVEY_QUESTION="surveyQuestion";
@@ -161,11 +168,6 @@ public class Constants {
     public static final String PREF_GCM_NAME = "gcmSharedPreferences";
     public static final String GCM_REG_ID = "registrationId";
     public static final String GCM_APP_VERSION = "appVersion";
-    /**
-     * Basic Profile Info fields
-     */
-    public static final String[] sharedPrefTags = {Constants.PREF_DATA_NAME, Constants.PREF_DATA_EMAIL,
-            Constants.PREF_DATA_MOBILE, Constants.PREF_DATA_LOCATION};
 
     /**
      * Change color of editTexts

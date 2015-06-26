@@ -14,6 +14,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.scribblernotebooks.scribblernotebooks.Activities.LogIn;
+import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.R;
 
 import org.w3c.dom.Text;
@@ -63,8 +64,10 @@ public class IllustrationsPageAdapter extends PagerAdapter {
             getStarted.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    activity.getSharedPreferences("Illustrations",Context.MODE_PRIVATE).edit().putBoolean("firstTime",false).apply();
-                    activity.getSharedPreferences("Illustrations",Context.MODE_PRIVATE).edit().putBoolean("showInstruct",true).apply();
+                    activity.getSharedPreferences(Constants.PREF_ONE_TIME_NAME,Context.MODE_PRIVATE)
+                            .edit().putBoolean(Constants.PREF_SHOW_ILLUSTRATION,false).apply();
+                    activity.getSharedPreferences(Constants.PREF_ONE_TIME_NAME,Context.MODE_PRIVATE)
+                            .edit().putBoolean(Constants.PREF_SHOW_INSTRUCTIONS,true).apply();
                     activity.startActivity(new Intent(activity, LogIn.class));
                     activity.finish();
                 }
