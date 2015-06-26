@@ -350,6 +350,7 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
                 HashMap<String, String> data = new HashMap<>();
                 data.put("email", strings[0]);
                 data.put("gcmkey", strings[1]);
+                Log.e("GCM KEY",strings[1]);
                 data.put("deviceID", deviceId);
 
                 Log.e("Device ID", deviceId);
@@ -405,7 +406,7 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
         editor.putString(Constants.GCM_REG_ID, regId);
         editor.putInt(Constants.GCM_APP_VERSION, appVersion);
         editor.apply();
-//        Log.e("GCM", "After save +" + prefs.getString(Constants.GCM_REG_ID, ""));
+        Log.e("GCM", "After save +" + prefs.getString(Constants.GCM_REG_ID, ""));
     }
 
 

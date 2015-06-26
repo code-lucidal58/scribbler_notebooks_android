@@ -42,6 +42,7 @@ public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User
     Activity activity;
     HashMap<String, String> parsedData;
     ProgressDialog progressDialog;
+    Boolean isSignup=false;
 
     public SignUpService(String s, Activity a) {
         urlExtension = s;
@@ -86,8 +87,10 @@ public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User
                 String response = br.readLine();
 //                Log.e("SignUpService","Response: "+response);
                 if (urlExtension.equalsIgnoreCase(Constants.ServerUrls.login)) {
+                    isSignup=false;
                     return loginHandle(response);
                 } else if (urlExtension.equalsIgnoreCase(Constants.ServerUrls.signUp)) {
+                    isSignup=true;
                     return signupHandle(response, params[0]);
                 }
 //                else if (urlExtension.equalsIgnoreCase(Constants.ServerUrls.loginGoogle) || urlExtension.equalsIgnoreCase(Constants.ServerUrls.loginFacebook)) {
@@ -107,7 +110,12 @@ public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User
             return;
         }
         Constants.saveUserDetails(activity, user);
-        activity.startActivity(new Intent(activity, NavigationDrawer.class));
+        User user1=Constants.getUser(activity);
+        if(user1.getMobile().isEmpty() && isSignup){
+            activity.startActivity(new Intent(activity, ProfileManagement.class));
+        }else {
+            activity.startActivity(new Intent(activity, NavigationDrawer.class));
+        }
         activity.finish();
         super.onPostExecute(user);
     }
