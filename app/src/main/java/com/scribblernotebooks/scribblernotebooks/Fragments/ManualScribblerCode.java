@@ -138,7 +138,7 @@ public class ManualScribblerCode extends Fragment {
             okay.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    sharedPreferences.edit().putBoolean("showInstruct", false).apply();
+                    sharedPreferences.edit().putBoolean(Constants.PREF_SHOW_INSTRUCTIONS, false).apply();
                     instruct.setVisibility(View.GONE);
                 }
             });

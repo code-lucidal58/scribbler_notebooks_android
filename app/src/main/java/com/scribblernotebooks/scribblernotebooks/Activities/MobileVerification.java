@@ -20,6 +20,8 @@ import com.scribblernotebooks.scribblernotebooks.R;
 
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
 
 public class MobileVerification extends AppCompatActivity {
 
@@ -41,25 +43,27 @@ public class MobileVerification extends AppCompatActivity {
         resend = (Button) findViewById(R.id.resend);
         change = (TextView) findViewById(R.id.changeNo);
 
-        sharedPreferences=getSharedPreferences(Constants.PREF_ONE_TIME_NAME,MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences(Constants.PREF_ONE_TIME_NAME, MODE_PRIVATE);
 
         setSupportActionBar(toolbar);
 
         //resend button to be shown after 2 min of activity start
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                resend.setVisibility(View.VISIBLE);
-            }
-        },2000,0);
-
+        new Timer().schedule(
+                new TimerTask() {
+                    @Override
+                    public void run() {
+                        resend.setVisibility(View.VISIBLE);
+                    }
+                },
+                2000
+        );
 
         //user does not want to verify mobile no.
         skip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //startActivity(new Intent(getBaseContext(), NavigationDrawer.class));
-                sharedPreferences.edit().putBoolean(Constants.PREF_SHOW_MOBILE,false).apply();
+                sharedPreferences.edit().putBoolean(Constants.PREF_SHOW_MOBILE, false).apply();
                 finish();
             }
         });
@@ -68,14 +72,14 @@ public class MobileVerification extends AppCompatActivity {
         okay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String otpNo=otp.getText().toString();
-                if(!otpNo.isEmpty()){
-                    if(otpNo.equals(sharedPreferences.getString(Constants.PREF_MOBILE_VERIFY_CODE,""))){
-                        Toast.makeText(getBaseContext(),"Mobile Number Verified",Toast.LENGTH_SHORT).show();
+                String otpNo = otp.getText().toString();
+                if (!otpNo.isEmpty()) {
+                    if (otpNo.equals(sharedPreferences.getString(Constants.PREF_MOBILE_VERIFY_CODE, ""))) {
+                        Toast.makeText(getBaseContext(), "Mobile Number Verified", Toast.LENGTH_SHORT).show();
                         finish();
                     }
-                }else{
-                    Toast.makeText(getBaseContext(),"Please enter correct OTP",Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getBaseContext(), "Please enter correct OTP", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -93,15 +97,6 @@ public class MobileVerification extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 change.setTextColor(getResources().getColor(R.color.darkBlue));
-                AlertDialog alertDialog = new AlertDialog.Builder(getBaseContext()).create();
-                alertDialog.setMessage("Press resend button after changing mobile number");
-                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
-                alertDialog.show();
                 startActivity(new Intent(getBaseContext(), ProfileManagement.class));
             }
         });
