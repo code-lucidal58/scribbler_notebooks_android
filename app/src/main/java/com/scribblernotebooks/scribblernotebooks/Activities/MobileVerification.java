@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
+import com.scribblernotebooks.scribblernotebooks.HelperClasses.User;
 import com.scribblernotebooks.scribblernotebooks.R;
 
 import java.io.BufferedWriter;
@@ -83,6 +84,8 @@ public class MobileVerification extends AppCompatActivity {
                 if (!otpNo.isEmpty()) {
                     if (otpNo.equals(sharedPreferences.getString(Constants.PREF_MOBILE_VERIFY_CODE, ""))) {
                         Toast.makeText(getBaseContext(), "Mobile Number Verified", Toast.LENGTH_SHORT).show();
+                        User user=Constants.getUser(getApplicationContext());
+                        new VerifyMobile().execute(user.getEmail(), user.getToken());
                         finish();
                     }
                 } else {
@@ -120,4 +123,35 @@ public class MobileVerification extends AppCompatActivity {
     public void onBackPressed() {
     }
 
+    public class VerifyMobile extends AsyncTask<String, Void, Void> {
+        @Override
+        protected Void doInBackground(String... params) {
+            String email=params[0];
+            String token=params[1];
+
+            try {
+                URL url = new URL(Constants.ServerUrls.mobileVerified);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("POST");
+                connection.setConnectTimeout(10000);
+                connection.setReadTimeout(15000);
+                connection.setDoOutput(true);
+
+                HashMap<String, String> data = new HashMap<>();
+                data.put(Constants.POST_TOKEN, token);
+                data.put(Constants.POST_NAME, email);
+
+                OutputStream os = connection.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                writer.write(Constants.getPostDataString(data));
+                writer.flush();
+                writer.close();
+                os.close();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+    }
 }
