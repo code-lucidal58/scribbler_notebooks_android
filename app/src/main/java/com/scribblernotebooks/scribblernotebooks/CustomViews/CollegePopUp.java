@@ -69,11 +69,13 @@ public class CollegePopUp extends Dialog {
             @Override
             public void onClick(View v) {
                 String text = collegeName.getText().toString();
-                if (text.isEmpty()) {
+                if (!text.isEmpty()) {
                     User user = Constants.getUser(getContext());
                     user.setCollege(text);
                     Constants.saveUserDetails(getContext(), user);
                     dialog.dismiss();
+                }else{
+                    collegeName.setError("Please enter your college name");
                 }
             }
         });

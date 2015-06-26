@@ -17,7 +17,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
-import com.scribblernotebooks.scribblernotebooks.HelperClasses.User;
 import com.scribblernotebooks.scribblernotebooks.R;
 
 import java.io.BufferedWriter;
@@ -28,8 +27,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import javax.xml.transform.sax.SAXResult;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
 
 public class MobileVerification extends AppCompatActivity {
 
@@ -51,29 +50,27 @@ public class MobileVerification extends AppCompatActivity {
         resend = (Button) findViewById(R.id.resend);
         change = (TextView) findViewById(R.id.changeNo);
 
-        sharedPreferences=getSharedPreferences(Constants.PREF_ONE_TIME_NAME,MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences(Constants.PREF_ONE_TIME_NAME, MODE_PRIVATE);
 
         setSupportActionBar(toolbar);
 
-        User user=Constants.getUser(this);
-        new VerifyMobile().execute(user.getEmail(), user.getToken());
-
         //resend button to be shown after 2 min of activity start
-        Timer timer=new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                resend.setVisibility(View.VISIBLE);
-            }
-        }, 2000, 0);
-
+        new Timer().schedule(
+                new TimerTask() {
+                    @Override
+                    public void run() {
+                        resend.setVisibility(View.VISIBLE);
+                    }
+                },
+                2000
+        );
 
         //user does not want to verify mobile no.
         skip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //startActivity(new Intent(getBaseContext(), NavigationDrawer.class));
-                sharedPreferences.edit().putBoolean(Constants.PREF_SHOW_MOBILE,false).apply();
+                sharedPreferences.edit().putBoolean(Constants.PREF_SHOW_MOBILE, false).apply();
                 finish();
             }
         });
@@ -82,14 +79,14 @@ public class MobileVerification extends AppCompatActivity {
         okay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String otpNo=otp.getText().toString();
-                if(!otpNo.isEmpty()){
-                    if(otpNo.equals(sharedPreferences.getString(Constants.PREF_MOBILE_VERIFY_CODE,""))){
-                        Toast.makeText(getBaseContext(),"Mobile Number Verified",Toast.LENGTH_SHORT).show();
+                String otpNo = otp.getText().toString();
+                if (!otpNo.isEmpty()) {
+                    if (otpNo.equals(sharedPreferences.getString(Constants.PREF_MOBILE_VERIFY_CODE, ""))) {
+                        Toast.makeText(getBaseContext(), "Mobile Number Verified", Toast.LENGTH_SHORT).show();
                         finish();
                     }
-                }else{
-                    Toast.makeText(getBaseContext(),"Please enter correct OTP",Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getBaseContext(), "Please enter correct OTP", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -107,15 +104,6 @@ public class MobileVerification extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 change.setTextColor(getResources().getColor(R.color.darkBlue));
-                AlertDialog alertDialog = new AlertDialog.Builder(getBaseContext()).create();
-                alertDialog.setMessage("Press resend button after changing mobile number");
-                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
-                alertDialog.show();
                 startActivity(new Intent(getBaseContext(), ProfileManagement.class));
             }
         });
@@ -132,35 +120,4 @@ public class MobileVerification extends AppCompatActivity {
     public void onBackPressed() {
     }
 
-    public class VerifyMobile extends AsyncTask<String, Void, Void>{
-        @Override
-        protected Void doInBackground(String... params) {
-            String email=params[0];
-            String token=params[1];
-
-            try {
-                URL url = new URL(Constants.ServerUrls.mobileVerified);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("POST");
-                connection.setConnectTimeout(10000);
-                connection.setReadTimeout(15000);
-                connection.setDoOutput(true);
-
-                HashMap<String, String> data = new HashMap<>();
-                data.put(Constants.POST_TOKEN, token);
-                data.put(Constants.POST_NAME, email);
-
-                OutputStream os = connection.getOutputStream();
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-                writer.write(Constants.getPostDataString(data));
-                writer.flush();
-                writer.close();
-                os.close();
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-    }
 }
