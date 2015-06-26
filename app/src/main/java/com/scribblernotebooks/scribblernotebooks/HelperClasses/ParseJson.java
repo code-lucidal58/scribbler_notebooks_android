@@ -9,6 +9,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.scribblernotebooks.scribblernotebooks.Activities.LogIn;
+import com.scribblernotebooks.scribblernotebooks.Handlers.UserHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -154,8 +155,33 @@ public class ParseJson {
             parsedData.put(Constants.POST_EMAIL, data.getString(Constants.POST_EMAIL));
             parsedData.put(Constants.POST_MOBILE, data.getString(Constants.POST_MOBILE));
             parsedData.put(Constants.POST_TOKEN, data.optString(Constants.POST_TOKEN));
+
+            try {
+                JSONObject collegeObject = data.getJSONObject(Constants.POST_COLLEGE);
+                parsedData.put(Constants.POST_COLLEGE, collegeObject.optString("name"));
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
             parsedData.put(Constants.POST_IS_NEW, data.optString(Constants.POST_IS_NEW));
             JSONObject name = data.getJSONObject(Constants.POST_NAME);
+
+            try {
+                JSONArray dealsLiked = data.getJSONArray("dealsLiked");
+                String liked=dealsLiked.toString();
+                parsedData.put("likedDeals",liked);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            try {
+                JSONArray sharedDeals = data.getJSONArray("dealsShared");
+                String shared=sharedDeals.toString();
+                parsedData.put("sharedDeals",shared);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+
             parsedData.put(Constants.POST_NAME, name.getString(Constants.POST_NAME_FIRST) + " " + name.getString(Constants.POST_NAME_LAST));
             return parsedData;
         } catch (JSONException e) {

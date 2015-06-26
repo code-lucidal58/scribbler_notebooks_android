@@ -3,6 +3,7 @@ package com.scribblernotebooks.scribblernotebooks.Activities;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -18,6 +19,13 @@ import android.widget.RatingBar;
 
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.R;
+
+import java.io.BufferedWriter;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.HashMap;
 
 public class FeedbackActivity extends AppCompatActivity {
 
@@ -59,9 +67,38 @@ public class FeedbackActivity extends AppCompatActivity {
     }
 
     public void submit_feedback(){
-        float rating=ratingBar.getRating();
+        final float rating=ratingBar.getRating();
         String feedback_message=feedback.getText().toString();
+        String user=userEmail.getText().toString();
+        new AsyncTask<String, Void, Void>(){
+            @Override
+            protected Void doInBackground(String... params) {
 
+                try{
+                    URL url=new URL(Constants.ServerUrls.feedback);
+                    HttpURLConnection connection=(HttpURLConnection)url.openConnection();
+                    connection.setDoOutput(true);
+                    connection.setRequestMethod("POST");
+                    connection.setReadTimeout(15000);
+                    connection.setConnectTimeout(15000);
+
+                    HashMap<String, String > data=new HashMap<>();
+                    data.put("user",params[0]);
+                    data.put("rating",params[1]);
+                    data.put("message",params[2]);
+
+                    OutputStream os=connection.getOutputStream();
+                    BufferedWriter writer=new BufferedWriter(new OutputStreamWriter(os,"UTF-8"));
+                    writer.write(Constants.getPostDataString(data));
+                    writer.flush();
+                    writer.close();
+                    os.close();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        }.execute(user, String.valueOf(rating),feedback_message);
         //TODO: Send feedback to server
     }
 

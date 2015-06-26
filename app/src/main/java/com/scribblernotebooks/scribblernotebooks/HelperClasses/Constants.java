@@ -55,6 +55,8 @@ public class Constants {
         public static String changePassword = websiteUrl + "user/change-password";
         public static String forgotPassword = websiteUrl + "forgot-password";
         public static String insertGCM = websiteUrl + "insertGcm";
+        public static String mobileVerified=websiteUrl+"mobileVerified";
+        public static String feedback=websiteUrl+"feedback";
 
         //Deal Details
         public static String dealDetail = websiteUrl + "deal/";
@@ -154,6 +156,7 @@ public class Constants {
     public static final String POST_PASSWORD = "password";
     public static final String POST_MIXPANELID = "_id";
     public static final String POST_GOOGLE = "googleId";
+    public static final String POST_COLLEGE="college";
     public static final String POST_FACEBOOK = "facebookId";
     public static final String POST_COVERPIC = "coverImage";
     public static final String POST_PROFILEPIC = "profilePic";

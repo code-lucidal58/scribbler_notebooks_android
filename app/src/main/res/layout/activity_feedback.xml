@@ -57,7 +57,7 @@
         android:id="@+id/ratingBar"
         android:numStars="5"
         android:stepSize="0.5"
-        android:rating="2"
+        android:rating="3"
         android:layout_margin="3dp"
         android:layout_toEndOf="@+id/t1"
         android:layout_toRightOf="@+id/t1"

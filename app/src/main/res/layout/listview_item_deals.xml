@@ -127,6 +127,7 @@
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:background="#00000000"
+                        android:visibility="gone"
                         android:src="@drawable/deallist_share" />
 
 

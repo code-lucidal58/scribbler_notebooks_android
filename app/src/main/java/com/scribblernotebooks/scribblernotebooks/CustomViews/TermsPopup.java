@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -41,6 +42,7 @@ public class TermsPopup extends Dialog implements View.OnClickListener {
     private String url;
     Context context;
     String  title;
+    ProgressBar progressBar;
 
     /**
      * Default Constructors
@@ -77,6 +79,7 @@ public class TermsPopup extends Dialog implements View.OnClickListener {
         //View Setup
         titleView=(TextView)findViewById(R.id.title);
         contentView=(TextView)findViewById(R.id.content);
+        progressBar=(ProgressBar)findViewById(R.id.loadingProgress);
 
         titleView.setText(title);
 
@@ -102,14 +105,11 @@ public class TermsPopup extends Dialog implements View.OnClickListener {
     public void displayContent(){
         new AsyncTask<Void,Void,String>(){
 
-            ProgressDialog progressDialog=null;
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
-                progressDialog=new ProgressDialog(context);
-                progressDialog.setMessage("Loading");
-                progressDialog.setIndeterminate(true);
-                progressDialog.show();
+                progressBar.setVisibility(View.VISIBLE);
+                contentView.setVisibility(View.GONE);
             }
 
             @Override
@@ -132,11 +132,16 @@ public class TermsPopup extends Dialog implements View.OnClickListener {
             @Override
             protected void onPostExecute(String s) {
                 JSONObject js;
-                if(progressDialog!=null){
-                    if(progressDialog.isShowing()){
-                        progressDialog.dismiss();
-                    }
+                if(s==null)
+                {
+                    dismiss();
+                    return;
                 }
+
+                progressBar.setVisibility(View.GONE);
+                contentView.setVisibility(View.VISIBLE);
+
+
                 try {
                     js = new JSONObject(s);
                     /*{success: true, data:"Content here"}*/

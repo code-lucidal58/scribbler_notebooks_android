@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.scribblernotebooks.scribblernotebooks.Activities.NavigationDrawer;
 import com.scribblernotebooks.scribblernotebooks.Activities.ProfileManagement;
+import com.scribblernotebooks.scribblernotebooks.Handlers.UserHandler;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.ParseJson;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.User;
@@ -26,9 +27,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -127,6 +130,37 @@ public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User
                         parsedData.get(Constants.POST_PROFILEPIC),
                         parsedData.get(Constants.POST_TOKEN),
                         parsedData.get(Constants.POST_MIXPANELID));
+
+                try {
+                    String likedDeals = parsedData.get("likedDeals");
+                    String[] ld = likedDeals.split(",");
+                    UserHandler handler = new UserHandler(activity);
+                    for (int i = 0; i < ld.length; i++) {
+                        handler.addDeal(ld[i]);
+                    }
+                    handler.close();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+                try{
+                    String likedDeals = parsedData.get("likedDeals");
+                    String[] ld = likedDeals.split(",");
+                    UserHandler handler = new UserHandler(activity);
+                    for (int i = 0; i < ld.length; i++) {
+                        handler.addSharedDeal(ld[i]);
+                    }
+                    handler.close();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+                try{
+                    user.setCollege(parsedData.get(Constants.POST_COLLEGE));
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
                 activity.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE).edit().putString(Constants.PREF_DATA_PASS, "OK").apply();
                 return user;
             } else {
@@ -156,7 +190,7 @@ public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User
             if (Boolean.parseBoolean(parsedData.get(Constants.POST_SUCCESS))) {
                 activity.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE).edit().putString(Constants.PREF_DATA_PASS, "OK").apply();
                 activity.getSharedPreferences(Constants.PREF_ONE_TIME_NAME,Context.MODE_PRIVATE).edit()
-                        .putString(Constants.PREF_MOBILE_VERIFY_CODE,parsedData.get(Constants.POST_MOBILE_VERIFY)).apply();
+                        .putString(Constants.PREF_MOBILE_VERIFY_CODE, parsedData.get(Constants.POST_MOBILE_VERIFY)).apply();
                 String cover,profilePic;
                 Log.e("normal signIn","signupHandle");
                 try {

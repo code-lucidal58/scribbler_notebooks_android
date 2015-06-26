@@ -3,6 +3,7 @@ package com.scribblernotebooks.scribblernotebooks.Activities;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -16,10 +17,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
+import com.scribblernotebooks.scribblernotebooks.HelperClasses.User;
 import com.scribblernotebooks.scribblernotebooks.R;
 
+import java.io.BufferedWriter;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import javax.xml.transform.sax.SAXResult;
 
 public class MobileVerification extends AppCompatActivity {
 
@@ -45,13 +55,17 @@ public class MobileVerification extends AppCompatActivity {
 
         setSupportActionBar(toolbar);
 
+        User user=Constants.getUser(this);
+        new VerifyMobile().execute(user.getEmail(), user.getToken());
+
         //resend button to be shown after 2 min of activity start
-        new Timer().schedule(new TimerTask() {
+        Timer timer=new Timer();
+        timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 resend.setVisibility(View.VISIBLE);
             }
-        },2000,0);
+        }, 2000, 0);
 
 
         //user does not want to verify mobile no.
@@ -116,5 +130,37 @@ public class MobileVerification extends AppCompatActivity {
     //to deactivate back press button
     @Override
     public void onBackPressed() {
+    }
+
+    public class VerifyMobile extends AsyncTask<String, Void, Void>{
+        @Override
+        protected Void doInBackground(String... params) {
+            String email=params[0];
+            String token=params[1];
+
+            try {
+                URL url = new URL(Constants.ServerUrls.mobileVerified);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("POST");
+                connection.setConnectTimeout(10000);
+                connection.setReadTimeout(15000);
+                connection.setDoOutput(true);
+
+                HashMap<String, String> data = new HashMap<>();
+                data.put(Constants.POST_TOKEN, token);
+                data.put(Constants.POST_NAME, email);
+
+                OutputStream os = connection.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                writer.write(Constants.getPostDataString(data));
+                writer.flush();
+                writer.close();
+                os.close();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+            return null;
+        }
     }
 }

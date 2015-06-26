@@ -440,18 +440,20 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
                     case "category":
                         category = text;
                         Log.e("DealFragment", "Category Changed " + category);
+                        parametersChanged = true;
                         break;
                     case "search":
                         searchQuery = text;
                         Log.e("DealFragment", "SearchQuery Changed " + searchQuery);
+                        parametersChanged = true;
                         break;
                     case "sort":
                         sort = text;
                         Log.e("DealFragment", "Sort Changed " + sort);
+                        parametersChanged=false;
                         break;
                 }
                 Log.e("DealFragment", "Search Clicked " + page + " " + category + " " + searchQuery + " " + sort);
-                parametersChanged = true;
                 showToolbarOptions();
             }
         });
@@ -461,6 +463,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
                 selectedIcon.setImageDrawable(getResources().getDrawable(R.drawable.category));
                 selectionIconName.setText("Category");
                 selectedIconQuery.setHint("Enter Category...");
+                selectedIconQuery.setText(category);
 
 //                initialTopPadding=recyclerView.getPaddingTop();
 //                recyclerView.setPadding(swipeRefreshLayout.getPaddingLeft(), 70 + 55 + 200, swipeRefreshLayout.getPaddingRight(), swipeRefreshLayout.getPaddingBottom());
@@ -472,6 +475,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
                 selectionIconName.setText("Search");
                 selectedIconQuery.setHint("Name, Location, Content...");
                 suggestionList = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.search_list)));
+                selectedIconQuery.setText(searchQuery);
                 break;
             case "sort":
                 selectedIcon.setImageDrawable(getResources().getDrawable(R.drawable.sort));
