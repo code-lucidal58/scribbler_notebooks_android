@@ -1,8 +1,10 @@
 package com.scribblernotebooks.scribblernotebooks.Activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -15,6 +17,9 @@ import android.widget.Toast;
 
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.R;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MobileVerification extends AppCompatActivity {
 
@@ -40,6 +45,15 @@ public class MobileVerification extends AppCompatActivity {
 
         setSupportActionBar(toolbar);
 
+        //resend button to be shown after 2 min of activity start
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                resend.setVisibility(View.VISIBLE);
+            }
+        },2000,0);
+
+
         //user does not want to verify mobile no.
         skip.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,9 +70,12 @@ public class MobileVerification extends AppCompatActivity {
             public void onClick(View v) {
                 String otpNo=otp.getText().toString();
                 if(!otpNo.isEmpty()){
-
+                    if(otpNo.equals(sharedPreferences.getString(Constants.PREF_MOBILE_VERIFY_CODE,""))){
+                        Toast.makeText(getBaseContext(),"Mobile Number Verified",Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
                 }else{
-                    Toast.makeText(getBaseContext(),"Please enter the OTP",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getBaseContext(),"Please enter correct OTP",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -76,10 +93,24 @@ public class MobileVerification extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 change.setTextColor(getResources().getColor(R.color.darkBlue));
-                startActivity(new Intent(getBaseContext(),ProfileManagement.class));
-                finish();
+                AlertDialog alertDialog = new AlertDialog.Builder(getBaseContext()).create();
+                alertDialog.setMessage("Press resend button after changing mobile number");
+                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                alertDialog.show();
+                startActivity(new Intent(getBaseContext(), ProfileManagement.class));
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        resend.setVisibility(View.VISIBLE);
     }
 
     //to deactivate back press button

@@ -79,7 +79,6 @@ public class ManualScribblerCode extends Fragment {
     private static Context sContext;
     private GoogleApiClient mGoogleApiClient;
 
-    private OnFragmentInteractionListener mListener;
     SharedPreferences sharedPreferences;
     /**
      * Statically initiating the Manual Code input fragment for the navigation drawer

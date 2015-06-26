@@ -123,6 +123,7 @@ public class Constants {
     public static final String PREF_SHOW_ILLUSTRATION="showIllustration";
     public static final String PREF_SHOW_COLLEGE="showCollegePopup";
     public static final String PREF_SHOW_MOBILE="showMobileVerfication";
+    public static final String PREF_MOBILE_VERIFY_CODE="mobileVerificationCode";
     public static final String PREF_SHOW_INSTRUCTIONS="showInstructions";
 
     public static final String SURVEY_PREF_NAME="surveyPref";
@@ -149,6 +150,7 @@ public class Constants {
     public static final String POST_NAME = "name";
     public static final String POST_EMAIL = "email";
     public static final String POST_MOBILE = "mobile";
+    public static final String POST_MOBILE_VERIFY="mobileVerfication";
     public static final String POST_PASSWORD = "password";
     public static final String POST_MIXPANELID = "_id";
     public static final String POST_GOOGLE = "googleId";

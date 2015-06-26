@@ -179,6 +179,7 @@ public class ParseJson {
             parsedData.put(Constants.POST_MOBILE, data.getString(Constants.POST_MOBILE));
             parsedData.put(Constants.POST_TOKEN, data.optString(Constants.POST_TOKEN));
             parsedData.put(Constants.POST_IS_NEW, data.optString(Constants.POST_IS_NEW));
+            parsedData.put(Constants.POST_MOBILE_VERIFY,data.optString(Constants.POST_MOBILE_VERIFY));
             JSONObject name = data.getJSONObject(Constants.POST_NAME);
             try {
                 parsedData.put(Constants.POST_NAME, name.getString(Constants.POST_NAME_FIRST) + " " + name.getString(Constants.POST_NAME_LAST));

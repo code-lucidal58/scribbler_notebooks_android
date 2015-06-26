@@ -147,6 +147,8 @@ public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User
         if (parsedData != null) {
             if (Boolean.parseBoolean(parsedData.get(Constants.POST_SUCCESS))) {
                 activity.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE).edit().putString(Constants.PREF_DATA_PASS, "OK").apply();
+                activity.getSharedPreferences(Constants.PREF_ONE_TIME_NAME,Context.MODE_PRIVATE).edit()
+                        .putString(Constants.PREF_MOBILE_VERIFY_CODE,parsedData.get(Constants.POST_MOBILE_VERIFY)).apply();
                 String cover,profilePic;
                 Log.e("normal signIn","signupHandle");
                 try {
