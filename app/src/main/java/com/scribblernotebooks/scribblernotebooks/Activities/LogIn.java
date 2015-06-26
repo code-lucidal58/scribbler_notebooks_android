@@ -57,7 +57,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     private static final int REQ_SIGN_IN_REQUIRED = 55664;
 
     EditText name, email, mobile, password;
-    TextView forgotPassword,termsAndConditions;
+    TextView forgotPassword, termsAndConditions;
     Button signIn, signUp;
     String userName = "", userEmail = "", userPassword, userMobile;
     SignInButton signInButton;
@@ -186,7 +186,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         signIn = (Button) findViewById(R.id.signIn);
         signUp = (Button) findViewById(R.id.signUp);
         forgotPassword = (TextView) findViewById(R.id.forgotPassword);
-        termsAndConditions=(TextView)findViewById(R.id.termsAndConditions);
+        termsAndConditions = (TextView) findViewById(R.id.termsAndConditions);
         signInButton = (SignInButton) findViewById(R.id.sign_in_button);
         signInButton.setOnClickListener(this);
         signInButton.setSize(SignInButton.SIZE_WIDE);
@@ -205,7 +205,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         Constants.drawableScaleColorChange(this, mobile, R.drawable.phonelogin);
 
         /**Forgot Password**/
-        View.OnTouchListener colorChanger=new View.OnTouchListener() {
+        View.OnTouchListener colorChanger = new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 TextView t = (TextView) v;
@@ -236,7 +236,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
             @Override
             public void onClick(View v) {
                 //TODO: Show terms and conditions
-                TermsPopup popup=new TermsPopup(LogIn.this);
+                TermsPopup popup = new TermsPopup(LogIn.this);
                 popup.setTitle("Terms & Conditions");
                 popup.setUrl(Constants.ServerUrls.termsAndConditions);
                 popup.show();
@@ -350,7 +350,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
             userMobile = mobile.getText().toString();
 
             if (userName.isEmpty()) {
-                name.setCompoundDrawables(null,null,null,null);
+                name.setCompoundDrawables(null, null, null, null);
                 name.setError("Name required");
             } else if (!Constants.isValidEmailId(userEmail)) {
                 email.setCompoundDrawables(null, null, null, null);
@@ -490,7 +490,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         @Override
         protected void onPostExecute(String response) {
             Log.e(TAG, "Google access token = " + response);
-            loginSocial(Constants.POST_METHOD_GOOGLE,response);
+            loginSocial(Constants.POST_METHOD_GOOGLE, response);
         }
     }
 
@@ -611,7 +611,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         HashMap<String, String> data = new HashMap<>();
         data.put(Constants.POST_METHOD, method);
         data.put(Constants.POST_ACCESS_TOKEN, accessToken);
-        data.put(Constants.POST_TOKEN,getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE).getString(Constants.PREF_DATA_USER_TOKEN,""));
+        data.put(Constants.POST_TOKEN, getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE).getString(Constants.PREF_DATA_USER_TOKEN, ""));
         new SignUpService(Constants.ServerUrls.login, this).execute(data);
     }
 

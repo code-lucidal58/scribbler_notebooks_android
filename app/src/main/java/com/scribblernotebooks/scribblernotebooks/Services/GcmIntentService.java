@@ -53,6 +53,7 @@ public class GcmIntentService extends IntentService {
              * any message types you're not interested in, or that you don't
              * recognize.
              */
+            Log.e("GCM EXTRA",extras.toString());
             if (GoogleCloudMessaging.
                     MESSAGE_TYPE_MESSAGE.equals(messageType)) {
 
@@ -85,6 +86,7 @@ public class GcmIntentService extends IntentService {
          */
 
         JSONObject responseObject = new JSONObject(response);
+        Log.e("GCM Response",response);
         String type = responseObject.getString("type");
         switch (type.toLowerCase()) {
             case "notification":
