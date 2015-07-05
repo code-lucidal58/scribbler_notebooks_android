@@ -123,7 +123,9 @@ public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User
         parsedData = ParseJson.parseLoginResponse(response);
         if (parsedData != null) {
             if (Boolean.parseBoolean(parsedData.get(Constants.POST_SUCCESS))) {
-                User user = new User(parsedData.get(Constants.POST_NAME),
+                User user = new User(
+                        parsedData.get(Constants.PREF_DATA_ID),
+                        parsedData.get(Constants.POST_NAME),
                         parsedData.get(Constants.POST_EMAIL),
                         parsedData.get(Constants.POST_MOBILE),
                         parsedData.get(Constants.POST_COVERPIC),
@@ -203,7 +205,8 @@ public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User
                 }catch (Exception e){
                     profilePic="";
                 }
-                return new User(params.get(Constants.POST_NAME),
+                return new User(params.get(Constants.PREF_DATA_ID),
+                        params.get(Constants.POST_NAME),
                         params.get(Constants.POST_EMAIL),
                         params.get(Constants.POST_MOBILE),
                         cover,profilePic,
@@ -227,7 +230,8 @@ public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User
         if (parsedData != null) {
             //success is true
             if (Boolean.parseBoolean(parsedData.get(Constants.POST_SUCCESS))) {
-                user = new User(parsedData.get(Constants.POST_NAME),
+                user = new User(parsedData.get(Constants.PREF_DATA_ID),
+                        parsedData.get(Constants.POST_NAME),
                         parsedData.get(Constants.POST_EMAIL),
                         parsedData.get(Constants.POST_MOBILE),
                         parsedData.get(Constants.POST_COVERPIC),

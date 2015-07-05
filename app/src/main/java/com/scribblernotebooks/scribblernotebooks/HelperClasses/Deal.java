@@ -96,7 +96,7 @@ public class Deal implements Parcelable {
     /**
      * Sending statistics to the server about like and share
      */
-    public void sendLikeStatus(final Context context, Boolean isFav) {
+    public void sendLikeStatus(final Context context,final Boolean isFav) {
         //Code to synchronise with server
         User user = Constants.getUser(context);
         String email = user.getEmail();
@@ -122,27 +122,56 @@ public class Deal implements Parcelable {
                 String id=params[2];
                 String liked=params[3];
 
+                data.put("token",token);
+                data.put("email",email);
+                data.put("id",id);
+
+                URL url;
                 try {
-                    URL url = new URL(Constants.ServerUrls.likeDeal+id+"/"+email+"/"+liked+"?token="+token);
+                    url = new URL(Constants.getLikeDealUrl(id));
                     Log.e("Deal","Liking deal url:"+url.toString());
                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    if(isFav) {
+                        connection.setRequestMethod("POST");
+                        Log.e("Deal", "POST method");
+                        connection.setDoOutput(true);
+
+                        Log.e("Deal","writing data");
+                        OutputStream os = connection.getOutputStream();
+                        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                        writer.write(Constants.getPostDataString(data));
+                        Log.e("Deal","Post Data: "+Constants.getPostDataString(data));
+                        writer.flush();
+                        writer.close();
+                        os.close();
+                    }
+                    else {
+                        connection.setRequestMethod("DELETE");
+                        Log.e("Deal","DELETE method");
+                    }
                     connection.setConnectTimeout(15000);
+                    connection.setRequestProperty("Authorization", "Bearer " + token);
                     connection.setReadTimeout(15000);
                     connection.setDoInput(true);
-                    connection.setDoOutput(true);
 
-                    OutputStream os = connection.getOutputStream();
-                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-                    writer.write(Constants.getPostDataString(data));
-                    writer.flush();
-                    writer.close();
-                    os.close();
+
+                    Log.e("Deal", "Connection: " + connection.toString());
+                    BufferedReader reader=new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                    Log.e("Deal","Connection Response: "+reader.readLine());
+
 
                 } catch (Exception e) {
+                    Log.e("Deal","Like Deal Exception");
                     e.printStackTrace();
                 }
 
                 return null;
+            }
+
+            @Override
+            protected void onPostExecute(String s) {
+                super.onPostExecute(s);
+                Log.e("Deal","Liked Deal");
             }
         }.execute(email, token, id, liked);
         //Mixpanel code

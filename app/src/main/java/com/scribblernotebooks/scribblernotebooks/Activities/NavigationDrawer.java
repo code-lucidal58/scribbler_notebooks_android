@@ -349,9 +349,9 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
             try {
                 HashMap<String, String> data = new HashMap<>();
                 data.put("email", strings[0]);
-                data.put("gcmkey", strings[1]);
+                data.put("gcmKey", strings[1]);
                 Log.e("GCM KEY",strings[1]);
-                data.put("deviceID", deviceId);
+                data.put("deviceId", deviceId);
 
                 Log.e("Device ID", deviceId);
 
@@ -362,6 +362,8 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
                 connection.setDoInput(true);
                 connection.setConnectTimeout(15000);
                 connection.setReadTimeout(15000);
+                User user=Constants.getUser(getApplicationContext());
+                connection.setRequestProperty("Authorization", "Bearer " + user.getToken());
 
                 OutputStream os = connection.getOutputStream();
                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
