@@ -8,40 +8,36 @@
 
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="70dp"
+        android:scaleType="fitXY"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="-15dp"
         android:src="@drawable/bluehills" />
 
     <ImageView
         android:id="@+id/cloud1"
         android:layout_width="@dimen/manualCodeCloud1W"
         android:layout_height="@dimen/manualCodeCloud1H"
-        android:layout_marginTop="70dp"
-        android:src="@drawable/clouds" />
-
-
-    <ImageView
-        android:id="@+id/cloud2"
-        android:layout_width="@dimen/manualCodeCloud2W"
-        android:layout_height="@dimen/manualCodeCloud2H"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/logo_holder"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="50dp"
         android:src="@drawable/clouds" />
 
 
     <ImageView
         android:id="@+id/sun"
-        android:layout_width="wrap_content"
+        android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_alignBottom="@+id/logo"
-        android:layout_marginBottom="-20dp"
-        android:layout_marginLeft="-20dp"
+        android:layout_below="@+id/logo_holder"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="50dp"
         android:src="@drawable/sun" />
 
     <ScrollView
         android:id="@+id/sl"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/logo"
+        android:layout_below="@+id/logo_holder"
         android:layout_centerInParent="true"
         android:layout_centerVertical="true">
 
@@ -242,13 +238,22 @@
 
     </ScrollView>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="110dp"
+        android:gravity="center"
+        android:id="@+id/logo_holder"
+        android:background="@drawable/below_logo">
 
-    <ImageView
-        android:id="@+id/logo"
-        android:layout_width="wrap_content"
-        android:layout_height="75dp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="25dp"
-        android:src="@drawable/logo_200" />
+
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="wrap_content"
+            android:layout_height="75dp"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/logo_white" />
+
+    </LinearLayout>
+
 
 </RelativeLayout>

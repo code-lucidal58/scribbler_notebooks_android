@@ -42,14 +42,14 @@
 
 
     <dimen name="manualCodeSunSize">60dp</dimen>
-    <dimen name="manualCodeCloud1W">70dp</dimen>
-    <dimen name="manualCodeCloud1H">50dp</dimen>
+    <dimen name="manualCodeCloud1W">60dp</dimen>
+    <dimen name="manualCodeCloud1H">45dp</dimen>
     <dimen name="manualCodeCloud2W">50dp</dimen>
     <dimen name="manualCodeCloud2H">30dp</dimen>
 
 
     <dimen name="search">55dp</dimen>
-    <dimen name="searchBarTextSize">11sp</dimen>
+    <dimen name="searchBarTextSize">13sp</dimen>
     <dimen name="searchBarEditTextFontSize">13sp</dimen>
     <dimen name="searchBarIconSize">35dp</dimen>
     <dimen name="searchBarIconLeftMargin">30dp</dimen>

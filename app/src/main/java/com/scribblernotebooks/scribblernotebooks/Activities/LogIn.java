@@ -194,7 +194,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
 
         sun = (ImageView) findViewById(R.id.sun);
         cloud1 = (ImageView) findViewById(R.id.cloud1);
-        cloud2 = (ImageView) findViewById(R.id.cloud2);
+//        cloud2 = (ImageView) findViewById(R.id.cloud2);
 
         /**
          * Setting the drawable height and color for edit texts
@@ -251,15 +251,15 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         screenWidth = displayMetrics.widthPixels;
         screenHeight = displayMetrics.heightPixels;
-        Constants.setMovingAnimation(cloud1, Constants.getRandomInt(5000, 15000), screenWidth, (float) (Math.random() * (screenHeight / 2)), true, screenHeight);
-        Constants.setMovingAnimation(cloud2, Constants.getRandomInt(10000, 25000), screenWidth, (float) (Math.random() * (screenHeight / 2)), true, screenHeight);
+//        Constants.setMovingAnimation(cloud1, Constants.getRandomInt(5000, 15000), screenWidth, (float) (Math.random() * (screenHeight / 2)), true, screenHeight);
+//        Constants.setMovingAnimation(cloud2, Constants.getRandomInt(10000, 25000), screenWidth, (float) (Math.random() * (screenHeight / 2)), true, screenHeight);
 
         int width = signInButton.getWidth();
         int height = signInButton.getHeight();
 
         loginButton.setHeight(height);
         loginButton.setWidth(width);
-        loginButton.setPadding(signInButton.getPaddingLeft(), signInButton.getPaddingTop(), signInButton.getPaddingRight(), signInButton.getPaddingBottom());
+//        loginButton.setPadding(signInButton.getPaddingLeft(), signInButton.getPaddingTop(), signInButton.getPaddingRight(), signInButton.getPaddingBottom());
 
 
         /**

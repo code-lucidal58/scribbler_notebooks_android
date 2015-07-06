@@ -115,7 +115,6 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
 
     RecyclerView suggestions;
     LinearLayout originalLayout, replacedLayout;
-    ImageView selectedIcon;
     TextView selectionIconName;
     AutoCompleteTextView selectedIconQuery;
     Boolean isOptionOpened = false;
@@ -197,13 +196,11 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
         View category = searchbar.findViewById(R.id.layoutCategory);
         View search = searchbar.findViewById(R.id.layoutSearch);
         View sort = searchbar.findViewById(R.id.layoutSort);
-        View scan = searchbar.findViewById(R.id.layoutScan);
 
         suggestions = (RecyclerView) searchbar.findViewById(R.id.recyclerView);
         suggestions.setLayoutManager(new LinearLayoutManager(context));
         originalLayout = (LinearLayout) searchbar.findViewById(R.id.originalLinearLayout);
         replacedLayout = (LinearLayout) searchbar.findViewById(R.id.replacedLinearLayout);
-        selectedIcon = (ImageView) searchbar.findViewById(R.id.selectedIcon);
         selectionIconName = (TextView) searchbar.findViewById(R.id.selectedIcon_name);
         selectedIconQuery = (AutoCompleteTextView) searchbar.findViewById(R.id.selectedQuery);
         loadingProgressLayout = (LinearLayout) v.findViewById(R.id.loadingProgress);
@@ -232,12 +229,6 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
             }
         });
 
-        scan.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(context, ScannerActivity.class));
-            }
-        });
 
 
         /**
@@ -460,8 +451,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
 
         switch (tag) {
             case "category":
-                selectedIcon.setImageDrawable(getResources().getDrawable(R.drawable.category));
-                selectionIconName.setText("Category");
+                selectionIconName.setText("CATEGORY");
                 selectedIconQuery.setHint("Enter Category...");
                 selectedIconQuery.setText(category);
 
@@ -471,15 +461,13 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
                 suggestions.setVisibility(View.VISIBLE);
                 break;
             case "search":
-                selectedIcon.setImageDrawable(getResources().getDrawable(R.drawable.search));
-                selectionIconName.setText("Search");
+                selectionIconName.setText("SEARCH");
                 selectedIconQuery.setHint("Name, Location, Content...");
                 suggestionList = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.search_list)));
                 selectedIconQuery.setText(searchQuery);
                 break;
             case "sort":
-                selectedIcon.setImageDrawable(getResources().getDrawable(R.drawable.sort));
-                selectionIconName.setText("Sort");
+                selectionIconName.setText("SORT");
                 selectedIconQuery.setHint("Sort by...");
                 suggestionList = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.sort_list)));
 

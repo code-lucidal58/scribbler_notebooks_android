@@ -101,4 +101,5 @@
     <string name="mobileVerify">Enter the OTP sent to your registered mobile number for verification</string>
 
     <string name="mobileVerifyNote">Note: Mobile Verification is required to give you better experience of using this app.</string>
+    <string name="title_activity_splash_screen">Scribbler Deals</string>
 </resources>

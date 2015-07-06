@@ -55,9 +55,7 @@ public class ManualScribblerCode extends Fragment {
 
 
     User user;
-    LinearLayout back;
-    TextView textView;
-    ImageView image;
+    Button back;
     Button claimDeal, okay;
     EditText code;
     String url = "";
@@ -71,7 +69,6 @@ public class ManualScribblerCode extends Fragment {
     Deal currentDeal = null;
     RelativeLayout root;
     ShakeEventManager shakeEventManager;
-    ImageView sun, cloud1, cloud2;
 
     int NOTIFICATION_ICON_TRANSITION_DURATION = 1000;
     int notificationCount = 3;
@@ -156,68 +153,10 @@ public class ManualScribblerCode extends Fragment {
         }
 
         root = (RelativeLayout) v.findViewById(R.id.manualRoot);
-        back = (LinearLayout) v.findViewById(R.id.backToScan);
-        textView = (TextView) back.findViewById(R.id.textView);
-        image = (ImageView) back.findViewById(R.id.imageView);
+        back = (Button) v.findViewById(R.id.backToScan);
         claimDeal = (Button) v.findViewById(R.id.claimDeal);
         code = (EditText) v.findViewById(R.id.manualScribblerCodeInput);
         ll = (LinearLayout) v.findViewById(R.id.ll);
-
-        sun = (ImageView) v.findViewById(R.id.sun);
-        cloud1 = (ImageView) v.findViewById(R.id.cloud1);
-        cloud2 = (ImageView) v.findViewById(R.id.cloud2);
-
-//        notificationIcon=(ImageView)v.findViewById(R.id.notificationIcon);
-
-        final DrawerLayout mDrawerLayout = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
-
-        //TODO: Uncomment with notification Drawer
-//        final RelativeLayout mDrawer = (RelativeLayout) getActivity().findViewById(R.id.notification_drawer);
-        /**
-         * Opening Notification drawer on notification icon click
-         */
-//        notificationIcon.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                mDrawerLayout.openDrawer(mDrawer);
-//            }
-//        });
-
-
-        /**
-         * Setting up notification icon animation
-         */
-//        CyclicTransitionDrawable cyclicTransitionDrawable = new CyclicTransitionDrawable(new Drawable[]{
-//                getResources().getDrawable(R.drawable.n1),
-//                getResources().getDrawable(R.drawable.n2),
-//                getResources().getDrawable(R.drawable.n3),
-//                getResources().getDrawable(R.drawable.n4),
-//                getResources().getDrawable(R.drawable.n5),
-//                getResources().getDrawable(R.drawable.n6),
-//                getResources().getDrawable(R.drawable.n7),
-//                getResources().getDrawable(R.drawable.n8),
-//        });
-////        notificationIcon.setImageDrawable(cyclicTransitionDrawable);
-//        cyclicTransitionDrawable.startTransition(NOTIFICATION_ICON_TRANSITION_DURATION, 0);
-//        final Animation dance = AnimationUtils.loadAnimation(mContext, R.anim.dancing_notification_icon);
-//        dance.setFillEnabled(true);
-//        dance.setAnimationListener(new Animation.AnimationListener() {
-//            @Override
-//            public void onAnimationStart(Animation animation) {
-//
-//            }
-//
-//            @Override
-//            public void onAnimationEnd(Animation animation) {
-////                notificationIcon.startAnimation(dance);
-//            }
-//
-//            @Override
-//            public void onAnimationRepeat(Animation animation) {
-//
-//            }
-//        });
-////        notificationIcon.startAnimation(dance);
 
 
         /**
@@ -227,41 +166,6 @@ public class ManualScribblerCode extends Fragment {
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         screenWidth = displayMetrics.widthPixels;
         screenHeight = displayMetrics.heightPixels;
-        Constants.setMovingAnimation(cloud1, Constants.getRandomInt(5000, 15000), screenWidth, (float) (Math.random() * (screenHeight / 2)) + 20, true, screenHeight);
-        Constants.setMovingAnimation(cloud2, Constants.getRandomInt(7000, 20000), screenWidth, (float) (Math.random() * (screenHeight / 2)) + 20, true, screenHeight);
-
-
-        /**Changing background of scan button programatically*/
-        View.OnTouchListener backgroundChange = new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        setDrawable(back, getResources().getDrawable(R.drawable.scan_pressed));
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        setDrawable(back, getResources().getDrawable(R.drawable.scan_pressed));
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        setDrawable(back, getResources().getDrawable(R.drawable.scan_enabled));
-                        startActivity(new Intent(mContext, ScannerActivity.class));
-//                        Set<String> s=new HashSet<>();
-//                        s.add("Male");
-//                        s.add("Female");
-//                        SurveyDialog surveyDialog=SurveyDialog.newInstance("123","What is your gender?",s);
-//                        surveyDialog.show(getFragmentManager(),"SURVEY");
-                        break;
-                    default:
-                        setDrawable(back, getResources().getDrawable(R.drawable.scan_enabled));
-                        break;
-                }
-                return true;
-            }
-        };
-
-        textView.setOnTouchListener(backgroundChange);
-        image.setOnTouchListener(backgroundChange);
-        back.setOnTouchListener(backgroundChange);
 
         claimDeal.setOnClickListener(new View.OnClickListener() {
             @Override
