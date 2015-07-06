@@ -167,6 +167,13 @@ public class ManualScribblerCode extends Fragment {
         screenWidth = displayMetrics.widthPixels;
         screenHeight = displayMetrics.heightPixels;
 
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(), ScannerActivity.class));
+            }
+        });
+
         claimDeal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
