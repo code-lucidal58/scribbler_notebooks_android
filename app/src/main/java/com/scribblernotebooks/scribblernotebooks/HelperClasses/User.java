@@ -6,10 +6,15 @@ import java.util.List;
  * Created by Jibin_ism on 13-Jun-15.
  */
 public class User {
+    String id="";
     String name="", email="", mobile="", coverImage="", profilePic="", token="", mixpanelId="", location="", college="";
     List<String> likedDeals;
 
     public User(String name, String email, String mobile, String token, String mixpanelId) {
+        this("",name,email,mobile,token,mixpanelId);
+    }
+     public User(String id,String name, String email, String mobile, String token, String mixpanelId) {
+         this.id=id;
         this.name = name;
         this.email = email;
 
@@ -18,7 +23,28 @@ public class User {
         this.mobile = mobile;
     }
 
+
+    public User(String id,String name, String email, String mobile, String coverImage, String profilePic, String token, String mixpanelId) {
+        this.id=id;
+        this.name = name;
+        this.email = email;
+        this.mobile = mobile;
+        this.coverImage = coverImage;
+        this.profilePic = profilePic;
+        this.token = token;
+        this.mixpanelId = mixpanelId;
+    }
+
+
     public User() {
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getLocation() {
@@ -37,15 +63,6 @@ public class User {
         this.likedDeals = likedDeals;
     }
 
-    public User(String name, String email, String mobile, String coverImage, String profilePic, String token, String mixpanelId) {
-        this.name = name;
-        this.email = email;
-        this.mobile = mobile;
-        this.coverImage = coverImage;
-        this.profilePic = profilePic;
-        this.token = token;
-        this.mixpanelId = mixpanelId;
-    }
 
     public String getCollege() {
         return college;

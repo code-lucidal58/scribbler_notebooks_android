@@ -46,7 +46,7 @@ public class Constants {
 
 
     public static class ServerUrls {
-        public static String host = "http://192.168.1.117:3000/";
+        public static String host = "http://192.168.108.1:3000/";
         public static String websiteUrl = host + "api/";
         //User Module
         public static String signUp = websiteUrl + "signup";
@@ -54,9 +54,10 @@ public class Constants {
         public static String linkSocialAccount = websiteUrl + "user/link-social-account";
         public static String changePassword = websiteUrl + "user/change-password";
         public static String forgotPassword = websiteUrl + "forgot-password";
-        public static String insertGCM = websiteUrl + "insertGcm";
+        public static String insertGCM = websiteUrl + "user/gcm-key";
         public static String mobileVerified=websiteUrl+"mobileVerified";
         public static String feedback=websiteUrl+"feedback";
+        public static String updateUser=websiteUrl+"user/";
 
         //Deal Details
         public static String dealDetail = websiteUrl + "deal/";
@@ -76,6 +77,9 @@ public class Constants {
 
     }
 
+    public static String getLikeDealUrl(String id){
+        return ServerUrls.dealDetail+id+"/like";
+    }
     public static URL getDealDetailsURL(String dealId, String token) {
         try {
             return new URL(ServerUrls.dealDetail + dealId + "?token=" + token);
@@ -111,6 +115,7 @@ public class Constants {
      */
     public static final String PREF_NAME = "LogInOut";
     public static final String PREF_DATA_NAME = "Name";
+    public static final String PREF_DATA_ID = "_id";
     public static final String PREF_DATA_PHOTO = "ImageUrl";
     public static final String PREF_DATA_COVER_PIC = "CoverPic";
     public static final String PREF_DATA_EMAIL = "EmailId";
@@ -255,6 +260,12 @@ public class Constants {
             e.printStackTrace();
         }
         try {
+            if (!user.getId().isEmpty())
+                editor.putString(PREF_DATA_ID, user.getId());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
             if (!user.getProfilePic().isEmpty())
                 editor.putString(PREF_DATA_PHOTO, user.getProfilePic());
         } catch (Exception e) {
@@ -303,6 +314,7 @@ public class Constants {
     public static User getUser(Context context) {
         SharedPreferences userPref;
         userPref = context.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
+        String id=userPref.getString(Constants.PREF_DATA_ID,"");
         String name = userPref.getString(Constants.PREF_DATA_NAME, "");
         String email = userPref.getString(Constants.PREF_DATA_EMAIL, "");
         String mobile = userPref.getString(Constants.PREF_DATA_MOBILE, "");
@@ -313,7 +325,7 @@ public class Constants {
         String location = userPref.getString(Constants.PREF_DATA_LOCATION, "");
         String college = userPref.getString(Constants.PREF_DATA_COLLEGE, "");
 
-        User user = new User(name, email, mobile, coverPic, profilePic, token, mixPanelId);
+        User user = new User(id,name, email, mobile, coverPic, profilePic, token, mixPanelId);
         user.setLocation(location);
         user.setCollege(college);
         return user;

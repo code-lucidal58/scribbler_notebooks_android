@@ -482,6 +482,7 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
         Constants.saveUserDetails(getActivity(), user);
         mListener.onUserNameChanged();
         mListener.onUserEmailChanged();
+
     }
 
 
