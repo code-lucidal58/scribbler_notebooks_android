@@ -26,13 +26,10 @@ public class IllustrationsPageAdapter extends PagerAdapter {
     Activity activity;
     LayoutInflater mLayoutInflater;
     int[] imageId;
-    String[] title, description;
 
-    public IllustrationsPageAdapter(Activity activity, int[] a, String[] t, String[] d) {
+    public IllustrationsPageAdapter(Activity activity, int[] a) {
         this.activity = activity;
         imageId = a;
-        title = t;
-        description = d;
         mLayoutInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
@@ -49,35 +46,9 @@ public class IllustrationsPageAdapter extends PagerAdapter {
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
         View itemView = mLayoutInflater.inflate(R.layout.layout_pager_item, container, false);
-
         ImageView imageView = (ImageView) itemView.findViewById(R.id.imageView);
-        TextView illusTitle = (TextView) itemView.findViewById(R.id.illusTitle);
-        TextView illusDesc = (TextView) itemView.findViewById(R.id.illusDescription);
-        Button getStarted = (Button) itemView.findViewById(R.id.getStarted);
-
         imageView.setImageResource(imageId[position]);
-        illusTitle.setText(title[position]);
-        illusDesc.setText(description[position]);
-
-        if (position == (getCount() - 1)) {
-            getStarted.setVisibility(View.VISIBLE);
-            getStarted.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    activity.getSharedPreferences(Constants.PREF_ONE_TIME_NAME,Context.MODE_PRIVATE)
-                            .edit().putBoolean(Constants.PREF_SHOW_ILLUSTRATION,false).apply();
-                    activity.getSharedPreferences(Constants.PREF_ONE_TIME_NAME,Context.MODE_PRIVATE)
-                            .edit().putBoolean(Constants.PREF_SHOW_INSTRUCTIONS,true).apply();
-                    activity.startActivity(new Intent(activity, LogIn.class));
-                    activity.finish();
-                }
-            });
-        } else {
-            getStarted.setVisibility(View.GONE);
-        }
-
         container.addView(itemView);
-
         return itemView;
     }
 

@@ -1,20 +1,54 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/newDarkBlue"
+    android:animateLayoutChanges="true"
     tools:context="com.scribblernotebooks.scribblernotebooks.Activities.SplashScreen">
 
    <ImageView
        android:layout_width="match_parent"
-       android:layout_height="match_parent"
-       android:src="@drawable/spash_screen"
-       android:scaleType="centerCrop"/>
+       android:layout_height="480dp"
+       android:id="@+id/topCurve"
+       android:scaleType="fitXY"
+       android:src="@drawable/splash_top_blue"/>
 
     <ImageView
         android:layout_width="wrap_content"
-        android:layout_height="120dp"
+        android:layout_height="100dp"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
+        android:layout_alignBottom="@+id/topCurve"
         android:paddingBottom="30dp"
+        android:layout_marginBottom="20dp"
+        android:id="@+id/whiteLogo"
         android:src="@drawable/logo_white"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/lowerCurveHeight"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:id="@+id/lowerCurve"
+        android:gravity="center"
+        android:background="@drawable/splash_lower_green">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#FFF"
+            android:id="@+id/bottomText"
+            android:text="Swipe to Continue -->"/>
+
+    </LinearLayout>
+
+
+    <android.support.v4.view.ViewPager
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/illustrations_pager"
+        android:layout_width="match_parent"
+        android:visibility="gone"
+        android:layout_marginTop="@dimen/topCurveHeight"
+        android:layout_marginBottom="@dimen/lowerCurveHeight"
+        android:layout_height="match_parent"/>
 
 </RelativeLayout>

@@ -16,7 +16,8 @@
 
     <color name="darkBlueRippleColor">#c617839e</color>
     <!--<color name="loginEditTextBackground">#000</color>-->
-    <color name="loginEditTextBackground">#C9CED1</color>
+    <color name="loginEditTextBackground">#FFFFFF</color>
+    <!--<color name="loginEditTextBackground">#C9CED1</color>-->
     <color name="loginEditTextTextColor">#ff181818</color>
     <!--<color name="loginEditTextTextColor">#fff</color>-->
     <color name="loginEditTextHintColor">#ff666666</color>
@@ -64,4 +65,18 @@
 
     <color name="selectedText">#ff9bfdff</color>
     <color name="normalText">#FFF</color>
+
+
+    <color name="newDarkBlue">#1b758d</color>
+    <color name="newLightBlue">#55c5cd</color>
+    <color name="newDarkerBlue">#13596c</color>
+    <color name="newLightGreen">#7cc623</color>
+    <color name="newDarkGreen">#3d6211</color>
+
+    dark blue #1b758d
+    light blue #55c5cd
+    darker blue #13596c
+
+    light green #7cc623
+    darker green #3d6211
 </resources>

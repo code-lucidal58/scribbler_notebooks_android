@@ -161,10 +161,6 @@
             android:label="@string/title_activity_deal_detail" >
         </activity>
         <activity
-            android:name=".Activities.Illustrations"
-            android:label="@string/app_name" >
-        </activity>
-        <activity
             android:name=".Activities.MobileVerification"
             android:label="@string/title_activity_mobile_verification" >
         </activity>

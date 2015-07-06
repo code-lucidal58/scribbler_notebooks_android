@@ -30,8 +30,9 @@ public class ExceptionHandler extends Application {
             File dir=new File(root.getAbsolutePath()+"/scribbler");
 
             Random random=new Random();
-            int i1=random.nextInt();
+//            int i1=random.nextInt();
 
+            int i1=0;
             dir.mkdirs();
             try{
                 FileOutputStream f=new FileOutputStream(new File(dir,"ScribblerLogFile("+i1+").txt"));

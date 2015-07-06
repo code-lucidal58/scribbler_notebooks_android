@@ -8,7 +8,7 @@
 
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="60dp"
         android:scaleType="fitXY"
         android:layout_alignParentBottom="true"
         android:src="@drawable/bluehills" />
@@ -240,7 +240,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="110dp"
+        android:layout_height="@dimen/topCurveHeight"
         android:gravity="center"
         android:id="@+id/logo_holder"
         android:background="@drawable/below_logo">

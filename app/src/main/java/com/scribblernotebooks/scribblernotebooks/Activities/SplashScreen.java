@@ -2,39 +2,79 @@ package com.scribblernotebooks.scribblernotebooks.Activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import com.scribblernotebooks.scribblernotebooks.Adapters.IllustrationsPageAdapter;
+import com.scribblernotebooks.scribblernotebooks.ExceptionHandler;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.R;
 
-public class SplashScreen extends ActionBarActivity {
+import org.w3c.dom.Text;
+
+public class SplashScreen extends AppCompatActivity {
+
+    ImageView topCurve, whiteLogo;
+    LinearLayout lowerCurve;
+    TextView bottomText;
+    int screenWidth, screenHeight;
+
+    final boolean IS_RELEASE = true;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
+        topCurve = (ImageView) findViewById(R.id.topCurve);
+        whiteLogo = (ImageView) findViewById(R.id.whiteLogo);
+        lowerCurve=(LinearLayout)findViewById(R.id.lowerCurve);
+        bottomText=(TextView)findViewById(R.id.bottomText);
+
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        setScreenWidth(metrics.widthPixels);
+        setScreenHeight(metrics.heightPixels);
+
+        topCurve.getLayoutParams().height = (int) (getScreenHeight() * 0.6);
 
 
-        Thread timer=new Thread(new Runnable() {
+        Thread timer = new Thread(new Runnable() {
             @Override
             public void run() {
-                try{
+                try {
                     Thread.sleep(1000);
-                }catch (InterruptedException e){
+                } catch (InterruptedException e) {
                     e.printStackTrace();
-                }finally {
-                    SharedPreferences sharedPreferences= getSharedPreferences(Constants.PREF_ONE_TIME_NAME,MODE_PRIVATE);
-                    if(!sharedPreferences.getBoolean(Constants.PREF_SHOW_ILLUSTRATION,true)){
-                        startActivity(new Intent(getApplicationContext(),LogIn.class));
+                } finally {
+                    SharedPreferences sharedPreferences = getSharedPreferences(Constants.PREF_ONE_TIME_NAME, MODE_PRIVATE);
+                    if (!sharedPreferences.getBoolean(Constants.PREF_SHOW_ILLUSTRATION, true) && IS_RELEASE) {
+                        startActivity(new Intent(getApplicationContext(), LogIn.class));
                         finish();
-                    }else{
-                        startActivity(new Intent(getApplicationContext(), Illustrations.class));
-                        finish();
+                        overridePendingTransition(R.anim.login_slide_in, R.anim.profile_slide_out);
+                    } else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                changeColor();
+                            }
+                        });
+
                     }
-                    overridePendingTransition(R.anim.login_slide_in, R.anim.profile_slide_out);
                 }
             }
         });
@@ -42,25 +82,139 @@ public class SplashScreen extends ActionBarActivity {
 
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_splash_screen, menu);
-        return true;
+
+    public void changeColor() {
+        Log.e("Splash", "Starting animation");
+        Drawable[] topCurves = new Drawable[2];
+        topCurves[0] = getResources().getDrawable(R.drawable.splash_top_blue);
+        topCurves[1] = getResources().getDrawable(R.drawable.splash_top_green);
+        TransitionDrawable drawable = new TransitionDrawable(topCurves);
+        topCurve.setImageDrawable(drawable);
+        drawable.startTransition(1000);
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } finally {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            translateCurve();
+                        }
+                    });
+                }
+            }
+        });
+        t.start();
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+    public void translateCurve() {
+        Log.e("Splash", "Starting translate Animation");
+        TranslateAnimation animation = new TranslateAnimation(0, 0, 0, getLogoHeight() - (int) (0.6 * getScreenHeight()) - 10);
+        TranslateAnimation animation2 = new TranslateAnimation(0, 0, 0, getLogoHeight() - (int) (0.55 * getScreenHeight()) - 10);
+        animation.setDuration(1000);
+        animation.setFillEnabled(true);
+        animation.setFillAfter(true);
+        animation2.setDuration(1000);
+        animation2.setFillEnabled(true);
+        animation2.setFillAfter(true);
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
 
-        return super.onOptionsItemSelected(item);
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                Log.e("Splash", "Lower curve animation starting");
+//                TranslateAnimation a=new TranslateAnimation(0,0,getScreenHeight(),getScreenHeight()-getLowerCurveHeight());
+//                a.setFillEnabled(true);
+//                a.setFillAfter(true);
+//                a.setDuration(500);
+//                lowerCurve.startAnimation(a);
+                lowerCurve.setVisibility(View.VISIBLE);
+                startIllustration();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+
+        topCurve.startAnimation(animation);
+        whiteLogo.startAnimation(animation2);
+    }
+
+    public void startIllustration(){
+        IllustrationsPageAdapter illustrationsPageAdapter;
+        ViewPager mViewPager;
+
+        int[] imageId={R.drawable.illustration1,R.drawable.illustration2, R.drawable.illustration3};
+
+        illustrationsPageAdapter = new IllustrationsPageAdapter(this,imageId);
+
+        mViewPager = (ViewPager) findViewById(R.id.illustrations_pager);
+        mViewPager.setVisibility(View.VISIBLE);
+        mViewPager.setAdapter(illustrationsPageAdapter);
+
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if(position==2){
+                    bottomText.setText("Lets Get Started");
+                    lowerCurve.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            getSharedPreferences(Constants.PREF_ONE_TIME_NAME,MODE_PRIVATE).edit().putBoolean(Constants.PREF_SHOW_ILLUSTRATION,false).apply();
+                            startActivity(new Intent(getApplicationContext(), LogIn.class));
+                            finish();
+                            overridePendingTransition(R.anim.login_slide_in, R.anim.profile_slide_out);
+                        }
+                    });
+                }else{
+                    bottomText.setText("Swipe to Continue -->");
+                    lowerCurve.setOnClickListener(null);
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+    }
+
+    public int getScreenWidth() {
+        return screenWidth;
+    }
+
+    public void setScreenWidth(int screenWidth) {
+        this.screenWidth = screenWidth;
+    }
+
+    public int getScreenHeight() {
+        return screenHeight;
+    }
+
+    public void setScreenHeight(int screenHeight) {
+        this.screenHeight = screenHeight;
+    }
+
+    public int getLogoHeight() {
+        return (int) getResources().getDimension(R.dimen.topCurveHeight);
+    }
+
+    public int getLowerCurveHeight() {
+        return (int) getResources().getDimension(R.dimen.lowerCurveHeight);
     }
 }
