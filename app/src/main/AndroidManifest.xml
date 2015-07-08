@@ -114,6 +114,11 @@
             android:label="Settings" >
         </activity>
 
+        <activity
+            android:name=".Activities.NotificationsActivity"
+            android:label="Notifications" >
+        </activity>
+
         <service
             android:name=".Services.LocationRetreiver"
             android:exported="false" >

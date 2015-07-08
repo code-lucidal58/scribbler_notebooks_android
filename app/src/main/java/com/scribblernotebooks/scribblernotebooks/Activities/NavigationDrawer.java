@@ -26,7 +26,6 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.plus.Plus;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.LeftNavigationDrawer;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.NotificationDrawer;
-import com.scribblernotebooks.scribblernotebooks.Fragments.ClaimedDeals;
 import com.scribblernotebooks.scribblernotebooks.Fragments.ManualScribblerCode;
 import com.scribblernotebooks.scribblernotebooks.Fragments.ProfileFragment;
 import com.scribblernotebooks.scribblernotebooks.Handlers.DatabaseHandler;
@@ -53,7 +52,7 @@ import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
-public class NavigationDrawer extends AppCompatActivity implements ProfileFragment.OnFragmentInteractionListener{
+public class NavigationDrawer extends AppCompatActivity implements ProfileFragment.OnFragmentInteractionListener {
 
 
     OnNavKeyPressed keyListener;
@@ -300,7 +299,7 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
 
     /**
      * Registers the application with GCM servers asynchronously.
-     * <p/>
+     * <p>
      * Stores the registration ID and app versionCode in the application's
      * shared preferences.
      */
@@ -350,7 +349,7 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
                 HashMap<String, String> data = new HashMap<>();
                 data.put("email", strings[0]);
                 data.put("gcmKey", strings[1]);
-                Log.e("GCM KEY",strings[1]);
+                Log.e("GCM KEY", strings[1]);
                 data.put("deviceId", deviceId);
 
                 Log.e("Device ID", deviceId);
@@ -362,7 +361,7 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
                 connection.setDoInput(true);
                 connection.setConnectTimeout(15000);
                 connection.setReadTimeout(15000);
-                User user=Constants.getUser(getApplicationContext());
+                User user = Constants.getUser(getApplicationContext());
                 connection.setRequestProperty("Authorization", "Bearer " + user.getToken());
 
                 OutputStream os = connection.getOutputStream();
@@ -469,6 +468,9 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
             if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
                 getSupportFragmentManager().popBackStack();
             }
+        }
+        else if(item.getItemId() ==R.id.notification){
+            startActivity(new Intent(getBaseContext(),NotificationsActivity.class));
         }
         return true;
     }
