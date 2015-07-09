@@ -1,9 +1,10 @@
 <menu xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.scribblernotebooks.scribblernotebooks.Activities.NavigationDrawer">
     <item
         android:icon="@drawable/n8"
         android:title="Notification"
         android:id="@+id/notification"
-        android:showAsAction="always" />
+        app:showAsAction="always" />
 </menu>
