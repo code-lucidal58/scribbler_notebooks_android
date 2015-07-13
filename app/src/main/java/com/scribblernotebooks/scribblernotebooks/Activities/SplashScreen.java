@@ -4,14 +4,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
@@ -20,11 +17,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.scribblernotebooks.scribblernotebooks.Adapters.IllustrationsPageAdapter;
-import com.scribblernotebooks.scribblernotebooks.ExceptionHandler;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.R;
-
-import org.w3c.dom.Text;
 
 public class SplashScreen extends AppCompatActivity {
 
@@ -61,19 +55,21 @@ public class SplashScreen extends AppCompatActivity {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } finally {
-                    SharedPreferences sharedPreferences = getSharedPreferences(Constants.PREF_ONE_TIME_NAME, MODE_PRIVATE);
-                    if (!sharedPreferences.getBoolean(Constants.PREF_SHOW_ILLUSTRATION, true) && IS_RELEASE) {
-                        startActivity(new Intent(getApplicationContext(), LogIn.class));
-                        finish();
-                        overridePendingTransition(R.anim.login_slide_in, R.anim.profile_slide_out);
-                    } else {
+                    SharedPreferences sharedPreferences=getSharedPreferences(Constants.PREF_ONE_TIME_NAME,MODE_PRIVATE);
+                    if(sharedPreferences.getBoolean(Constants.PREF_SHOW_ILLUSTRATION,true)){
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 changeColor();
                             }
                         });
-
+                    }else{
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                translateAndLogIn();
+                            }
+                        });
                     }
                 }
             }
@@ -82,6 +78,36 @@ public class SplashScreen extends AppCompatActivity {
 
     }
 
+    public void translateAndLogIn(){
+        Log.e("Splash", "Starting translate and Login Animation");
+        TranslateAnimation animation = new TranslateAnimation(0, 0, 0, getLogoHeight() - (int) (0.6 * getScreenHeight()));
+        TranslateAnimation animation2 = new TranslateAnimation(0, 0, 0, getLogoHeight() - (int) (0.59 * getScreenHeight())+10);
+        animation.setDuration(1000);
+        animation.setFillEnabled(true);
+        animation.setFillAfter(true);
+        animation2.setDuration(1000);
+        animation2.setFillEnabled(true);
+        animation2.setFillAfter(true);
+
+        Thread a=new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(500);
+                }catch (InterruptedException e){
+                    e.printStackTrace();
+                }finally {
+                    startActivity(new Intent(getApplicationContext(),LogIn.class));
+                    finish();
+                    overridePendingTransition(R.anim.flash_appear,R.anim.flash_disappear);
+                }
+            }
+        });
+        a.start();
+
+        topCurve.startAnimation(animation);
+        whiteLogo.startAnimation(animation2);
+    }
 
     public void changeColor() {
         Log.e("Splash", "Starting animation");
@@ -113,8 +139,8 @@ public class SplashScreen extends AppCompatActivity {
 
     public void translateCurve() {
         Log.e("Splash", "Starting translate Animation");
-        TranslateAnimation animation = new TranslateAnimation(0, 0, 0, getLogoHeight() - (int) (0.6 * getScreenHeight()) - 10);
-        TranslateAnimation animation2 = new TranslateAnimation(0, 0, 0, getLogoHeight() - (int) (0.55 * getScreenHeight()) - 10);
+        TranslateAnimation animation = new TranslateAnimation(0, 0, 0, getLogoHeight() - (int) (0.6 * getScreenHeight()));
+        TranslateAnimation animation2 = new TranslateAnimation(0, 0, 0, getLogoHeight() - (int) (0.58 * getScreenHeight()));
         animation.setDuration(1000);
         animation.setFillEnabled(true);
         animation.setFillAfter(true);

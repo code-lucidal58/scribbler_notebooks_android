@@ -14,11 +14,10 @@
 
     <ImageView
         android:layout_width="wrap_content"
-        android:layout_height="100dp"
+        android:layout_height="@dimen/whiteLogoheight"
         android:layout_centerHorizontal="true"
         android:layout_alignBottom="@+id/topCurve"
-        android:paddingBottom="30dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="30dp"
         android:id="@+id/whiteLogo"
         android:src="@drawable/logo_white"/>
 
@@ -47,8 +46,8 @@
         android:id="@+id/illustrations_pager"
         android:layout_width="match_parent"
         android:visibility="gone"
-        android:layout_marginTop="@dimen/topCurveHeight"
-        android:layout_marginBottom="@dimen/lowerCurveHeight"
+        android:layout_marginTop="@dimen/illustrationsMarginTop"
+        android:layout_marginBottom="@dimen/illustrationsMarginBottom"
         android:layout_height="match_parent"/>
 
 </RelativeLayout>

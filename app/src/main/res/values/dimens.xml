@@ -82,6 +82,9 @@
     <dimen name="details_marginTop">5dp</dimen>
     <dimen name="details_marginBottom">5dp</dimen>
     <dimen name="changePasswordTextFontSize">15sp</dimen>
-    <dimen name="topCurveHeight">110dp</dimen>
-    <dimen name="lowerCurveHeight">55dp</dimen>
+    <dimen name="topCurveHeight">80dp</dimen>
+    <dimen name="lowerCurveHeight">40dp</dimen>
+    <dimen name="whiteLogoheight">60dp</dimen>
+    <dimen name="illustrationsMarginTop">120dp</dimen>
+    <dimen name="illustrationsMarginBottom">100dp</dimen>
 </resources>
