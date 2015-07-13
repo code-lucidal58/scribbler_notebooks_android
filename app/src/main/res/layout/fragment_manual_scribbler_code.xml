@@ -17,7 +17,7 @@
     <LinearLayout
         android:id="@+id/logo_holder"
         android:layout_width="match_parent"
-        android:layout_height="110dp"
+        android:layout_height="@dimen/topCurveHeight"
         android:background="@drawable/below_logo"
         android:gravity="center">
 
@@ -25,7 +25,7 @@
         <ImageView
             android:id="@+id/logo"
             android:layout_width="wrap_content"
-            android:layout_height="75dp"
+            android:layout_height="@dimen/whiteLogoheight"
             android:layout_centerHorizontal="true"
             android:src="@drawable/logo_white" />
 
@@ -86,12 +86,12 @@
         android:textColor="#FFF" />
     </LinearLayout>
 
-    <include
-        android:id="@+id/instruction"
-        layout="@layout/layout_nav_instruction"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="visible" />
+    <!--<include-->
+        <!--android:id="@+id/instruction"-->
+        <!--layout="@layout/layout_nav_instruction"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:visibility="visible" />-->
 
 
 </RelativeLayout>

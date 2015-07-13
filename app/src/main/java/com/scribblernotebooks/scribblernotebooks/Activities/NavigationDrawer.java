@@ -133,7 +133,7 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
         mDrawerLayout = (DrawerLayout) mainView.findViewById(R.id.drawer_layout);
 
         /** Setting Up Navigation Drawer and Right Notification Drawer */
-        setupNotificationDrawer();
+//        setupNotificationDrawer();
         setupNavigationDrawer();
 
         /** Initializing Google+API incase user wants to logOut */

@@ -1,6 +1,5 @@
 package com.scribblernotebooks.scribblernotebooks.Fragments;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -13,19 +12,17 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
@@ -46,11 +43,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-
 public class ManualScribblerCode extends Fragment {
 
 
@@ -63,6 +55,7 @@ public class ManualScribblerCode extends Fragment {
     LinearLayout ll;
     View instruct;
     //    ImageView notificationIcon;
+    DrawerLayout drawerLayout;
     int screenWidth;
     int screenHeight;
 
@@ -129,14 +122,13 @@ public class ManualScribblerCode extends Fragment {
 
         //View Setup
         if (sharedPreferences.getBoolean(Constants.PREF_SHOW_INSTRUCTIONS, true)) {
-            instruct = v.findViewById(R.id.instruction);
-            okay = (Button) instruct.findViewById(R.id.okay);
-            instruct.setVisibility(View.VISIBLE);
-            okay.setOnClickListener(new View.OnClickListener() {
+            drawerLayout=(DrawerLayout)getActivity().findViewById(R.id.drawer_layout);
+            drawerLayout.openDrawer(GravityCompat.START);
+            drawerLayout.setDrawerListener(new DrawerLayout.SimpleDrawerListener() {
                 @Override
-                public void onClick(View v) {
-                    sharedPreferences.edit().putBoolean(Constants.PREF_SHOW_INSTRUCTIONS, false).apply();
-                    instruct.setVisibility(View.GONE);
+                public void onDrawerClosed(View drawerView) {
+                    super.onDrawerClosed(drawerView);
+                    sharedPreferences.edit().putBoolean(Constants.PREF_SHOW_INSTRUCTIONS,false).apply();
                 }
             });
         }
