@@ -1,10 +1,9 @@
 package com.scribblernotebooks.scribblernotebooks.Fragments;
 
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
-import android.net.Uri;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -15,11 +14,17 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import com.scribblernotebooks.scribblernotebooks.Activities.DealDetail;
 import com.scribblernotebooks.scribblernotebooks.Adapters.RecyclerDealsAdapter;
 import com.scribblernotebooks.scribblernotebooks.Handlers.DatabaseHandler;
+import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
+import com.scribblernotebooks.scribblernotebooks.HelperClasses.Deal;
 import com.scribblernotebooks.scribblernotebooks.R;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -102,10 +107,31 @@ public class ClaimedDeals extends android.support.v4.app.Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
         DatabaseHandler han=new DatabaseHandler(context);
-        RecyclerDealsAdapter adapter=new RecyclerDealsAdapter(han.getClaimedDealList(),context,true);
+        ArrayList<Deal> deals=han.getClaimedDealList();
+        if (deals!=null){
+            if(deals.size()>0){
+                ((LinearLayout)v.findViewById(R.id.loadingProgress)).setVisibility(View.GONE);
+            }
+        }
+        RecyclerDealsAdapter adapter=new RecyclerDealsAdapter(deals,context,true);
         han.close();
+        adapter.setItemClickListener(new RecyclerDealsAdapter.onItemClickListener() {
+            @Override
+            public void onItemClick(int position, ArrayList<Deal> deals) {
+                showDealDetail(position, deals);
+            }
+        });
         recyclerView.setAdapter(adapter);
         return v;
+    }
+
+    final int DEAL_DETAIL_REQUEST_CODE = 50;
+    public void showDealDetail(int position, ArrayList<Deal> deals) {
+        Intent i = new Intent(context, DealDetail.class);
+        i.putParcelableArrayListExtra(Constants.PARCELABLE_DEAL_LIST_KEY, deals);
+        i.putExtra(Constants.CURRENT_DEAL_INDEX, position);
+        i.putExtra("IS_CLAIMED",true);
+        startActivityForResult(i, DEAL_DETAIL_REQUEST_CODE);
     }
 
 }

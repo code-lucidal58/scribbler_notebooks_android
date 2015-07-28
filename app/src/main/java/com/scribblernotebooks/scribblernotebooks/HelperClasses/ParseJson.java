@@ -1,15 +1,6 @@
 package com.scribblernotebooks.scribblernotebooks.HelperClasses;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.util.Log;
-import android.widget.Toast;
-
-import com.scribblernotebooks.scribblernotebooks.Activities.LogIn;
-import com.scribblernotebooks.scribblernotebooks.Handlers.UserHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -73,7 +64,7 @@ public class ParseJson {
         Deal deal = new Deal();
         try {
             JSONObject jsonChild = new JSONObject(jsonResponse);
-            String id, title, category, sdesp, ldesp, imgurl, code;
+            String id, title, category, sdesp, ldesp, imgurl, code, couponCode;
 
             id = jsonChild.optString("_id");
             title = jsonChild.optString(Constants.TAG_DEAL_NAME);
@@ -81,16 +72,17 @@ public class ParseJson {
             category = categoryDetail.optString("name");
             sdesp = jsonChild.optString(Constants.TAG_SHORT_DESCRIPTION);
             ldesp = jsonChild.optString(Constants.TAG_LONG_DESCRIPTION);
-            code = jsonChild.optString(Constants.TAG_CODE);
+//            code = jsonChild.optString(Constants.TAG_CODE);
 //            imgurl = "http://www.ucarecdn.com/" + jsonChild.optString(Constants.TAG_IMAGE_URL) + "/image.png";
             imgurl = jsonChild.optString(Constants.TAG_IMAGE_UUID);
+            couponCode=jsonChild.optString(Constants.TAG_COUPON_CODE);
             deal.setId(id);
             deal.setTitle(title);
             deal.setCategory(category);
             deal.setImageUrl(imgurl);
             deal.setShortDescription(sdesp);
             deal.setLongDescription(ldesp);
-            deal.setCouponCode(code);
+            deal.setCouponCode(couponCode);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -108,7 +100,7 @@ public class ParseJson {
             JSONObject jsonChild = jsonObject.optJSONObject(Constants.TAG_DATA);
             String success = jsonObject.optString("success");
 
-            String id, title, category, sdesp, ldesp, imgurl;
+            String id, title, category, sdesp, ldesp, imgurl, couponCode;
 
             id = jsonChild.optString(Constants.TAG_ID);
             title = jsonChild.optString(Constants.TAG_DEAL_NAME);
@@ -125,13 +117,14 @@ public class ParseJson {
 //                imgurl = "http://www.ucarecdn.com/" + jsonChild.optString(Constants.TAG_IMAGE_UUID) + "/image.png";
 //            }
             imgurl = jsonChild.optString(Constants.TAG_IMAGE_UUID);
-
+            couponCode=jsonChild.optString(Constants.TAG_COUPON_CODE);
             deal.setId(id);
             deal.setTitle(title);
             deal.setCategory(category);
             deal.setImageUrl(imgurl);
             deal.setShortDescription(sdesp);
             deal.setLongDescription(ldesp);
+            deal.setCouponCode(couponCode);
             Log.e("Done", "Done");
 
         } catch (JSONException e) {

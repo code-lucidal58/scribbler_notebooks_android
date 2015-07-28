@@ -20,7 +20,6 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
-import com.scribblernotebooks.scribblernotebooks.Activities.DealDetail;
 import com.scribblernotebooks.scribblernotebooks.Handlers.UserHandler;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Deal;

@@ -11,7 +11,6 @@ import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Deal;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 /**
  * Created by Aanisha on 26-May-15.
@@ -153,14 +152,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public long addClaimedDeal(Deal deal){
         ContentValues contentValues=new ContentValues();
-        contentValues.put(Constants.TAG_ID,deal.getId()+ String.valueOf(new Random().nextInt()));
+        contentValues.put(Constants.TAG_ID,deal.getId());
         contentValues.put(Constants.TAG_DEAL_NAME,deal.getTitle());
         contentValues.put(Constants.TAG_CATEGORY,deal.getCategory());
         contentValues.put(Constants.TAG_LONG_DESCRIPTION,deal.getLongDescription());
         contentValues.put(Constants.TAG_IMAGE_URL,deal.getImageUrl());
         contentValues.put(Constants.TAG_COUPON_CODE,deal.getCouponCode());
 
-        Log.e("Claimed Deal", "Inserted");
+        Log.e("Claimed Deal", "Inserted: "+deal.getId());
         return db.insertOrThrow(TABLE_CLAIMED_DEALS,null,contentValues);
 
     }
@@ -177,7 +176,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 deal.setTitle(cursor.getString(1));
                 deal.setCategory(cursor.getString(2));
                 deal.setImageUrl(cursor.getString(4));
-                deal.setShortDescription(cursor.getString(3));
+                deal.setLongDescription(cursor.getString(3));
                 deal.setCouponCode(cursor.getString(5));
                 dealArrayList.add(deal);
             } while (cursor.moveToNext());

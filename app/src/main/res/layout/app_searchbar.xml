@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     android:animateLayoutChanges="true"
     android:background="@color/toolbarColor"
+    android:paddingBottom="2dp"
     android:minHeight="@dimen/search">
 
     <LinearLayout
@@ -134,6 +135,7 @@
         android:layout_height="200dp"
         android:maxHeight="200dp"
         android:background="@color/toolbarColor"
+        android:layout_marginBottom="5dp"
         android:layout_below="@+id/replacedLinearLayout"
         android:visibility="gone" />
 </RelativeLayout>

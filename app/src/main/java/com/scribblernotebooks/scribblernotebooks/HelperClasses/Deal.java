@@ -7,6 +7,7 @@ import android.os.Parcelable;
 import android.util.Log;
 
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
+import com.scribblernotebooks.scribblernotebooks.Handlers.DatabaseHandler;
 import com.scribblernotebooks.scribblernotebooks.Handlers.UserHandler;
 
 import org.json.JSONException;
@@ -14,12 +15,12 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.security.CodeSigner;
 import java.util.HashMap;
 
 /**
@@ -27,9 +28,9 @@ import java.util.HashMap;
  */
 public class Deal implements Parcelable {
 
-    private String id, title, category, shortDescription, imageUrl, longDescription;
+    private String id="", title="", category="", shortDescription="", imageUrl="", longDescription="";
     private Boolean isFav = false, isFeatured = false;
-    private String couponCode;
+    private String couponCode="";
 
     public Deal() {
         super();
@@ -41,6 +42,10 @@ public class Deal implements Parcelable {
 
     public Deal(String id, String title, String category, String shortDescription, String imageUrl,
                 String longDescription, Boolean isFav, Boolean isFeatured) {
+        this(id,title,category,shortDescription,imageUrl,longDescription,isFav,isFeatured,"");
+    }
+    public Deal(String id, String title, String category, String shortDescription, String imageUrl,
+                String longDescription, Boolean isFav, Boolean isFeatured, String couponCode) {
         this.id = id;
         this.title = title;
         this.category = category;
@@ -49,6 +54,7 @@ public class Deal implements Parcelable {
         this.longDescription = longDescription;
         this.isFav = isFav;
         this.isFeatured = isFeatured;
+        this.couponCode=couponCode;
     }
 
     private Deal(Parcel in) {
@@ -60,6 +66,7 @@ public class Deal implements Parcelable {
         longDescription = in.readString();
         isFav = Boolean.parseBoolean(in.readString());
         isFeatured = Boolean.parseBoolean(in.readString());
+        couponCode=in.readString();
     }
 
 
@@ -78,6 +85,7 @@ public class Deal implements Parcelable {
         dest.writeString(longDescription);
         dest.writeString(String.valueOf(isFav));
         dest.writeString(String.valueOf(isFeatured));
+        dest.writeString(couponCode);
     }
 
     public static final Parcelable.Creator<Deal> CREATOR = new Parcelable.Creator<Deal>() {
@@ -104,14 +112,6 @@ public class Deal implements Parcelable {
         String id = this.getId();
         String liked = String.valueOf(isFav);
 
-        UserHandler handler = new UserHandler(context);
-        if (isFav)
-            handler.addDeal(id);
-        else
-            handler.removeDeal(id);
-        Log.e("Deal Favorite", "Deal Favorited");
-        handler.close();
-
         new AsyncTask<String, Void, String>() {
             @Override
             protected String doInBackground(String... params) {
@@ -129,8 +129,12 @@ public class Deal implements Parcelable {
                 URL url;
                 try {
                     url = new URL(Constants.getLikeDealUrl(id));
-                    Log.e("Deal","Liking deal url:"+url.toString());
+                    Log.e("Deal", "Liking deal url:" + url.toString());
                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    connection.setRequestProperty("Authorization", "Bearer " + token);
+                    connection.setConnectTimeout(15000);
+                    connection.setReadTimeout(15000);
+                    connection.setDoInput(true);
                     if(isFav) {
                         connection.setRequestMethod("POST");
                         Log.e("Deal", "POST method");
@@ -149,16 +153,17 @@ public class Deal implements Parcelable {
                         connection.setRequestMethod("DELETE");
                         Log.e("Deal","DELETE method");
                     }
-                    connection.setConnectTimeout(15000);
-                    connection.setRequestProperty("Authorization", "Bearer " + token);
-                    connection.setReadTimeout(15000);
-                    connection.setDoInput(true);
 
 
-                    Log.e("Deal", "Connection: " + connection.toString());
                     BufferedReader reader=new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                    Log.e("Deal","Connection Response: "+reader.readLine());
-
+                    String s=reader.readLine();
+                    JSONObject jsonObject=new JSONObject(s);
+                    boolean success=Boolean.parseBoolean(jsonObject.optString("success"));
+                    if(success){
+                        UserHandler handler1=new UserHandler(context);
+                        handler1.addDeal(id);
+                        handler1.close();
+                    }
 
                 } catch (Exception e) {
                     Log.e("Deal","Like Deal Exception");
@@ -317,6 +322,52 @@ public class Deal implements Parcelable {
     }
 
     public String getCouponCode() {
+        return this.couponCode;
+    }
+
+    public String claimDeal(final Context context){
+        final Deal deal=this;
+        Log.e("Deal","Claiming deal:"+id);
+        new AsyncTask<String, Void, Void>(){
+            @Override
+            protected Void doInBackground(String... params) {
+                String id=params[0];
+                User user = Constants.getUser(context);
+                try {
+                    Log.e("Deal","Claimed Deal:"+id);
+                    URL url = new URL(Constants.ServerUrls.claimDeal);
+                    HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+                    connection.setRequestMethod("POST");
+                    connection.setDoInput(true);
+                    connection.setDoOutput(true);
+                    connection.setConnectTimeout(15000);
+                    connection.setReadTimeout(15000);
+                    connection.setRequestProperty("Authorization", "Bearer " + user.getToken());
+                    HashMap<String, String > data=new HashMap<String, String>();
+                    data.put("dealId", id);
+                    OutputStream os=connection.getOutputStream();
+                    BufferedWriter writer=new BufferedWriter(new OutputStreamWriter(os,"UTF-8"));
+                    writer.write(Constants.getPostDataString(data));
+                    writer.flush();
+                    writer.close();
+                    os.close();
+
+                    InputStream is=connection.getInputStream();
+                    BufferedReader reader=new BufferedReader(new InputStreamReader(is));
+                    String s=reader.readLine();
+                    JSONObject jsonObject=new JSONObject(s);
+                    boolean success=Boolean.parseBoolean(jsonObject.optString("success"));
+                    if(success){
+                        DatabaseHandler handler=new DatabaseHandler(context);
+                        handler.addClaimedDeal(deal);
+                        handler.close();
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+                return null;
+            }
+       }.execute(id);
         return this.couponCode;
     }
 

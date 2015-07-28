@@ -35,11 +35,9 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.scribblernotebooks.scribblernotebooks.Activities.DealDetail;
 import com.scribblernotebooks.scribblernotebooks.Activities.NavigationDrawer;
-import com.scribblernotebooks.scribblernotebooks.Activities.ScannerActivity;
 import com.scribblernotebooks.scribblernotebooks.Adapters.CategoryListAdapter;
 import com.scribblernotebooks.scribblernotebooks.Adapters.RecyclerDealsAdapter;
 import com.scribblernotebooks.scribblernotebooks.Adapters.SearchListAdapter;
@@ -60,15 +58,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKeyPressed {
@@ -79,7 +73,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
 
     public int ACTION_SEARCH = 1;
     public int ACTION_DEFAULT = 0;
-    int action=0;
+    int action = 0;
     ArrayList<Categories> categoryList = null;
 
     RecyclerView recyclerView;
@@ -124,6 +118,8 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
     ImageView loadingCharacter;
     TextView loadingMessage;
     ProgressBar loadingBar;
+
+    String categoryName = "";
 
     private boolean loading = true;
     int pastVisibleItems, visibleItemCount, totalItemCount;
@@ -228,7 +224,6 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
                 hideToolbarOptions("sort");
             }
         });
-
 
 
         /**
@@ -380,6 +375,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
      * Hide the category, search, scan and sort options and show the corresponding menu
      */
     public void hideToolbarOptions(String tag1) {
+        Log.e("DealFragment", "0 SearchQuery=" + searchQuery + " Category=" + category + " SortBy=" + sort);
         Log.e("DealFragment", "Isloading: " + isloading + " isEmpty:" + isEmpty);
         if (isloading || isEmpty) {
             return;
@@ -392,14 +388,6 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
         replacedLayout.setVisibility(View.VISIBLE);
         //originalLayout.setVisibility(View.GONE);
         selectedIconQuery.setText("");
-        if (tag.equalsIgnoreCase("search")) {
-            UserHandler handler = new UserHandler(getActivity());
-            String[] suggestions = handler.getSuggestions();
-            handler.close();
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, suggestions);
-            selectedIconQuery.setAdapter(adapter);
-            selectedIconQuery.setThreshold(1);
-        }
         ArrayList<String> suggestionList = new ArrayList<>();
         replacedLayout.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -410,6 +398,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
                 switch (tag) {
                     case "category":
                         category = "";
+                        categoryName = "";
                         break;
                     case "search":
                         searchQuery = "";
@@ -441,7 +430,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
                     case "sort":
                         sort = text;
                         Log.e("DealFragment", "Sort Changed " + sort);
-                        parametersChanged=false;
+                        parametersChanged = false;
                         break;
                 }
                 Log.e("DealFragment", "Search Clicked " + page + " " + category + " " + searchQuery + " " + sort);
@@ -451,39 +440,44 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
 
         switch (tag) {
             case "category":
+                Log.e("DealFragment", "1 SearchQuery=" + searchQuery + " Category=" + category + " SortBy=" + sort);
                 selectionIconName.setText("CATEGORY");
                 selectedIconQuery.setHint("Enter Category...");
                 selectedIconQuery.setText(category);
-
-//                initialTopPadding=recyclerView.getPaddingTop();
-//                recyclerView.setPadding(swipeRefreshLayout.getPaddingLeft(), 70 + 55 + 200, swipeRefreshLayout.getPaddingRight(), swipeRefreshLayout.getPaddingBottom());
-
+                selectedIconQuery.setText(categoryName);
                 suggestions.setVisibility(View.VISIBLE);
+                CategoryListAdapter categoryListAdapter = new CategoryListAdapter(categoryList, tag);
+                suggestions.setAdapter(categoryListAdapter);
                 break;
             case "search":
+                Log.e("DealFragment", "2 SearchQuery=" + searchQuery + " Category=" + category + " SortBy=" + sort);
+                UserHandler handler = new UserHandler(getActivity());
+                String[] suggestions1 = handler.getSuggestions();
+                handler.close();
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, suggestions1);
+                selectedIconQuery.setAdapter(adapter);
+                selectedIconQuery.setThreshold(1);
+
                 selectionIconName.setText("SEARCH");
                 selectedIconQuery.setHint("Name, Location, Content...");
+                selectedIconQuery.setText(searchQuery);
                 suggestionList = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.search_list)));
                 selectedIconQuery.setText(searchQuery);
+                searchListAdapter = new SearchListAdapter(suggestionList, tag);
+                suggestions.setAdapter(searchListAdapter);
                 break;
             case "sort":
+                Log.e("DealFragment", "3 SearchQuery=" + searchQuery + " Category=" + category + " SortBy=" + sort);
                 selectionIconName.setText("SORT");
                 selectedIconQuery.setHint("Sort by...");
+                selectedIconQuery.setText(sort);
                 suggestionList = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.sort_list)));
-
-//                initialTopPadding=recyclerView.getPaddingTop();
-//                recyclerView.setPadding(swipeRefreshLayout.getPaddingLeft(), 70+55+200, swipeRefreshLayout.getPaddingRight(), swipeRefreshLayout.getPaddingBottom());
                 suggestions.setVisibility(View.VISIBLE);
+                searchListAdapter = new SearchListAdapter(suggestionList, tag);
+                suggestions.setAdapter(searchListAdapter);
                 break;
             default:
                 break;
-        }
-        if (tag.equalsIgnoreCase("category")) {
-            CategoryListAdapter categoryListAdapter = new CategoryListAdapter(categoryList, tag);
-            suggestions.setAdapter(categoryListAdapter);
-        } else {
-            searchListAdapter = new SearchListAdapter(suggestionList, tag);
-            suggestions.setAdapter(searchListAdapter);
         }
 
         querySearchListAdapter = new SearchListAdapter(suggestionList, tag);
@@ -543,6 +537,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
                         ArrayList<Categories> categories = categoryList;
                         category = categories.get(position).getId();
                         parametersChanged = true;
+                        categoryName = categories.get(position).getName();
                         Log.e("DealFragment", "Category set to " + category);
                         showToolbarOptions();
                         break;
@@ -601,7 +596,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
     }
 
     public void LoadNextPage() {
-        new LongOperation(action).execute(String.valueOf(page), category, searchQuery,sort);
+        new LongOperation(action).execute(String.valueOf(page), category, searchQuery, sort);
     }
 
     @Override
@@ -694,7 +689,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
         }
 
         @Override
-        protected void onPostExecute(String s){
+        protected void onPostExecute(String s) {
             isloading = false;
             Log.e("DealFragment", "Response " + s);
 //            progressDialog.dismiss();
@@ -702,10 +697,9 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
 
             DealListResponse dealListResponse = ParseJson.getParsedData(s);
             try {
-                if (s.isEmpty() || dealListResponse==null) {
+                if (s.isEmpty() || dealListResponse == null) {
                     Log.e("DealsFragment", "Is Empty1: " + isEmpty);
-                    if(dealsList.isEmpty())
-                    {
+                    if (dealsList.isEmpty()) {
                         isEmpty = true;
                     }
                     Log.e("DealsFragment", "Is Empty2: " + isEmpty);
@@ -771,7 +765,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
                 }
                 setAdapterHolder();
                 recyclerView.setAdapter(adapter);
-            }catch (NullPointerException e){
+            } catch (NullPointerException e) {
                 e.getStackTrace();
             }
         }

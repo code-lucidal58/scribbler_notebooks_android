@@ -2,9 +2,10 @@ package com.scribblernotebooks.scribblernotebooks.Activities;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ListView;
 
 import com.scribblernotebooks.scribblernotebooks.Adapters.NotificationDrawerListAdapter;
@@ -20,37 +21,34 @@ import java.util.ArrayList;
 public class NotificationsActivity extends AppCompatActivity {
 
     ListView notificationsListView;
-    Button clearNotif;
     NotificationDrawerListAdapter drawerListAdapter;
     ArrayList<Notifications> notificationList=new ArrayList<>();
-
+    Toolbar toolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_right_drawer);
 
+        toolbar=(Toolbar)findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Notifications");
+        getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         notificationsListView = (ListView)findViewById(R.id.right_drawer);
-        clearNotif=(Button)findViewById(R.id.clearNotifs);
-
         notificationList=retrieveNotifications();
         drawerListAdapter = new NotificationDrawerListAdapter(NotificationsActivity.this, notificationList);
         notificationsListView.setAdapter(drawerListAdapter);
+    }
 
-        clearNotif.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NotificationDataHandler handler=new NotificationDataHandler(NotificationsActivity.this);
-                handler.open();
-                handler.deleteTable(NotificationDataHandler.TABLE_NAME_DEFAULT);
-                handler.close();
-                Log.e("NotificationDrawer","Cliked Clear");
-                notificationList=retrieveNotifications();
-                drawerListAdapter = new NotificationDrawerListAdapter(NotificationsActivity.this, notificationList);
-                notificationsListView.setAdapter(drawerListAdapter);
-
-            }
-        });
-
+    void clearNotifications(){
+        NotificationDataHandler handler=new NotificationDataHandler(NotificationsActivity.this);
+        handler.open();
+        handler.deleteTable(NotificationDataHandler.TABLE_NAME_DEFAULT);
+        handler.close();
+        Log.e("NotificationDrawer","Cliked Clear");
+        notificationList=retrieveNotifications();
+        drawerListAdapter = new NotificationDrawerListAdapter(NotificationsActivity.this, notificationList);
+        notificationsListView.setAdapter(drawerListAdapter);
     }
 
     protected ArrayList<Notifications> retrieveNotifications(){
@@ -65,5 +63,24 @@ public class NotificationsActivity extends AppCompatActivity {
             notificationsArrayList.add(new Notifications("0", "You do not have any notifications", ""));
         }
         return notificationsArrayList;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.menu_notification,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if(item.getItemId()==R.id.clear){
+            clearNotifications();
+        }else if(item.getItemId()==android.R.id.home){
+            finish();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -1,9 +1,7 @@
 package com.scribblernotebooks.scribblernotebooks.Fragments;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -17,14 +15,7 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
-import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Deal;
 import com.scribblernotebooks.scribblernotebooks.R;
@@ -34,7 +25,6 @@ import com.scribblernotebooks.scribblernotebooks.R;
  */
 public class DealDetailFragment extends Fragment {
 
-    OnFragmentInteractionListener mListener;
     Deal deal;
     Context mContext;
     TextView title, category, description;
@@ -42,11 +32,13 @@ public class DealDetailFragment extends Fragment {
     Button claimDeal;
     CheckBox likeBox;
     RadioButton shareBox;
+    Boolean isClaimed=false;
 
-    public static DealDetailFragment newInstance(Deal deal){
+    public static DealDetailFragment newInstance(Deal deal, Boolean isClaimed){
         DealDetailFragment fragment=new DealDetailFragment();
         Bundle args=new Bundle();
         args.putParcelable(Constants.PARCELABLE_DEAL_KEY, deal);
+        args.putBoolean("IS_CLAIMED",isClaimed);
         fragment.setArguments(args);
         return fragment;
     }
@@ -61,6 +53,7 @@ public class DealDetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Bundle args=getArguments();
         this.deal=args.getParcelable(Constants.PARCELABLE_DEAL_KEY);
+        this.isClaimed=args.getBoolean("IS_CLAIMED");
     }
 
 
@@ -117,60 +110,30 @@ public class DealDetailFragment extends Fragment {
             }
         });
 
-//        ImageLoaderConfiguration loaderConfiguration=new ImageLoaderConfiguration.Builder(mContext).build();
-//        ImageLoader.getInstance().init(loaderConfiguration);
-//        ImageLoadingListener imageLoadingListener=new SimpleImageLoadingListener();
-//        DisplayImageOptions displayImageOptions=new DisplayImageOptions.Builder()
-//                .showImageOnLoading(R.mipmap.ic_launcher)
-//                .showImageForEmptyUri(R.mipmap.ic_launcher)
-//                .showImageOnFail(R.mipmap.ic_launcher)
-//                .cacheOnDisk(true)
-//                .cacheInMemory(true)
-//                .considerExifParams(true)
-//                .displayer(new SimpleBitmapDisplayer()).build();
-//        ImageLoader.getInstance().displayImage(deal.getImageUrl(),image,displayImageOptions,imageLoadingListener);
-
-        claimDeal.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                claimThisDeal();
-            }
-        });
+        if(isClaimed){
+            claimDeal.setOnClickListener(null);
+            claimDeal.setText(deal.getCouponCode());
+        }else {
+            claimDeal.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    claimThisDeal();
+                }
+            });
+        }
 
         return view;
     }
 
 
     private void claimThisDeal(){
-        Toast.makeText(mContext,"Deal Claimed "+deal.getTitle(),Toast.LENGTH_LONG).show();
-    }
-
-
-
-    /**
-     * Auto-generated methods
-     *
-     * @param uri
-     */
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+        String s=deal.claimDeal(mContext);
+        if(s.isEmpty()){
+            claimDeal.setText("Error Claiming... Try Again");
+        }else{
+            claimDeal.setText(s);
+            claimDeal.setOnClickListener(null);
         }
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    public interface OnFragmentInteractionListener {
-        public void onFragmentInteraction(Uri uri);
     }
 
 }

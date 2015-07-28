@@ -1,9 +1,5 @@
 package com.scribblernotebooks.scribblernotebooks.Activities;
 
-import java.util.ArrayList;
-
-import android.net.Uri;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -12,21 +8,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.scribblernotebooks.scribblernotebooks.Adapters.DealDetailFragmentAdapter;
-import com.scribblernotebooks.scribblernotebooks.Fragments.DealDetailFragment;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Deal;
 import com.scribblernotebooks.scribblernotebooks.R;
 
-public class DealDetail extends AppCompatActivity implements DealDetailFragment.OnFragmentInteractionListener{
+import java.util.ArrayList;
 
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
+public class DealDetail extends AppCompatActivity{
+
     DealDetailFragmentAdapter fragmentAdapter;
 
     /**
@@ -49,7 +38,9 @@ public class DealDetail extends AppCompatActivity implements DealDetailFragment.
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        fragmentAdapter = new DealDetailFragmentAdapter(getSupportFragmentManager(),dealArrayList);
+
+        boolean isClaimed=getIntent().getBooleanExtra("IS_CLAIMED",false);
+        fragmentAdapter = new DealDetailFragmentAdapter(getSupportFragmentManager(),dealArrayList, isClaimed);
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
@@ -76,10 +67,5 @@ public class DealDetail extends AppCompatActivity implements DealDetailFragment.
             finish();
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
     }
 }

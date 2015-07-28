@@ -186,7 +186,7 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
         }
         if (!registered) {
             Log.e("NavigationDrawer", "BackKey Event Not Registered");
-            if (mDrawerLayout.isDrawerOpen(findViewById(R.id.left_drawer_relative)) || mDrawerLayout.isDrawerOpen(findViewById(R.id.notification_drawer))) {
+            if (mDrawerLayout.isDrawerOpen(findViewById(R.id.left_drawer_relative))) {
                 mDrawerLayout.closeDrawers();
             } else if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
                 getSupportFragmentManager().popBackStack();

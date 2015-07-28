@@ -2,7 +2,6 @@ package com.scribblernotebooks.scribblernotebooks.CustomViews;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -16,18 +15,8 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
-import com.scribblernotebooks.scribblernotebooks.Handlers.DatabaseHandler;
-import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Deal;
 import com.scribblernotebooks.scribblernotebooks.R;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 /**
  * Created by Jibin_ism on 12-May-15.
@@ -141,54 +130,19 @@ public class DealPopup extends Dialog implements View.OnClickListener {
         int id=v.getId();
         switch (id){
             case R.id.codeButton:
-                getCodeAndDisplay(currentDeal);
+                String s=currentDeal.claimDeal(context);
+                if(s.isEmpty()){
+                    codeButton.setText("Error claiming... Try Again");
+                    break;
+                }
+                codeButton.setText(s);
+                codeButton.setOnClickListener(null);
                 break;
             default:
                 break;
         }
     }
 
-    /**
-     * Code for getting the scribbler code from the server
-     * @param deal the deal of which request is to be sent
-     */
-    public void getCodeAndDisplay(Deal deal){
-        new AsyncTask<Deal,Void,String>(){
-            @Override
-            protected String doInBackground(Deal... params) {
-                Deal deal=params[0];
-                try {
-                    URL url=new URL(Constants.parentURLForCouponCode+deal.getId());
-                    HttpURLConnection connection=(HttpURLConnection)url.openConnection();
-                    connection.setRequestMethod("GET");
-                    connection.connect();
-                    BufferedReader b=new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                    return b.readLine();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return "";
-            }
-
-            @Override
-            protected void onPostExecute(String s) {
-                JSONObject js;
-                try {
-                    js = new JSONObject(s);
-                    String code=js.optString("id");
-                    DatabaseHandler handler=new DatabaseHandler(context);
-                    currentDeal.setCouponCode(code);
-                    handler.addClaimedDeal(currentDeal);
-                    handler.close();
-                    codeButton.setText(currentDeal.getCouponCode());
-                    codeButton.setOnClickListener(null);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                super.onPostExecute(s);
-            }
-        }.execute(deal);
-    }
 
     public void setContent(String content){
         this.content=content;

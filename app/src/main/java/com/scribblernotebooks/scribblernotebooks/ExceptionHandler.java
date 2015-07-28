@@ -6,7 +6,6 @@ import android.os.Environment;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Random;
 
 /**
@@ -47,7 +46,7 @@ public class ExceptionHandler extends Application {
                     e.printStackTrace();
                 }
                 f.write(data.getBytes());
-                f.write("\n***********************************".getBytes());
+                f.write("\n".getBytes());
                 f.write(data2.getBytes());
                 f.close();
             }catch (Exception e){

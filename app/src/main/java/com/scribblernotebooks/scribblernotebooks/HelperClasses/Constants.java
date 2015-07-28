@@ -46,7 +46,7 @@ public class Constants {
 
 
     public static class ServerUrls {
-        public static String host = "http://192.168.108.1:3000/";
+        public static String host = "http://scribbler.co.in:8080/";
         public static String websiteUrl = host + "api/";
         //User Module
         public static String signUp = websiteUrl + "signup";
@@ -75,6 +75,8 @@ public class Constants {
 
         public static String surveySubmit=websiteUrl+"survey";
 
+        public static final String claimDeal=websiteUrl+"claim/";
+
     }
 
     public static String getLikeDealUrl(String id){
@@ -99,7 +101,7 @@ public class Constants {
     public static final String TAG_SHORT_DESCRIPTION = "shortDescription";
     public static final String TAG_LONG_DESCRIPTION = "description";
     public static final String TAG_CODE = "code";
-    public static final String TAG_ID = "Id";
+    public static final String TAG_ID = "_id";
     public static final String TAG_CATEGORY = "category";
     public static final String TAG_IF_FEATURED = "ifFeatured";
     public static final String TAG_IF_FAVOURITE = "ifFavorite";
