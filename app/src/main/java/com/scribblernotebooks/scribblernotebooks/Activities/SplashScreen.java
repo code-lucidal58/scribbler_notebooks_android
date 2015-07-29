@@ -79,34 +79,37 @@ public class SplashScreen extends AppCompatActivity {
     }
 
     public void translateAndLogIn(){
-        Log.e("Splash", "Starting translate and Login Animation");
-        TranslateAnimation animation = new TranslateAnimation(0, 0, 0, getLogoHeight() - (int) (0.6 * getScreenHeight()));
-        TranslateAnimation animation2 = new TranslateAnimation(0, 0, 0, getLogoHeight() - (int) (0.59 * getScreenHeight())+10);
-        animation.setDuration(1000);
-        animation.setFillEnabled(true);
-        animation.setFillAfter(true);
-        animation2.setDuration(1000);
-        animation2.setFillEnabled(true);
-        animation2.setFillAfter(true);
-
-        Thread a=new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(500);
-                }catch (InterruptedException e){
-                    e.printStackTrace();
-                }finally {
-                    startActivity(new Intent(getApplicationContext(),LogIn.class));
-                    finish();
-                    overridePendingTransition(R.anim.flash_appear,R.anim.flash_disappear);
-                }
-            }
-        });
-        a.start();
-
-        topCurve.startAnimation(animation);
-        whiteLogo.startAnimation(animation2);
+        startActivity(new Intent(getApplicationContext(),LogIn.class));
+        finish();
+        overridePendingTransition(R.anim.flash_appear,R.anim.flash_disappear);
+//        Log.e("Splash", "Starting translate and Login Animation");
+//        TranslateAnimation animation = new TranslateAnimation(0, 0, 0, getLogoHeight() - (int) (0.6 * getScreenHeight()));
+//        TranslateAnimation animation2 = new TranslateAnimation(0, 0, 0, getLogoHeight() - (int) (0.59 * getScreenHeight())+10);
+//        animation.setDuration(1000);
+//        animation.setFillEnabled(true);
+//        animation.setFillAfter(true);
+//        animation2.setDuration(1000);
+//        animation2.setFillEnabled(true);
+//        animation2.setFillAfter(true);
+//
+//        Thread a=new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                try {
+//                    Thread.sleep(500);
+//                }catch (InterruptedException e){
+//                    e.printStackTrace();
+//                }finally {
+//                    startActivity(new Intent(getApplicationContext(),LogIn.class));
+//                    finish();
+//                    overridePendingTransition(R.anim.flash_appear,R.anim.flash_disappear);
+//                }
+//            }
+//        });
+//        a.start();
+//
+//        topCurve.startAnimation(animation);
+//        whiteLogo.startAnimation(animation2);
     }
 
     public void changeColor() {
