@@ -15,7 +15,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -30,7 +29,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -66,7 +64,15 @@ import com.scribblernotebooks.scribblernotebooks.Services.SignUpService;
 
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -180,7 +186,9 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
         userEmail.setText(user.getEmail());
         userLocation.setText(user.getLocation());
         userMob.setText(user.getMobile());
-        userCollege.setText(user.getCollege());
+        if(user.getCollege()!=null) {
+            userCollege.setText(user.getCollege().getName());
+        }
 
         imageChanger(userName);
         imageChanger(userMob);
@@ -474,15 +482,103 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
 
     public void saveDetails(){
         User user=new User();
+        user=Constants.getUser(context);
         user.setName(userName.getText().toString());
         user.setEmail(userEmail.getText().toString());
-        user.setCollege(userCollege.getText().toString());
+//        user.setCollege(userCollege.getText().toString());
         user.setLocation(userLocation.getText().toString());
-        user.setMobile(userLocation.getText().toString());
+        user.setMobile(userMob.getText().toString());
+        Log.e("User Id"," "+user.getId());
+
+        new SaveOperation().execute(user);
+
         Constants.saveUserDetails(getActivity(), user);
         mListener.onUserNameChanged();
         mListener.onUserEmailChanged();
 
+    }
+
+    class SaveOperation extends AsyncTask<User, Void, Void>{
+
+        ProgressDialog dialog;
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            dialog=new ProgressDialog(getActivity());
+            dialog.setIndeterminate(true);
+            dialog.setMessage("Saving...\nPlease Wait");
+            dialog.show();
+
+        }
+
+        @Override
+        protected Void doInBackground(User... params) {
+
+            try {
+                User user = params[0];
+                URL url = new URL(Constants.ServerUrls.updateUser + user.getId());
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("PUT");
+                connection.setDoInput(true);
+                connection.setDoOutput(true);
+                connection.setConnectTimeout(15000);
+                connection.setReadTimeout(15000);
+                connection.setRequestProperty("Authorization", "Bearer " + user.getToken());
+
+                OutputStream os = connection.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+
+                HashMap<String, String> data = new HashMap<>();
+                data.put(Constants.POST_NAME, user.getName());
+                data.put(Constants.POST_EMAIL, user.getEmail());
+                data.put(Constants.POST_MOBILE, user.getMobile());
+                if(user.getCollege()!=null) {
+                    if (!user.getCollege().getId().isEmpty()) {
+                        data.put(Constants.POST_COLLEGE, user.getCollege().getId());
+                    }
+                }
+                writer.write(Constants.getPostDataString(data));
+                writer.flush();
+                writer.close();
+                os.close();
+
+                InputStream is = connection.getInputStream();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+                String s = reader.readLine();
+
+                if(s==null){
+                    return null;
+                }
+                if(s.isEmpty()){
+                    return null;
+                }
+
+                try{
+                    JSONObject object=new JSONObject(s);
+                    Boolean success=Boolean.parseBoolean(object.optString("success"));
+                    if(success){
+                        Constants.saveUserDetails(getActivity(), user);
+                        Toast.makeText(getActivity(), "Successfully Saved",Toast.LENGTH_LONG).show();
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            if(dialog!=null){
+                if(dialog.isShowing()){
+                    dialog.dismiss();
+                }
+            }
+        }
     }
 
 

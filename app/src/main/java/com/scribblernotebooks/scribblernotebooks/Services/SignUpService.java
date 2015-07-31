@@ -14,28 +14,20 @@ import android.widget.Toast;
 import com.scribblernotebooks.scribblernotebooks.Activities.NavigationDrawer;
 import com.scribblernotebooks.scribblernotebooks.Activities.ProfileManagement;
 import com.scribblernotebooks.scribblernotebooks.Handlers.UserHandler;
+import com.scribblernotebooks.scribblernotebooks.HelperClasses.College;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.ParseJson;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.User;
 import com.scribblernotebooks.scribblernotebooks.R;
-
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
-
-import javax.net.ssl.HttpsURLConnection;
 
 /**
  * Created by Aanisha on 12-Jun-15.
@@ -45,7 +37,8 @@ public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User
     Activity activity;
     HashMap<String, String> parsedData;
     ProgressDialog progressDialog;
-    Boolean isSignup=false;
+    Boolean isSignup = false;
+    Boolean success=false;
 
     public SignUpService(String s, Activity a) {
         urlExtension = s;
@@ -85,16 +78,15 @@ public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User
             os.close();
             int responseCode = conn.getResponseCode();
 
-            if (responseCode == HttpsURLConnection.HTTP_OK) {
-                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                String response = br.readLine();
-                if (urlExtension.equalsIgnoreCase(Constants.ServerUrls.login)) {
-                    isSignup=false;
-                    return loginHandle(response);
-                } else if (urlExtension.equalsIgnoreCase(Constants.ServerUrls.signUp)) {
-                    isSignup=true;
-                    return signupHandle(response, params[0]);
-                }
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String response = br.readLine();
+            Log.e("Signup Service", "Response: " + response);
+            if (urlExtension.equalsIgnoreCase(Constants.ServerUrls.login)) {
+                isSignup = false;
+                return loginHandle(response);
+            } else if (urlExtension.equalsIgnoreCase(Constants.ServerUrls.signUp)) {
+                isSignup = true;
+                return signupHandle(response, params[0]);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -109,11 +101,14 @@ public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User
             return;
         }
         Constants.saveUserDetails(activity, user);
-        User user1=Constants.getUser(activity);
-        if(user1.getMobile().isEmpty() && isSignup){
+        User user1 = Constants.getUser(activity);
+        if (user1.getMobile().isEmpty() && isSignup) {
             activity.startActivity(new Intent(activity, ProfileManagement.class));
-        }else {
-            activity.startActivity(new Intent(activity, NavigationDrawer.class));
+        } else {
+            if(success)
+                activity.startActivity(new Intent(activity, NavigationDrawer.class));
+            else
+                Toast.makeText(activity, "Unable to connect to server. Please try again",Toast.LENGTH_LONG).show();
         }
         activity.finish();
         super.onPostExecute(user);
@@ -141,11 +136,11 @@ public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User
                         handler.addDeal(ld[i]);
                     }
                     handler.close();
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
-                try{
+                try {
                     String likedDeals = parsedData.get("likedDeals");
                     String[] ld = likedDeals.split(",");
                     UserHandler handler = new UserHandler(activity);
@@ -153,23 +148,27 @@ public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User
                         handler.addSharedDeal(ld[i]);
                     }
                     handler.close();
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
-                try{
-                    user.setCollege(parsedData.get(Constants.POST_COLLEGE));
-                }catch (Exception e){
+                try {
+                    user.setCollege(new College(parsedData.get(Constants.PREF_DATA_COLLEGE_ID), parsedData.get(Constants.PREF_DATA_COLLEGE_NAME)));
+                } catch (Exception e) {
                     e.printStackTrace();
+                }
+                if (user.getCollege() == null) {
+                    activity.getSharedPreferences(Constants.PREF_ONE_TIME_NAME, Context.MODE_PRIVATE).edit().putBoolean(Constants.PREF_SHOW_COLLEGE, true).apply();
                 }
 
                 activity.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE).edit().putString(Constants.PREF_DATA_PASS, "OK").apply();
+                success=true;
                 return user;
             } else {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        AlertDialog.Builder builder=new AlertDialog.Builder(activity.getApplicationContext());
+                        AlertDialog.Builder builder = new AlertDialog.Builder(activity.getApplicationContext());
                         builder.setTitle("Error")
                                 .setMessage("The entered Email-password combination is incorrect. Please try again")
                                 .setNeutralButton("Close", new DialogInterface.OnClickListener() {
@@ -191,25 +190,31 @@ public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User
         if (parsedData != null) {
             if (Boolean.parseBoolean(parsedData.get(Constants.POST_SUCCESS))) {
                 activity.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE).edit().putString(Constants.PREF_DATA_PASS, "OK").apply();
-                activity.getSharedPreferences(Constants.PREF_ONE_TIME_NAME,Context.MODE_PRIVATE).edit()
+                activity.getSharedPreferences(Constants.PREF_ONE_TIME_NAME, Context.MODE_PRIVATE).edit()
                         .putString(Constants.PREF_MOBILE_VERIFY_CODE, parsedData.get(Constants.POST_MOBILE_VERIFY)).apply();
-                String cover,profilePic;
-                Log.e("normal signIn","signupHandle");
+                String cover, profilePic;
+                Log.e("normal signIn", "signupHandle");
                 try {
-                    cover=params.get(Constants.POST_COVERPIC);
-                }catch (Exception e){
-                    cover="";
+                    cover = params.get(Constants.POST_COVERPIC);
+                } catch (Exception e) {
+                    cover = "";
                 }
                 try {
-                    profilePic=params.get(Constants.POST_PROFILEPIC);
-                }catch (Exception e){
-                    profilePic="";
+                    profilePic = params.get(Constants.POST_PROFILEPIC);
+                } catch (Exception e) {
+                    profilePic = "";
                 }
+                success=true;
+                SharedPreferences.Editor sharedPreferences = activity.getSharedPreferences(Constants.PREF_ONE_TIME_NAME, Context.MODE_PRIVATE).edit();
+                sharedPreferences.putBoolean(Constants.PREF_SHOW_COLLEGE, true);
+                sharedPreferences.putBoolean(Constants.PREF_SHOW_ILLUSTRATION, true);
+                sharedPreferences.putBoolean(Constants.PREF_SHOW_MOBILE, true);
+                sharedPreferences.apply();
                 return new User(params.get(Constants.PREF_DATA_ID),
                         params.get(Constants.POST_NAME),
                         params.get(Constants.POST_EMAIL),
                         params.get(Constants.POST_MOBILE),
-                        cover,profilePic,
+                        cover, profilePic,
                         parsedData.get(Constants.POST_TOKEN),
                         parsedData.get(Constants.POST_MIXPANELID));
             } else {

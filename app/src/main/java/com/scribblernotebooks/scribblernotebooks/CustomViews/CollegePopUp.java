@@ -6,13 +6,14 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.Pair;
 import android.view.View;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 
+import com.scribblernotebooks.scribblernotebooks.BuildConfig;
+import com.scribblernotebooks.scribblernotebooks.HelperClasses.College;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.User;
 import com.scribblernotebooks.scribblernotebooks.R;
@@ -22,10 +23,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by Aanisha on 25-Jun-15.
@@ -38,7 +44,9 @@ public class CollegePopUp extends Dialog {
     AutoCompleteTextView collegeName;
     Button skip, okay;
     ArrayList<String> college;
+    ArrayList<College> colleges;
     SharedPreferences sharedPreferences;
+    Context context;
 
     public CollegePopUp(Context context) {
         super(context);
@@ -50,7 +58,7 @@ public class CollegePopUp extends Dialog {
         getCollegePopup();
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
-
+        context=getContext();
         setContentView(R.layout.popup_college);
         sharedPreferences = getContext().getSharedPreferences(Constants.PREF_ONE_TIME_NAME, Context.MODE_PRIVATE);
         collegeName = (AutoCompleteTextView) findViewById(R.id.college);
@@ -70,8 +78,16 @@ public class CollegePopUp extends Dialog {
             public void onClick(View v) {
                 String text = collegeName.getText().toString();
                 if (!text.isEmpty()) {
+
+                    College c1=null;
+                    for(College c:colleges){
+                        if(c.getName().equalsIgnoreCase(text)){
+                            c1=c;
+                        }
+                    }
                     User user = Constants.getUser(getContext());
-                    user.setCollege(text);
+                    user.setCollege(c1);
+                    saveCollege(c1);
                     Constants.saveUserDetails(getContext(), user);
                     dialog.dismiss();
                 }else{
@@ -88,6 +104,46 @@ public class CollegePopUp extends Dialog {
         dialog.dismiss();
         sharedPreferences.edit().putBoolean(Constants.PREF_SHOW_COLLEGE, false).apply();
     }
+
+    public void saveCollege(College college){
+        new AsyncTask<College, Void,Void>(){
+            @Override
+            protected Void doInBackground(College... params) {
+                College college=params[0];
+                User user=Constants.getUser(context);
+                try {
+                    URL url = new URL(Constants.ServerUrls.updateUser + user.getId());
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    connection.setRequestMethod("PUT");
+                    connection.setDoInput(true);
+                    connection.setDoOutput(true);
+                    connection.setConnectTimeout(15000);
+                    connection.setReadTimeout(15000);
+                    connection.setRequestProperty("Authorization", "Bearer " + user.getToken());
+
+                    OutputStream os = connection.getOutputStream();
+                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+
+                    HashMap<String, String> data = new HashMap<>();
+                    data.put(Constants.POST_COLLEGE, college.getId());
+                    writer.write(Constants.getPostDataString(data));
+                    writer.flush();
+                    writer.close();
+                    os.close();
+
+                    InputStream is = connection.getInputStream();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+                    String s=reader.readLine();
+
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+                return null;
+            }
+        }.execute(college);
+    }
+
 
     /**
      * Popup for College name
@@ -118,9 +174,8 @@ public class CollegePopUp extends Dialog {
             @Override
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
-                ArrayList<Pair<String, String>> col = new ArrayList<Pair<String, String>>();
-                college = new ArrayList<String>();
                 if (s != null) {
+                    colleges.clear();
                     Log.e("college popup", s);
                     try {
                         JSONObject jsonObject = new JSONObject(s);
@@ -132,7 +187,7 @@ public class CollegePopUp extends Dialog {
                             JSONArray collegeList = data.optJSONArray(Constants.POST_COLLEGES);
                             for (int i = 0; i < count; i++) {
                                 JSONObject c = collegeList.getJSONObject(i);
-                                col.add(new Pair<String, String>(c.optString("_id"), c.optString(Constants.POST_NAME)));
+                                colleges.add(new College(c.optString("_id"), c.optString(Constants.POST_NAME)));
                                 college.add(c.optString(Constants.POST_NAME));
                             }
                         }
@@ -141,11 +196,14 @@ public class CollegePopUp extends Dialog {
                         e.printStackTrace();
                     }
                 } else {
-                    return;
+                    if(BuildConfig.DEBUG){
+                        college.add("ISM");
+                        college.add("IITB");
+                        college.add("BITS");
+                    }else{
+                        return;
+                    }
                 }
-                college.add("ISM");
-                college.add("IITB");
-                college.add("BITS");
 
                 arrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.select_dialog_item, college);
                 collegeName.setAdapter(arrayAdapter);

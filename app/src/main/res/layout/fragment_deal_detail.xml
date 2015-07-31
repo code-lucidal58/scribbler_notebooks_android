@@ -63,7 +63,7 @@
                         android:id="@+id/likeBox"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_centerInParent="true"
+                        android:layout_marginLeft="15dp"
                         android:background="@drawable/background_like"
                         android:button="@drawable/favorite_checkbox"
                         android:paddingRight="4sp"

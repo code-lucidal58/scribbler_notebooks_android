@@ -152,7 +152,8 @@ public class ParseJson {
 
             try {
                 JSONObject collegeObject = data.getJSONObject(Constants.POST_COLLEGE);
-                parsedData.put(Constants.POST_COLLEGE, collegeObject.optString("name"));
+                parsedData.put(Constants.PREF_DATA_COLLEGE_NAME, collegeObject.optString("name"));
+                parsedData.put(Constants.PREF_DATA_COLLEGE_ID,collegeObject.optString("_id"));
             }catch (Exception e){
                 e.printStackTrace();
             }

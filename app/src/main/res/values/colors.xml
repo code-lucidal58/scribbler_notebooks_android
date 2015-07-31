@@ -23,7 +23,9 @@
     <color name="loginEditTextHintColor">#ff666666</color>
     <!--<color name="loginEditTextHintColor">#ffbababa</color>-->
 
-    <color name="toolbarColor">#1b758d</color>
+    <color name="toolbarColor">#ff2196f3</color>
+    <color name="newBlue">#ff2196f3</color>
+    <!--<color name="toolbarColor">#1b758d</color>-->
     <color name="loginEditText2Background">@color/loginEditTextBackground</color>
     <color name="loginEditText2TextColor">#ff2c2c2c</color>
 

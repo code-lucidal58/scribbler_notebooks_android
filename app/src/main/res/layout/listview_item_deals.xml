@@ -14,6 +14,7 @@
         android:layout_height="match_parent"
         card_view:cardCornerRadius="@dimen/cardViewListItem_radius"
         card_view:cardElevation="2dp"
+        android:background="#FFF"
         card_view:cardMaxElevation="2dp">
 
         <com.balysv.materialripple.MaterialRippleLayout
@@ -34,8 +35,8 @@
                 android:id="@+id/listView_container"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/listviewitem_selected"
                 android:orientation="horizontal"
+                android:background="#FFF"
                 android:weightSum="10">
 
 

@@ -7,7 +7,8 @@ import java.util.List;
  */
 public class User {
     String id="";
-    String name="", email="", mobile="", coverImage="", profilePic="", token="", mixpanelId="", location="", college="";
+    String name="", email="", mobile="", coverImage="", profilePic="", token="", mixpanelId="", location="";
+    College college;
     List<String> likedDeals;
 
     public User(String name, String email, String mobile, String token, String mixpanelId) {
@@ -63,12 +64,11 @@ public class User {
         this.likedDeals = likedDeals;
     }
 
-
-    public String getCollege() {
+    public College getCollege() {
         return college;
     }
 
-    public void setCollege(String college) {
+    public void setCollege(College college) {
         this.college = college;
     }
 

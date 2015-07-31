@@ -127,7 +127,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                  * Current SDK uses GraphAPI to retrieve data from facebook
                  */
                 final String token = loginResult.getAccessToken().getToken();
-                Log.e("fb access token", token);
+//                Log.e("fb access token", token);
                 GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
                     @Override
                     public void onCompleted(JSONObject jsonObject, GraphResponse graphResponse) {
@@ -489,7 +489,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
 
         @Override
         protected void onPostExecute(String response) {
-            Log.e(TAG, "Google access token = " + response);
+//            Log.e(TAG, "Google access token = " + response);
             loginSocial(Constants.POST_METHOD_GOOGLE, response);
         }
     }
@@ -530,8 +530,8 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                 sendGoogleMethodAndToken(mGoogleApiClient);
             } else {
                 Log.e("profile info", "person null");
-                Toast.makeText(getApplicationContext(),
-                        "Person information is null", Toast.LENGTH_LONG).show();
+//                Toast.makeText(getApplicationContext(),
+//                        "Person information is null", Toast.LENGTH_LONG).show();
             }
         } catch (Exception e) {
             Log.e("profile info", "inside catch");

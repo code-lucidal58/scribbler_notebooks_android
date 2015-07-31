@@ -1,10 +1,10 @@
 package com.scribblernotebooks.scribblernotebooks.Fragments;
 
 
+import android.app.Fragment;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,12 +13,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.mixpanel.android.java_websocket.util.Base64;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
+import com.scribblernotebooks.scribblernotebooks.HelperClasses.User;
 import com.scribblernotebooks.scribblernotebooks.R;
 
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -26,7 +25,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 
@@ -105,6 +103,9 @@ public class ChangePassword extends DialogFragment {
                     URL url=new URL(Constants.ServerUrls.changePassword);
                     HttpURLConnection connection=(HttpURLConnection)url.openConnection();
                     connection.setRequestMethod("POST");
+                    User user=Constants.getUser(getActivity());
+                    String token=user.getToken();
+                    connection.setRequestProperty("Authorization", "Bearer " + token);
                     connection.setDoInput(true);
                     connection.setDoOutput(true);
                     connection.setReadTimeout(15000);

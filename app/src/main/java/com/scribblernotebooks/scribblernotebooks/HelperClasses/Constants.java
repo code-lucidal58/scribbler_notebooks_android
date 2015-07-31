@@ -55,9 +55,9 @@ public class Constants {
         public static String changePassword = websiteUrl + "user/change-password";
         public static String forgotPassword = websiteUrl + "forgot-password";
         public static String insertGCM = websiteUrl + "user/gcm-key";
-        public static String mobileVerified=websiteUrl+"mobileVerified";
-        public static String feedback=websiteUrl+"feedback";
-        public static String updateUser=websiteUrl+"user/";
+        public static String mobileVerified = websiteUrl + "mobileVerified";
+        public static String feedback = websiteUrl + "feedback";
+        public static String updateUser = websiteUrl + "user/";
 
         //Deal Details
         public static String dealDetail = websiteUrl + "deal/";
@@ -73,15 +73,18 @@ public class Constants {
         public static String privacyPolicy = host + "privacyPolicy";
         public static String termsAndConditions = host + "terms";
 
-        public static String surveySubmit=websiteUrl+"survey";
+        public static String surveySubmit = websiteUrl + "survey";
 
-        public static final String claimDeal=websiteUrl+"claim/";
+        public static final String claimDeal = websiteUrl + "claim/";
+
+        public static final String getCollege=websiteUrl+"college/";
 
     }
 
-    public static String getLikeDealUrl(String id){
-        return ServerUrls.dealDetail+id+"/like";
+    public static String getLikeDealUrl(String id) {
+        return ServerUrls.dealDetail + id + "/like";
     }
+
     public static URL getDealDetailsURL(String dealId, String token) {
         try {
             return new URL(ServerUrls.dealDetail + dealId + "?token=" + token);
@@ -127,20 +130,22 @@ public class Constants {
     public static final String PREF_DATA_USER_TOKEN = "userToken";
     public static final String PREF_DATA_MIXPANEL_USER_ID = "mixpanelUserId";
     public static final String PREF_DATA_COLLEGE = "college";
+    public static final String PREF_DATA_COLLEGE_ID = "collegeId";
+    public static final String PREF_DATA_COLLEGE_NAME = "collegeName";
 
-    public static final String PREF_ONE_TIME_NAME="OneTimeShow";
-    public static final String PREF_SHOW_ILLUSTRATION="showIllustration";
-    public static final String PREF_SHOW_COLLEGE="showCollegePopup";
-    public static final String PREF_SHOW_MOBILE="showMobileVerfication";
-    public static final String PREF_MOBILE_VERIFY_CODE="mobileVerificationCode";
-    public static final String PREF_SHOW_INSTRUCTIONS="showInstructions";
+    public static final String PREF_ONE_TIME_NAME = "OneTimeShow";
+    public static final String PREF_SHOW_ILLUSTRATION = "showIllustration";
+    public static final String PREF_SHOW_COLLEGE = "showCollegePopup";
+    public static final String PREF_SHOW_MOBILE = "showMobileVerfication";
+    public static final String PREF_MOBILE_VERIFY_CODE = "mobileVerificationCode";
+    public static final String PREF_SHOW_INSTRUCTIONS = "showInstructions";
 
-    public static final String SURVEY_PREF_NAME="surveyPref";
+    public static final String SURVEY_PREF_NAME = "surveyPref";
 
-    public static final String PREF_SURVEY_EXISTS="isSurveyPresent";
-    public static final String PREF_SURVEY_ID="surveyId";
-    public static final String PREF_SURVEY_QUESTION="surveyQuestion";
-    public static final String PREF_SURVEY_OPTIONS="surveyOptions";
+    public static final String PREF_SURVEY_EXISTS = "isSurveyPresent";
+    public static final String PREF_SURVEY_ID = "surveyId";
+    public static final String PREF_SURVEY_QUESTION = "surveyQuestion";
+    public static final String PREF_SURVEY_OPTIONS = "surveyOptions";
 
     public static final String INTENT_ID_NAME = "idName";
     public static final String INTENT_ID_VALUE = "idValue";
@@ -159,11 +164,11 @@ public class Constants {
     public static final String POST_NAME = "name";
     public static final String POST_EMAIL = "email";
     public static final String POST_MOBILE = "mobile";
-    public static final String POST_MOBILE_VERIFY="mobileVerfication";
+    public static final String POST_MOBILE_VERIFY = "mobileVerfication";
     public static final String POST_PASSWORD = "password";
     public static final String POST_MIXPANELID = "_id";
     public static final String POST_GOOGLE = "googleId";
-    public static final String POST_COLLEGE="college";
+    public static final String POST_COLLEGE = "college";
     public static final String POST_FACEBOOK = "facebookId";
     public static final String POST_COVERPIC = "coverImage";
     public static final String POST_PROFILEPIC = "profilePic";
@@ -304,8 +309,10 @@ public class Constants {
             e.printStackTrace();
         }
         try {
-            if (!user.getCollege().isEmpty())
-                editor.putString(PREF_DATA_COLLEGE, user.getCollege());
+            if (user.getCollege() != null) {
+                editor.putString(PREF_DATA_COLLEGE_ID, user.getCollege().getId());
+                editor.putString(PREF_DATA_COLLEGE_NAME, user.getCollege().getName());
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -316,7 +323,7 @@ public class Constants {
     public static User getUser(Context context) {
         SharedPreferences userPref;
         userPref = context.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
-        String id=userPref.getString(Constants.PREF_DATA_ID,"");
+        String id = userPref.getString(Constants.PREF_DATA_ID, "");
         String name = userPref.getString(Constants.PREF_DATA_NAME, "");
         String email = userPref.getString(Constants.PREF_DATA_EMAIL, "");
         String mobile = userPref.getString(Constants.PREF_DATA_MOBILE, "");
@@ -325,9 +332,11 @@ public class Constants {
         String mixPanelId = userPref.getString(Constants.PREF_DATA_MIXPANEL_USER_ID, "");
         String token = userPref.getString(Constants.PREF_DATA_USER_TOKEN, "");
         String location = userPref.getString(Constants.PREF_DATA_LOCATION, "");
-        String college = userPref.getString(Constants.PREF_DATA_COLLEGE, "");
-
-        User user = new User(id,name, email, mobile, coverPic, profilePic, token, mixPanelId);
+        College college = new College(userPref.getString(Constants.PREF_DATA_COLLEGE_ID, ""),userPref.getString(Constants.PREF_DATA_COLLEGE_NAME,""));
+        if((userPref.getString(Constants.PREF_DATA_COLLEGE_ID,"")).isEmpty()){
+            college=null;
+        }
+        User user = new User(id, name, email, mobile, coverPic, profilePic, token, mixPanelId);
         user.setLocation(location);
         user.setCollege(college);
         return user;
