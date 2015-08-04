@@ -64,7 +64,7 @@ public class CollegePopUp extends Dialog {
         collegeName = (AutoCompleteTextView) findViewById(R.id.college);
         skip = (Button) findViewById(R.id.skip);
         okay = (Button) findViewById(R.id.okay);
-
+        colleges=new ArrayList<>();
         dialog = this;
         skip.setOnClickListener(new View.OnClickListener() {
             @Override

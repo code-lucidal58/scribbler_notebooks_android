@@ -190,7 +190,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         signInButton = (SignInButton) findViewById(R.id.sign_in_button);
         signInButton.setOnClickListener(this);
         signInButton.setSize(SignInButton.SIZE_WIDE);
-        progressDialog = new ProgressDialog(this);
+        progressDialog = new ProgressDialog(LogIn.this);
 
         sun = (ImageView) findViewById(R.id.sun);
         cloud1 = (ImageView) findViewById(R.id.cloud1);
@@ -291,8 +291,12 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                     if (!mGoogleApiClient.isConnecting()) {
                         progressDialog.setMessage("Connecting...");
                         progressDialog.setCancelable(false);
-                        progressDialog.show();
                         mSignInClicked = true;
+                        try {
+                            progressDialog.show();
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
                         resolveSignInError();
                     }
                 } else {
@@ -446,6 +450,11 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
 
     @Override
     public void onConnectionSuspended(int i) {
+        if(progressDialog!=null){
+            if(progressDialog.isShowing()){
+                progressDialog.dismiss();
+            }
+        }
         mGoogleApiClient.connect();
     }
 
@@ -612,6 +621,8 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         data.put(Constants.POST_METHOD, method);
         data.put(Constants.POST_ACCESS_TOKEN, accessToken);
         data.put(Constants.POST_TOKEN, getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE).getString(Constants.PREF_DATA_USER_TOKEN, ""));
+
+        Log.e("LoginSocialData","Data: METHOD: "+method+" ACCESS_TOKEN: "+accessToken);
         new SignUpService(Constants.ServerUrls.login, this).execute(data);
     }
 

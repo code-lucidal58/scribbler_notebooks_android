@@ -140,10 +140,8 @@ public class ParseJson {
             JSONObject object = new JSONObject(response);
             HashMap<String, String> parsedData = new HashMap<>();
             parsedData.put(Constants.POST_SUCCESS, object.optString(Constants.POST_SUCCESS));
-
             JSONObject data = object.optJSONObject(Constants.POST_DATA);
 //            parsedData.put(Constants.POST_ERROR, object.optString(Constants.POST_ERROR));
-//            parsedData.put(Constants.POST_MIXPANELID, object.optString(Constants.POST_MIXPANELID));
             parsedData.put(Constants.PREF_DATA_ID,data.getString("_id"));
             parsedData.put(Constants.POST_MIXPANELID, data.getString(Constants.POST_MIXPANELID));
             parsedData.put(Constants.POST_EMAIL, data.getString(Constants.POST_EMAIL));

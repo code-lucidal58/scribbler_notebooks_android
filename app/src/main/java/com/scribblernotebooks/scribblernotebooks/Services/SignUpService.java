@@ -1,13 +1,13 @@
 package com.scribblernotebooks.scribblernotebooks.Services;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -22,10 +22,12 @@ import com.scribblernotebooks.scribblernotebooks.R;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.HashMap;
 
@@ -38,7 +40,9 @@ public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User
     HashMap<String, String> parsedData;
     ProgressDialog progressDialog;
     Boolean isSignup = false;
-    Boolean success=false;
+    Boolean isLogin = false, isLoginSocial = false, fileNowFoundException = false;
+    Boolean errorShown = false;
+    Boolean success = false;
 
     public SignUpService(String s, Activity a) {
         urlExtension = s;
@@ -68,6 +72,17 @@ public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User
             conn.setDoInput(true);
             conn.setDoOutput(true);
 
+            if (urlExtension.equalsIgnoreCase(Constants.ServerUrls.login)) {
+                isLogin = true;
+                try {
+                    if (!params[0].get(Constants.POST_METHOD).isEmpty()) {
+                        isLoginSocial = true;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
             OutputStream os = conn.getOutputStream();
             BufferedWriter writer = new BufferedWriter(
                     new OutputStreamWriter(os, "UTF-8"));
@@ -88,6 +103,16 @@ public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User
                 isSignup = true;
                 return signupHandle(response, params[0]);
             }
+        } catch (FileNotFoundException f) {
+            if (isLogin && !isLoginSocial) {
+                fileNowFoundException = true;
+                return null;
+            } else if (isLoginSocial) {
+                activity.startActivity(new Intent(activity, ProfileManagement.class));
+                activity.finish();
+            }
+        } catch (SocketTimeoutException s) {
+            return null;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -97,18 +122,35 @@ public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User
     @Override
     protected void onPostExecute(User user) {
         progressDialog.dismiss();
+        if (fileNowFoundException) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            builder.setTitle("Error")
+                    .setMessage("The entered Email-password combination is incorrect. Please try again")
+                    .setPositiveButton("Close", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .show();
+            errorShown = true;
+        }
+        if (user == null && !isLoginSocial && !errorShown) {
+            Toast.makeText(activity, "Unable to connect to server. Please try again", Toast.LENGTH_LONG).show();
+            return;
+        }
         if (user == null) {
             return;
         }
         Constants.saveUserDetails(activity, user);
         User user1 = Constants.getUser(activity);
-        if (user1.getMobile().isEmpty() && isSignup) {
+        if (user1.getMobile().isEmpty()) {
             activity.startActivity(new Intent(activity, ProfileManagement.class));
         } else {
-            if(success)
+            if (success)
                 activity.startActivity(new Intent(activity, NavigationDrawer.class));
             else
-                Toast.makeText(activity, "Unable to connect to server. Please try again",Toast.LENGTH_LONG).show();
+                Toast.makeText(activity, "Unable to connect to server. Please try again", Toast.LENGTH_LONG).show();
         }
         activity.finish();
         super.onPostExecute(user);
@@ -144,8 +186,8 @@ public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User
                     String likedDeals = parsedData.get("likedDeals");
                     String[] ld = likedDeals.split(",");
                     UserHandler handler = new UserHandler(activity);
-                    for (int i = 0; i < ld.length; i++) {
-                        handler.addSharedDeal(ld[i]);
+                    for (String i : ld) {
+                        handler.addSharedDeal(i);
                     }
                     handler.close();
                 } catch (Exception e) {
@@ -162,24 +204,8 @@ public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User
                 }
 
                 activity.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE).edit().putString(Constants.PREF_DATA_PASS, "OK").apply();
-                success=true;
+                success = true;
                 return user;
-            } else {
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(activity.getApplicationContext());
-                        builder.setTitle("Error")
-                                .setMessage("The entered Email-password combination is incorrect. Please try again")
-                                .setNeutralButton("Close", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                    }
-                                })
-                                .show();
-                    }
-                });
             }
         }
         return null;
@@ -204,10 +230,9 @@ public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User
                 } catch (Exception e) {
                     profilePic = "";
                 }
-                success=true;
+                success = true;
                 SharedPreferences.Editor sharedPreferences = activity.getSharedPreferences(Constants.PREF_ONE_TIME_NAME, Context.MODE_PRIVATE).edit();
                 sharedPreferences.putBoolean(Constants.PREF_SHOW_COLLEGE, true);
-                sharedPreferences.putBoolean(Constants.PREF_SHOW_ILLUSTRATION, true);
                 sharedPreferences.putBoolean(Constants.PREF_SHOW_MOBILE, true);
                 sharedPreferences.apply();
                 return new User(params.get(Constants.PREF_DATA_ID),
