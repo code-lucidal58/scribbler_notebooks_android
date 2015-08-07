@@ -26,7 +26,6 @@ import android.widget.RelativeLayout;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
-import com.scribblernotebooks.scribblernotebooks.Activities.MobileVerification;
 import com.scribblernotebooks.scribblernotebooks.Activities.ScannerActivity;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.CollegePopUp;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.DealPopup;
@@ -93,7 +92,6 @@ public class ManualScribblerCode extends Fragment {
         mContext = getActivity().getApplicationContext();
         user = Constants.getUser(mContext);
 
-        this.mContext = sContext;
 
         //Initialize Google API code
         mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
@@ -111,11 +109,14 @@ public class ManualScribblerCode extends Fragment {
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-        sharedPreferences=mContext.getSharedPreferences(Constants.PREF_ONE_TIME_NAME, Context.MODE_PRIVATE);
         //to verify mobile
-        if (sharedPreferences.getBoolean(Constants.PREF_SHOW_MOBILE, true)) {
-            startActivity(new Intent(mContext, MobileVerification.class));
-        }
+
+        sharedPreferences=mContext.getSharedPreferences(Constants.PREF_ONE_TIME_NAME, Context.MODE_PRIVATE);
+        this.mContext = getActivity();
+//        if (sharedPreferences.getBoolean(Constants.PREF_SHOW_MOBILE, true)) {
+//            startActivity(new Intent(mContext, MobileVerification.class));
+//        }
+
         //Inflate view
         final View v = inflater.inflate(R.layout.fragment_manual_scribbler_code, container, false);
         CollegePopUp collegePopUp = new CollegePopUp(mContext);

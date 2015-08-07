@@ -325,6 +325,14 @@ public class Deal implements Parcelable {
         return this.couponCode;
     }
 
+    public Boolean getIsFav() {
+        return isFav;
+    }
+
+    public Boolean getIsFeatured() {
+        return isFeatured;
+    }
+
     public String claimDeal(final Context context){
         final Deal deal=this;
         Log.e("Deal","Claiming deal:"+id);

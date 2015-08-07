@@ -22,6 +22,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "dealsManager";
     private static final String TABLE_DEALS = "deals";
     private static final String TABLE_CLAIMED_DEALS="claimedDeals";
+    ListUpdateListener listUpdateListener;
     SQLiteDatabase db;
     Context context;
     final String CREATE_DEALS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_DEALS + "("
@@ -151,16 +152,31 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 
     public long addClaimedDeal(Deal deal){
+
+        Cursor c=db.query(TABLE_CLAIMED_DEALS,null,Constants.TAG_ID+"=?", new String[]{deal.getId()}, null, null, null);
+        if(c.moveToFirst()){
+            Log.e("ClaimedDealsTable","Deal already in list: "+deal.getId());
+            return 0;
+        }
+        c.close();
         ContentValues contentValues=new ContentValues();
         contentValues.put(Constants.TAG_ID,deal.getId());
         contentValues.put(Constants.TAG_DEAL_NAME,deal.getTitle());
         contentValues.put(Constants.TAG_CATEGORY,deal.getCategory());
         contentValues.put(Constants.TAG_LONG_DESCRIPTION,deal.getLongDescription());
         contentValues.put(Constants.TAG_IMAGE_URL,deal.getImageUrl());
-        contentValues.put(Constants.TAG_COUPON_CODE,deal.getCouponCode());
+        contentValues.put(Constants.TAG_COUPON_CODE, deal.getCouponCode());
 
-        Log.e("Claimed Deal", "Inserted: "+deal.getId());
-        return db.insertOrThrow(TABLE_CLAIMED_DEALS,null,contentValues);
+//        Log.e("Claimed Deal", "Inserted: "+deal.getId());
+        long l= db.insertOrThrow(TABLE_CLAIMED_DEALS,null,contentValues);
+        if(listUpdateListener!=null){
+            try{
+                listUpdateListener.OnClaimedDealListUpdated();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        return l;
 
     }
 
@@ -185,5 +201,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return dealArrayList;
     }
 
+    public interface ListUpdateListener{
+        void OnClaimedDealListUpdated();
+    }
+
+    public void setListUpdateListener(ListUpdateListener listUpdateListener){
+        this.listUpdateListener=listUpdateListener;
+    }
 
 }

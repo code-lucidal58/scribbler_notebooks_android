@@ -36,8 +36,8 @@ public class SplashScreen extends AppCompatActivity {
         setContentView(R.layout.activity_splash_screen);
         topCurve = (ImageView) findViewById(R.id.topCurve);
         whiteLogo = (ImageView) findViewById(R.id.whiteLogo);
-        lowerCurve=(LinearLayout)findViewById(R.id.lowerCurve);
-        bottomText=(TextView)findViewById(R.id.bottomText);
+        lowerCurve = (LinearLayout) findViewById(R.id.lowerCurve);
+        bottomText = (TextView) findViewById(R.id.bottomText);
 
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -55,15 +55,15 @@ public class SplashScreen extends AppCompatActivity {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } finally {
-                    SharedPreferences sharedPreferences=getSharedPreferences(Constants.PREF_ONE_TIME_NAME,MODE_PRIVATE);
-                    if(sharedPreferences.getBoolean(Constants.PREF_SHOW_ILLUSTRATION,true)){
+                    SharedPreferences sharedPreferences = getSharedPreferences(Constants.PREF_ONE_TIME_NAME, MODE_PRIVATE);
+                    if (sharedPreferences.getBoolean(Constants.PREF_SHOW_ILLUSTRATION, true)) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 changeColor();
                             }
                         });
-                    }else{
+                    } else {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -78,10 +78,10 @@ public class SplashScreen extends AppCompatActivity {
 
     }
 
-    public void translateAndLogIn(){
-        startActivity(new Intent(getApplicationContext(),LogIn.class));
+    public void translateAndLogIn() {
+        startActivity(new Intent(getApplicationContext(), LogIn.class));
         finish();
-        overridePendingTransition(R.anim.flash_appear,R.anim.flash_disappear);
+        overridePendingTransition(R.anim.flash_appear, R.anim.flash_disappear);
 //        Log.e("Splash", "Starting translate and Login Animation");
 //        TranslateAnimation animation = new TranslateAnimation(0, 0, 0, getLogoHeight() - (int) (0.6 * getScreenHeight()));
 //        TranslateAnimation animation2 = new TranslateAnimation(0, 0, 0, getLogoHeight() - (int) (0.59 * getScreenHeight())+10);
@@ -120,24 +120,9 @@ public class SplashScreen extends AppCompatActivity {
         TransitionDrawable drawable = new TransitionDrawable(topCurves);
         topCurve.setImageDrawable(drawable);
         drawable.startTransition(1000);
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } finally {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            translateCurve();
-                        }
-                    });
-                }
-            }
-        });
-        t.start();
+
+        translateCurve();
+
     }
 
     public void translateCurve() {
@@ -154,19 +139,28 @@ public class SplashScreen extends AppCompatActivity {
         animation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-
+                Thread t = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        } finally {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    startIllustration();
+                                }
+                            });
+                        }
+                    }
+                });
+                t.start();
             }
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                Log.e("Splash", "Lower curve animation starting");
-//                TranslateAnimation a=new TranslateAnimation(0,0,getScreenHeight(),getScreenHeight()-getLowerCurveHeight());
-//                a.setFillEnabled(true);
-//                a.setFillAfter(true);
-//                a.setDuration(500);
-//                lowerCurve.startAnimation(a);
-                lowerCurve.setVisibility(View.VISIBLE);
-                startIllustration();
             }
 
             @Override
@@ -179,13 +173,14 @@ public class SplashScreen extends AppCompatActivity {
         whiteLogo.startAnimation(animation2);
     }
 
-    public void startIllustration(){
+    public void startIllustration() {
+        lowerCurve.setVisibility(View.VISIBLE);
         IllustrationsPageAdapter illustrationsPageAdapter;
         ViewPager mViewPager;
 
-        int[] imageId={R.drawable.illustration1,R.drawable.illustration2, R.drawable.illustration3};
+        int[] imageId = {R.drawable.illustration1, R.drawable.illustration2, R.drawable.illustration3};
 
-        illustrationsPageAdapter = new IllustrationsPageAdapter(this,imageId);
+        illustrationsPageAdapter = new IllustrationsPageAdapter(this, imageId);
 
         mViewPager = (ViewPager) findViewById(R.id.illustrations_pager);
         mViewPager.setVisibility(View.VISIBLE);
@@ -199,18 +194,18 @@ public class SplashScreen extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-                if(position==2){
+                if (position == 2) {
                     bottomText.setText("Lets Get Started");
                     lowerCurve.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            getSharedPreferences(Constants.PREF_ONE_TIME_NAME,MODE_PRIVATE).edit().putBoolean(Constants.PREF_SHOW_ILLUSTRATION,false).apply();
+                            getSharedPreferences(Constants.PREF_ONE_TIME_NAME, MODE_PRIVATE).edit().putBoolean(Constants.PREF_SHOW_ILLUSTRATION, false).apply();
                             startActivity(new Intent(getApplicationContext(), LogIn.class));
                             finish();
                             overridePendingTransition(R.anim.login_slide_in, R.anim.profile_slide_out);
                         }
                     });
-                }else{
+                } else {
                     bottomText.setText("Swipe to Continue -->");
                     lowerCurve.setOnClickListener(null);
                 }

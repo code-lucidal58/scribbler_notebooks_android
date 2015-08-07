@@ -48,7 +48,7 @@
     <dimen name="manualCodeCloud2H">30dp</dimen>
 
 
-    <dimen name="search">55dp</dimen>
+    <dimen name="search">45dp</dimen>
     <dimen name="searchBarTextSize">13sp</dimen>
     <dimen name="searchBarEditTextFontSize">13sp</dimen>
     <dimen name="searchBarIconSize">35dp</dimen>

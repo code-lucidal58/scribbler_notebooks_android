@@ -23,6 +23,7 @@ import com.scribblernotebooks.scribblernotebooks.Handlers.DatabaseHandler;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Deal;
 import com.scribblernotebooks.scribblernotebooks.R;
+import com.scribblernotebooks.scribblernotebooks.Services.ClaimedDealsRetriever;
 
 import java.util.ArrayList;
 
@@ -38,6 +39,8 @@ public class ClaimedDeals extends android.support.v4.app.Fragment {
     Toolbar appbar;
     DrawerLayout mDrawerLayout;
     RelativeLayout mDrawer;
+
+    DatabaseHandler databaseHandler;
 
     private String title;
 
@@ -66,6 +69,8 @@ public class ClaimedDeals extends android.support.v4.app.Fragment {
         if (getArguments() != null) {
             title = getArguments().getString(TITLE);
         }
+
+
     }
 
     @Override
@@ -73,8 +78,16 @@ public class ClaimedDeals extends android.support.v4.app.Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         context=getActivity().getApplicationContext();
-        View v = inflater.inflate(R.layout.fragment_claimed_deals, container, false);
+        databaseHandler=new DatabaseHandler(context);
+        final View v = inflater.inflate(R.layout.fragment_claimed_deals, container, false);
 
+        databaseHandler.setListUpdateListener(new DatabaseHandler.ListUpdateListener() {
+            @Override
+            public void OnClaimedDealListUpdated() {
+                updateList(v);
+            }
+        });
+        context.startService(new Intent(context,ClaimedDealsRetriever.class));
         appbar = (Toolbar) v.findViewById(R.id.app_bar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(appbar);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeButtonEnabled(true);
@@ -106,22 +119,9 @@ public class ClaimedDeals extends android.support.v4.app.Fragment {
         recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        DatabaseHandler han=new DatabaseHandler(context);
-        ArrayList<Deal> deals=han.getClaimedDealList();
-        if (deals!=null){
-            if(deals.size()>0){
-                ((LinearLayout)v.findViewById(R.id.loadingProgress)).setVisibility(View.GONE);
-            }
-        }
-        RecyclerDealsAdapter adapter=new RecyclerDealsAdapter(deals,context,true);
-        han.close();
-        adapter.setItemClickListener(new RecyclerDealsAdapter.onItemClickListener() {
-            @Override
-            public void onItemClick(int position, ArrayList<Deal> deals) {
-                showDealDetail(position, deals);
-            }
-        });
-        recyclerView.setAdapter(adapter);
+
+        updateList(v);
+
         return v;
     }
 
@@ -134,4 +134,27 @@ public class ClaimedDeals extends android.support.v4.app.Fragment {
         startActivityForResult(i, DEAL_DETAIL_REQUEST_CODE);
     }
 
+    void updateList(View v){
+        ArrayList<Deal> deals=databaseHandler.getClaimedDealList();
+        if (deals!=null){
+            if(deals.size()>0){
+                ((LinearLayout)v.findViewById(R.id.loadingProgress)).setVisibility(View.GONE);
+            }
+        }
+        RecyclerDealsAdapter adapter=new RecyclerDealsAdapter(deals,context,true);
+
+        adapter.setItemClickListener(new RecyclerDealsAdapter.onItemClickListener() {
+            @Override
+            public void onItemClick(int position, ArrayList<Deal> deals) {
+                showDealDetail(position, deals);
+            }
+        });
+        recyclerView.setAdapter(adapter);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        databaseHandler.close();
+    }
 }

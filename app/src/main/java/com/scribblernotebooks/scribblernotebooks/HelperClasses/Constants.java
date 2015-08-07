@@ -76,6 +76,7 @@ public class Constants {
         public static String surveySubmit = websiteUrl + "survey";
 
         public static final String claimDeal = websiteUrl + "claim/";
+        public static final String claimDealList=websiteUrl+"user/claimed-deals";
 
         public static final String getCollege=websiteUrl+"college/";
 

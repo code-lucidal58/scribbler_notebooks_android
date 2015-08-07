@@ -113,11 +113,10 @@
             android:name=".Activities.SettingsActivity"
             android:label="Settings" >
         </activity>
-
         <activity
             android:name=".Activities.NotificationsActivity"
-            android:parentActivityName=".Activities.NavigationDrawer"
-            android:label="Notifications" >
+            android:label="Notifications"
+            android:parentActivityName=".Activities.NavigationDrawer" >
         </activity>
 
         <service
@@ -180,6 +179,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".Services.ClaimedDealsRetriever"
+            android:exported="false" >
+        </service>
     </application>
 
 </manifest>

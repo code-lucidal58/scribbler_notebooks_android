@@ -17,8 +17,6 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -27,6 +25,7 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
@@ -69,20 +68,25 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
 
     private static final String URL_STRING = "url";
     private static final String TITLE = "title";
+    public static final int CATEGORY=1;
+    public static final int SEARCH=2;
+    public static final int SORT=3;
+    public static final int NONE=0;
+    public static int OPEN_PARAMETER=NONE;
     int PAGE_LIMIT = 5;
 
     public int ACTION_SEARCH = 1;
     public int ACTION_DEFAULT = 0;
     int action = 0;
     ArrayList<Categories> categoryList = null;
-
+    RelativeLayout previousLayout;
     RecyclerView recyclerView;
     ArrayList<Deal> dealsList = new ArrayList<>();
     RecyclerDealsAdapter adapter;
     Context context;
     ProgressDialog progressDialog;
     Toolbar appbar;
-    View searchbar;
+    View searchbar,categoryView, searchView, sortView;
     LinearLayout toolbarContainer;
     int mToolbarHeight;
     DrawerLayout mDrawerLayout;
@@ -109,7 +113,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
 
     RecyclerView suggestions;
     LinearLayout originalLayout, replacedLayout;
-    TextView selectionIconName;
+//    TextView selectionIconName;
     AutoCompleteTextView selectedIconQuery;
     Boolean isOptionOpened = false;
     SearchListAdapter searchListAdapter, querySearchListAdapter;
@@ -189,39 +193,69 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
         /**
          * Option Select Animation and toggling
          */
-        View category = searchbar.findViewById(R.id.layoutCategory);
-        View search = searchbar.findViewById(R.id.layoutSearch);
-        View sort = searchbar.findViewById(R.id.layoutSort);
+        categoryView = searchbar.findViewById(R.id.layoutCategory);
+        searchView = searchbar.findViewById(R.id.layoutSearch);
+        sortView = searchbar.findViewById(R.id.layoutSort);
 
         suggestions = (RecyclerView) searchbar.findViewById(R.id.recyclerView);
         suggestions.setLayoutManager(new LinearLayoutManager(context));
         originalLayout = (LinearLayout) searchbar.findViewById(R.id.originalLinearLayout);
         replacedLayout = (LinearLayout) searchbar.findViewById(R.id.replacedLinearLayout);
-        selectionIconName = (TextView) searchbar.findViewById(R.id.selectedIcon_name);
+//        selectionIconName = (TextView) searchbar.findViewById(R.id.selectedIcon_name);
         selectedIconQuery = (AutoCompleteTextView) searchbar.findViewById(R.id.selectedQuery);
         loadingProgressLayout = (LinearLayout) v.findViewById(R.id.loadingProgress);
         loadingCharacter = (ImageView) loadingProgressLayout.findViewById(R.id.loadingCharacter);
         loadingMessage = (TextView) loadingProgressLayout.findViewById(R.id.loadingMessage);
         loadingBar = (ProgressBar) loadingProgressLayout.findViewById(R.id.loadingBar);
 
-        category.setOnClickListener(new View.OnClickListener() {
+        categoryView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                hideToolbarOptions("category");
+                if(OPEN_PARAMETER==CATEGORY){
+                    if(categoryName.isEmpty()){
+                        if(previousLayout!=null)
+                            previousLayout.getChildAt(1).setVisibility(View.GONE);
+                    }
+                    showToolbarOptions();
+                    OPEN_PARAMETER=NONE;
+                    return;
+                }
+                OPEN_PARAMETER=CATEGORY;
+                hideToolbarOptions("category",v);
             }
         });
 
-        search.setOnClickListener(new View.OnClickListener() {
+        searchView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                hideToolbarOptions("search");
+                if(OPEN_PARAMETER==SEARCH){
+                    if(searchQuery.isEmpty()){
+                        if(previousLayout!=null)
+                            previousLayout.getChildAt(1).setVisibility(View.GONE);
+                    }
+                    showToolbarOptions();
+                    OPEN_PARAMETER=NONE;
+                    return;
+                }
+                OPEN_PARAMETER=SEARCH;
+                hideToolbarOptions("search",v);
             }
         });
 
-        sort.setOnClickListener(new View.OnClickListener() {
+        sortView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                hideToolbarOptions("sort");
+                if(OPEN_PARAMETER==SORT){
+                    if(sort.isEmpty()){
+                        if(previousLayout!=null)
+                            previousLayout.getChildAt(1).setVisibility(View.GONE);
+                    }
+                    showToolbarOptions();
+                    OPEN_PARAMETER=NONE;
+                    return;
+                }
+                OPEN_PARAMETER=SORT;
+                hideToolbarOptions("sort",v);
             }
         });
 
@@ -347,9 +381,10 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
      */
     public void showToolbarOptions() {
         isOptionOpened = false;
+        OPEN_PARAMETER=NONE;
+        hideKeyboard();
         String[] suggestions1 = new String[0];
         selectedIconQuery.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, suggestions1));
-//        recyclerView.setPadding(swipeRefreshLayout.getPaddingLeft(), initialTopPadding, swipeRefreshLayout.getPaddingRight(), swipeRefreshLayout.getPaddingBottom());
         if (parametersChanged) {
             dealsList.clear();
             Log.e("DealFragment", "ShowToolbarOptions " + page + " " + category + " " + searchQuery + " " + sort);
@@ -363,7 +398,6 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
             parametersChanged = false;
         }
         replacedLayout.setVisibility(View.GONE);
-        originalLayout.setVisibility(View.VISIBLE);
         suggestions.setVisibility(View.GONE);
 //        toolbarContainer.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).start();
     }
@@ -374,40 +408,107 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
     /**
      * Hide the category, search, scan and sort options and show the corresponding menu
      */
-    public void hideToolbarOptions(String tag1) {
-        Log.e("DealFragment", "0 SearchQuery=" + searchQuery + " Category=" + category + " SortBy=" + sort);
-        Log.e("DealFragment", "Isloading: " + isloading + " isEmpty:" + isEmpty);
+    public void hideToolbarOptions(String tag1, View v) {
+        RelativeLayout holdingLayout=(RelativeLayout)v;
+        if(previousLayout!=null){
+            previousLayout.getChildAt(1).setVisibility(View.GONE);
+        }
+        isOptionOpened = true;
+        holdingLayout.getChildAt(1).setVisibility(View.VISIBLE);
+        previousLayout=holdingLayout;
+//        Log.e("DealFragment", "0 SearchQuery=" + searchQuery + " Category=" + category + " SortBy=" + sort);
+//        Log.e("DealFragment", "Isloading: " + isloading + " isEmpty:" + isEmpty);
         if (isloading || isEmpty) {
             return;
         }
-        isOptionOpened = true;
         tag = tag1;
-        int height = replacedLayout.getHeight();
-
         toolbarContainer.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).start();
-        replacedLayout.setVisibility(View.VISIBLE);
-        //originalLayout.setVisibility(View.GONE);
-        selectedIconQuery.setText("");
-        ArrayList<String> suggestionList = new ArrayList<>();
-        replacedLayout.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
+
+
+        switch (OPEN_PARAMETER){
+            case CATEGORY:
+                setupCategory();
+                break;
+            case SEARCH:
+                setupSearch();
+                break;
+            case SORT:
+                setupSort();
+                break;
+            case NONE:
+                break;
+            default:
+                break;
+        }
+
+    }
+
+
+    private void setupSort(){
+        replacedLayout.setVisibility(View.GONE);
+        ArrayList<String> suggestionList = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.sort_list)));
+        suggestions.setVisibility(View.VISIBLE);
+        suggestions.setAdapter(null);
+        searchListAdapter = new SearchListAdapter(suggestionList, tag);
+        suggestions.setAdapter(searchListAdapter);
+
+        suggestions.addOnItemTouchListener(new RecyclerItemClickListener(context, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
-            public void onClick(View v) {
-                if (!selectedIconQuery.getText().toString().isEmpty()) {
-                    selectedIconQuery.setText("");
+            public void onItemClick(View view, int position) {
+                List<String> list;
+                list = Arrays.asList(getResources().getStringArray(R.array.sort_list));
+                sort = list.get(position);
+                parametersChanged = true;
+                Log.e("DealFragment", "Sort set to " + sort);
+                showToolbarOptions();
+            }
+        }));
+    }
+
+    private void setupCategory(){
+        suggestions.setVisibility(View.VISIBLE);
+        suggestions.setAdapter(null);
+        CategoryListAdapter categoryListAdapter = new CategoryListAdapter(categoryList, tag);
+        suggestions.setAdapter(categoryListAdapter);
+
+        suggestions.addOnItemTouchListener(new RecyclerItemClickListener(context, new RecyclerItemClickListener.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                ArrayList<Categories> categories = categoryList;
+                category = categories.get(position).getId();
+                parametersChanged = true;
+                categoryName = categories.get(position).getName();
+                Log.e("DealFragment", "Category set to " + category);
+                showToolbarOptions();
+            }
+        }));
+    }
+
+    private void setupSearch(){
+        replacedLayout.setVisibility(View.VISIBLE);
+        suggestions.setVisibility(View.GONE);
+        suggestions.setAdapter(null);
+
+        UserHandler handler = new UserHandler(getActivity());
+        String[] suggestions1 = handler.getSuggestions();
+        handler.close();
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, suggestions1);
+        selectedIconQuery.setAdapter(adapter);
+        selectedIconQuery.setThreshold(1);
+
+        selectedIconQuery.setHint("Name, Location, Content...");
+        selectedIconQuery.setText(searchQuery);
+
+        selectedIconQuery.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    searchQuery = v.getText().toString();
+                    parametersChanged = true;
+                    Log.e("DealFragment", "SearchQuery set to " + searchQuery);
+                    showToolbarOptions();
                 }
-                switch (tag) {
-                    case "category":
-                        category = "";
-                        categoryName = "";
-                        break;
-                    case "search":
-                        searchQuery = "";
-                        break;
-                    case "sort":
-                        sort = "";
-                        break;
-                }
-                Log.e("DealFragment", "Search Cleared " + page + " " + category + " " + searchQuery + " " + sort);
+                return false;
             }
         });
 
@@ -415,152 +516,23 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
             @Override
             public void onClick(View v) {
                 EditText view = (EditText) replacedLayout.findViewById(R.id.selectedQuery);
-                String text = view.getText().toString();
-                switch (tag) {
-                    case "category":
-                        category = text;
-                        Log.e("DealFragment", "Category Changed " + category);
-                        parametersChanged = true;
-                        break;
-                    case "search":
-                        searchQuery = text;
-                        Log.e("DealFragment", "SearchQuery Changed " + searchQuery);
-                        parametersChanged = true;
-                        break;
-                    case "sort":
-                        sort = text;
-                        Log.e("DealFragment", "Sort Changed " + sort);
-                        parametersChanged = false;
-                        break;
-                }
+                searchQuery = view.getText().toString();
+                Log.e("DealFragment", "SearchQuery Changed " + searchQuery);
+                parametersChanged = true;
                 Log.e("DealFragment", "Search Clicked " + page + " " + category + " " + searchQuery + " " + sort);
                 showToolbarOptions();
             }
         });
 
-        switch (tag) {
-            case "category":
-                Log.e("DealFragment", "1 SearchQuery=" + searchQuery + " Category=" + category + " SortBy=" + sort);
-                selectionIconName.setText("CATEGORY");
-                selectedIconQuery.setHint("Enter Category...");
-                selectedIconQuery.setText(category);
-                selectedIconQuery.setText(categoryName);
-                suggestions.setVisibility(View.VISIBLE);
-                CategoryListAdapter categoryListAdapter = new CategoryListAdapter(categoryList, tag);
-                suggestions.setAdapter(categoryListAdapter);
-                break;
-            case "search":
-                Log.e("DealFragment", "2 SearchQuery=" + searchQuery + " Category=" + category + " SortBy=" + sort);
-                UserHandler handler = new UserHandler(getActivity());
-                String[] suggestions1 = handler.getSuggestions();
-                handler.close();
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, suggestions1);
-                selectedIconQuery.setAdapter(adapter);
-                selectedIconQuery.setThreshold(1);
-
-                selectionIconName.setText("SEARCH");
-                selectedIconQuery.setHint("Name, Location, Content...");
-                selectedIconQuery.setText(searchQuery);
-                suggestionList = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.search_list)));
-                selectedIconQuery.setText(searchQuery);
-                searchListAdapter = new SearchListAdapter(suggestionList, tag);
-                suggestions.setAdapter(searchListAdapter);
-                break;
-            case "sort":
-                Log.e("DealFragment", "3 SearchQuery=" + searchQuery + " Category=" + category + " SortBy=" + sort);
-                selectionIconName.setText("SORT");
-                selectedIconQuery.setHint("Sort by...");
-                selectedIconQuery.setText(sort);
-                suggestionList = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.sort_list)));
-                suggestions.setVisibility(View.VISIBLE);
-                searchListAdapter = new SearchListAdapter(suggestionList, tag);
-                suggestions.setAdapter(searchListAdapter);
-                break;
-            default:
-                break;
-        }
-
-        querySearchListAdapter = new SearchListAdapter(suggestionList, tag);
-        selectedIconQuery.addTextChangedListener(new TextWatcher() {
+        replacedLayout.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                ArrayList<String> result = querySearchListAdapter.searchResult(s);
-                searchListAdapter = new SearchListAdapter(result, tag);
-                suggestions.setAdapter(searchListAdapter);
-                switch (tag) {
-                    case "category":
-                        category = s.toString();
-                        break;
-                    case "search":
-                        searchQuery = s.toString();
-                        break;
-                    case "sort":
-                        sort = s.toString();
-                        break;
+            public void onClick(View v) {
+                if (!selectedIconQuery.getText().toString().isEmpty()) {
+                    selectedIconQuery.setText("");
                 }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
+                searchQuery = "";
             }
         });
-
-
-        selectedIconQuery.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    switch (tag) {
-                        case "search":
-                            searchQuery = v.getText().toString();
-                            parametersChanged = true;
-                            Log.e("DealFragment", "SearchQuery set to " + searchQuery);
-                            showToolbarOptions();
-                    }
-
-                }
-                return false;
-            }
-        });
-
-        suggestions.addOnItemTouchListener(new RecyclerItemClickListener(context, new RecyclerItemClickListener.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                List<String> list;
-                switch (tag) {
-                    case "category":
-                        ArrayList<Categories> categories = categoryList;
-                        category = categories.get(position).getId();
-                        parametersChanged = true;
-                        categoryName = categories.get(position).getName();
-                        Log.e("DealFragment", "Category set to " + category);
-                        showToolbarOptions();
-                        break;
-                    case "search":
-//                        list = Arrays.asList(getResources().getStringArray(R.array.search_list));
-//                        searchQuery = list.get(position);
-//                        parametersChanged=true;
-//                        Log.e("DealFragment","SearchQuery set to "+searchQuery);
-//                        showToolbarOptions();
-                        break;
-                    case "sort":
-                        list = Arrays.asList(getResources().getStringArray(R.array.sort_list));
-                        sort = list.get(position);
-                        parametersChanged = true;
-                        Log.e("DealFragment", "Sort set to " + sort);
-                        showToolbarOptions();
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }));
-
 
     }
 
@@ -868,7 +840,6 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
         protected void onPostExecute(String s) {
             if (s == null) {
                 Log.e("Category", "Retrieving again");
-                doInBackground();
                 return;
             }
             try {
@@ -895,4 +866,9 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
         }
     }
 
+
+    private void hideKeyboard(){
+        InputMethodManager inputManager=(InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputManager.hideSoftInputFromWindow(selectedIconQuery.getWindowToken(),0);
+    }
 }

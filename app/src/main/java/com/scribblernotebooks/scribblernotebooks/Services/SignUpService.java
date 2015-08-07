@@ -13,7 +13,6 @@ import android.widget.Toast;
 
 import com.scribblernotebooks.scribblernotebooks.Activities.NavigationDrawer;
 import com.scribblernotebooks.scribblernotebooks.Activities.ProfileManagement;
-import com.scribblernotebooks.scribblernotebooks.Handlers.UserHandler;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.College;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.ParseJson;
@@ -142,6 +141,8 @@ public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User
         if (user == null) {
             return;
         }
+
+        activity.startService(new Intent(activity, ClaimedDealsRetriever.class));
         Constants.saveUserDetails(activity, user);
         User user1 = Constants.getUser(activity);
         if (user1.getMobile().isEmpty()) {
@@ -171,30 +172,6 @@ public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User
                         parsedData.get(Constants.POST_MIXPANELID));
 
                 try {
-                    String likedDeals = parsedData.get("likedDeals");
-                    String[] ld = likedDeals.split(",");
-                    UserHandler handler = new UserHandler(activity);
-                    for (int i = 0; i < ld.length; i++) {
-                        handler.addDeal(ld[i]);
-                    }
-                    handler.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                try {
-                    String likedDeals = parsedData.get("likedDeals");
-                    String[] ld = likedDeals.split(",");
-                    UserHandler handler = new UserHandler(activity);
-                    for (String i : ld) {
-                        handler.addSharedDeal(i);
-                    }
-                    handler.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                try {
                     user.setCollege(new College(parsedData.get(Constants.PREF_DATA_COLLEGE_ID), parsedData.get(Constants.PREF_DATA_COLLEGE_NAME)));
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -205,6 +182,12 @@ public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User
 
                 activity.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE).edit().putString(Constants.PREF_DATA_PASS, "OK").apply();
                 success = true;
+
+                SharedPreferences.Editor sharedPreferences = activity.getSharedPreferences(Constants.PREF_ONE_TIME_NAME, Context.MODE_PRIVATE).edit();
+                sharedPreferences.putBoolean(Constants.PREF_SHOW_COLLEGE, false);
+                sharedPreferences.putBoolean(Constants.PREF_SHOW_MOBILE, false);
+                sharedPreferences.apply();
+
                 return user;
             }
         }
