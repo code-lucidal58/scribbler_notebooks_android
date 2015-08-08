@@ -1,8 +1,12 @@
 package com.scribblernotebooks.scribblernotebooks.Adapters;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +24,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
+import com.scribblernotebooks.scribblernotebooks.Handlers.DatabaseHandler;
 import com.scribblernotebooks.scribblernotebooks.Handlers.UserHandler;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Deal;
@@ -46,6 +51,7 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
     Boolean isClaimed=false;
     onViewHolderListener mListener;
     onItemClickListener itemClickListener;
+    Activity activity;
 
     public void setViewHolderListener(onViewHolderListener listener){
         mListener=listener;
@@ -64,10 +70,11 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
         init();
     }
 
-    public RecyclerDealsAdapter(ArrayList<Deal> dealsList,Context context,Boolean isClaimed){
+    public RecyclerDealsAdapter(ArrayList<Deal> dealsList,Context context,Boolean isClaimed, Activity activity){
         this.dealsList = dealsList;
         this.context = context;
         this.isClaimed=isClaimed;
+        this.activity=activity;
         init();
     }
 
@@ -185,13 +192,40 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
         });
 
         if(!isClaimed) {
-            viewHolder.txtViewDealDetails.setText(details);
+            viewHolder.txtViewDealDetails.setText(Html.fromHtml(details));
+
         }
         else
         {
             viewHolder.txtViewDealDetails.setText("Coupon Code: " + deal.getCouponCode());
             viewHolder.shareButton.setVisibility(View.GONE);
             viewHolder.favoriteIcon.setVisibility(View.GONE);
+            viewHolder.rippleLayout.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(activity);
+                    dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dealsList.remove(position);
+                            DatabaseHandler handler = new DatabaseHandler(context);
+                            handler.deleteClaimedDeal(deal);
+                            handler.close();
+                            notifyItemRemoved(position);
+                        }
+                    });
+                    dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+                    dialog.setTitle("Confirm Delete");
+                    dialog.setMessage("Are you sure you want to delete this deal from the list? This cannot be undone.");
+                    dialog.show();
+                    return true;
+                }
+            });
         }
 
         viewHolder.rippleLayout.setOnClickListener(new View.OnClickListener() {
@@ -215,7 +249,7 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                mixpanelAPI.track("User", props);
+                mixpanelAPI.track("Views", props);
             }
         });
 

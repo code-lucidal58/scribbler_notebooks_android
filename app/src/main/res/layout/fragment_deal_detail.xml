@@ -50,7 +50,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/dealCategory"
-
+                android:id="@+id/tr"
                 android:padding="10dp"
                 android:weightSum="2">
 
@@ -61,7 +61,7 @@
 
                     <CheckBox
                         android:id="@+id/likeBox"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="15dp"
                         android:background="@drawable/background_like"
@@ -92,8 +92,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="6sp"
+                android:layout_below="@+id/tr"
                 android:layout_marginRight="6sp"
-                android:layout_marginTop="230dp"
+                android:layout_marginTop="5dp"
                 android:minHeight="150sp"
                 app:cardCornerRadius="@dimen/details_cardCorner"
                 app:cardElevation="@dimen/details_cardViewElevation">

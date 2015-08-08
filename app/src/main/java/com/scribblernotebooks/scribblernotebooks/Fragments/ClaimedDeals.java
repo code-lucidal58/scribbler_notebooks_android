@@ -141,7 +141,7 @@ public class ClaimedDeals extends android.support.v4.app.Fragment {
                 ((LinearLayout)v.findViewById(R.id.loadingProgress)).setVisibility(View.GONE);
             }
         }
-        RecyclerDealsAdapter adapter=new RecyclerDealsAdapter(deals,context,true);
+        RecyclerDealsAdapter adapter=new RecyclerDealsAdapter(deals,context,true,getActivity());
 
         adapter.setItemClickListener(new RecyclerDealsAdapter.onItemClickListener() {
             @Override

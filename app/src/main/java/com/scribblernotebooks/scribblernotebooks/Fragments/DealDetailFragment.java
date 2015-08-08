@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,9 +17,16 @@ import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Deal;
 import com.scribblernotebooks.scribblernotebooks.R;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by Jibin_ism on 09-Jun-15.
@@ -133,6 +141,23 @@ public class DealDetailFragment extends Fragment {
         }else{
             claimDeal.setText(s);
             claimDeal.setOnClickListener(null);
+            MixpanelAPI mixpanelAPI=Constants.getMixPanelInstance(getActivity());
+            Calendar calendar=Calendar.getInstance();
+            JSONObject props=new JSONObject();
+            try {
+                props.put("id",deal.getId());
+                props.put("category",category);
+                props.put("dealName",title);
+                props.put("date", calendar.get(Calendar.DATE));
+                props.put("month",calendar.get(Calendar.MONTH));
+                props.put("year",calendar.get(Calendar.YEAR));
+                props.put("time",new Date()) ;
+                props.put("day", calendar.get(Calendar.DAY_OF_WEEK));
+                Log.e("check", props.toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            mixpanelAPI.track("Claim", props);
         }
     }
 

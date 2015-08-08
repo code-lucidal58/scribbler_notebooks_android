@@ -51,7 +51,7 @@
     <dimen name="search">45dp</dimen>
     <dimen name="searchBarTextSize">13sp</dimen>
     <dimen name="searchBarEditTextFontSize">13sp</dimen>
-    <dimen name="searchBarIconSize">35dp</dimen>
+    <dimen name="searchBarIconSize">18dp</dimen>
     <dimen name="searchBarIconLeftMargin">30dp</dimen>
 
 

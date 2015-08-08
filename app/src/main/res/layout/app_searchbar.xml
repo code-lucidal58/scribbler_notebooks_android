@@ -23,12 +23,26 @@
             android:layout_weight="1"
             android:id="@+id/layoutCategory"
             android:orientation="vertical">
-            <TextView
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center"
-                android:text="CATEGORY"
-                android:textColor="#FFF"/>
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="@dimen/searchBarIconSize"
+                    android:layout_height="@dimen/searchBarIconSize"
+                    android:src="@drawable/category_icon"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="CATEGORY"
+                    android:paddingLeft="5dp"
+                    android:textColor="#FFF"/>
+            </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
@@ -52,12 +66,27 @@
             android:id="@+id/layoutSearch"
             android:animateLayoutChanges="true"
             android:orientation="vertical">
-            <TextView
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="SEARCH"
-                android:gravity="center"
-                android:textColor="#FFF"/>
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="@dimen/searchBarIconSize"
+                    android:layout_height="@dimen/searchBarIconSize"
+                    android:src="@drawable/ic_action_search"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="SEARCH"
+                    android:paddingLeft="5dp"
+                    android:textColor="#FFF"/>
+            </LinearLayout>
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="3dp"
@@ -82,12 +111,29 @@
             android:id="@+id/layoutSort"
             android:animateLayoutChanges="true"
             android:orientation="vertical">
-            <TextView
+
+
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="SORT"
-                android:gravity="center"
-                android:textColor="#FFF"/>
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="@dimen/searchBarIconSize"
+                    android:layout_height="@dimen/searchBarIconSize"
+                    android:src="@drawable/sort_icon"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="SORT"
+                    android:paddingLeft="5dp"
+                    android:textColor="#FFF"/>
+            </LinearLayout>
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="3dp"

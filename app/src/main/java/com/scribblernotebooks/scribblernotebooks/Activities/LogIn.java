@@ -374,7 +374,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         name.setVisibility(View.VISIBLE);
         mobile.setVisibility(View.VISIBLE);
         forgotPassword.setVisibility(View.GONE);
-        termsAndConditions.setVisibility(View.VISIBLE);
+//        termsAndConditions.setVisibility(View.VISIBLE);
         view_open = SIGNUP;
     }
 

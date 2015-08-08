@@ -44,7 +44,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="top|end"
-                    android:layout_marginTop="60dp"
+                    android:layout_marginTop="5dp"
                     android:background="#55ffffff"
                     android:padding="5dp"
                     android:text="Change"
@@ -53,46 +53,28 @@
 
             </FrameLayout>
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="35dp"
-                android:orientation="horizontal"
-                android:id="@+id/l2"
-                android:gravity="center_vertical"
-                android:background="@color/darkBlue"
-                android:layout_below="@+id/fl">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="35dp"
-                    android:text="Basic Information"
-                    android:minHeight="25dp"
-                    android:gravity="center_vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="BASIC INFORMATION"
+                    android:layout_below="@+id/fl"
+                    android:gravity="center"
                     android:textSize="18sp"
                     android:paddingRight="10dp"
                     android:paddingLeft="10dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:background="@color/newBlue"
                     android:textColor="#FFF"
                     android:id="@+id/t1"/>
 
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="35dp"
-                    android:layout_gravity="end"
-                    android:background="@drawable/scanner_button"
-                    android:text="Save"
-                    android:textColor="#FFF"
-                    android:layout_centerHorizontal="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true"
-                    android:id="@+id/save"/>
-
-            </RelativeLayout>
 
             <TableLayout
                 android:id="@+id/table"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/l2">
+                android:layout_below="@id/t1">
 
                 <TableRow android:orientation="horizontal">
 
@@ -251,12 +233,26 @@
 
             </TableLayout>
 
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_gravity="end"
+                android:background="@drawable/scanner_button"
+                android:text="Save"
+                android:textColor="#FFF"
+                android:layout_below="@+id/table"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:id="@+id/save"/>
+
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:layout_below="@+id/table"
+                android:layout_below="@+id/save"
+                android:layout_marginTop="10dp"
                 android:id="@+id/l1"
                 android:orientation="vertical">
 
@@ -288,5 +284,5 @@
         android:minHeight="?attr/actionBarSize"
         app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         android:id="@+id/toolbar"
-        android:background="#5513657b"/>
+        android:background="#00000000"/>
 </RelativeLayout>

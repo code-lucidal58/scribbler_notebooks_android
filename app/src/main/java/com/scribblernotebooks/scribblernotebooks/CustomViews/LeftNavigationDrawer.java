@@ -21,7 +21,6 @@ import android.widget.Toast;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.scribblernotebooks.scribblernotebooks.Activities.LogIn;
@@ -42,7 +41,7 @@ import java.util.ArrayList;
 /**
  * Created by Jibin_ism on 18-May-15.
  */
-public class LeftNavigationDrawer {
+public class LeftNavigationDrawer extends NavigationDrawer {
     View mainView = null;
     Context mContext;
 
@@ -173,7 +172,9 @@ public class LeftNavigationDrawer {
             FragmentManager fragmentManager = navigationDrawerActivity.getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.content_frame, fragment);
-            fragmentTransaction.addToBackStack(null);
+            if(fragment instanceof ManualScribblerCode){
+                fragmentTransaction.addToBackStack(null);
+            }
             fragmentTransaction.commit();
             try {
                 //noinspection ConstantConditions

@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Deal;
@@ -155,7 +154,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         Cursor c=db.query(TABLE_CLAIMED_DEALS,null,Constants.TAG_ID+"=?", new String[]{deal.getId()}, null, null, null);
         if(c.moveToFirst()){
-            Log.e("ClaimedDealsTable","Deal already in list: "+deal.getId());
             return 0;
         }
         c.close();
@@ -177,7 +175,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             }
         }
         return l;
+    }
 
+    public void deleteClaimedDeal(Deal deal){
+        db.delete(TABLE_CLAIMED_DEALS,Constants.TAG_ID+"=?",new String[]{deal.getId()});
     }
 
     public ArrayList<Deal> getClaimedDealList(){

@@ -243,7 +243,7 @@ public class ParseJson {
                 JSONObject jsonChildNode = jsonArray.getJSONObject(i);
 
                 /****Fetch node values****/
-                Log.e("Claimed Deals", "Single Deal Response: " + jsonChildNode.getJSONObject("deal").toString());
+//                Log.e("Claimed Deals", "Single Deal Response: " + jsonChildNode.getJSONObject("deal").toString());
                 Deal deal = parseSingleDeal(jsonChildNode.getJSONObject("deal").toString());
                 dealsList.add(deal);
             }

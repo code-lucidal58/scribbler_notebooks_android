@@ -28,9 +28,19 @@ import java.util.HashMap;
  */
 public class Deal implements Parcelable {
 
-    private String id="", title="", category="", shortDescription="", imageUrl="", longDescription="";
+    public enum Range {
+        VERY_LOW, LOW, MEDIAN, HIGH, VERY_HIGH
+    }
+
+
+
+    private String id = "", title = "", category = "", shortDescription = "", imageUrl = "", longDescription = "";
     private Boolean isFav = false, isFeatured = false;
-    private String couponCode="";
+    private String couponCode = "";
+
+    String companyName = "", location = "", dealType = "", tnc = "";
+    boolean isGroup = false;
+    String validity = "";
 
     public Deal() {
         super();
@@ -42,8 +52,9 @@ public class Deal implements Parcelable {
 
     public Deal(String id, String title, String category, String shortDescription, String imageUrl,
                 String longDescription, Boolean isFav, Boolean isFeatured) {
-        this(id,title,category,shortDescription,imageUrl,longDescription,isFav,isFeatured,"");
+        this(id, title, category, shortDescription, imageUrl, longDescription, isFav, isFeatured, "");
     }
+
     public Deal(String id, String title, String category, String shortDescription, String imageUrl,
                 String longDescription, Boolean isFav, Boolean isFeatured, String couponCode) {
         this.id = id;
@@ -54,7 +65,7 @@ public class Deal implements Parcelable {
         this.longDescription = longDescription;
         this.isFav = isFav;
         this.isFeatured = isFeatured;
-        this.couponCode=couponCode;
+        this.couponCode = couponCode;
     }
 
     private Deal(Parcel in) {
@@ -66,7 +77,7 @@ public class Deal implements Parcelable {
         longDescription = in.readString();
         isFav = Boolean.parseBoolean(in.readString());
         isFeatured = Boolean.parseBoolean(in.readString());
-        couponCode=in.readString();
+        couponCode = in.readString();
     }
 
 
@@ -101,10 +112,27 @@ public class Deal implements Parcelable {
     };
 
 
+    int lowerLimit = 0;
+    int upperLimit = Integer.MAX_VALUE;
+
+    public Range getPriceRange() {
+        if (upperLimit < 250) {
+            return Range.VERY_HIGH;
+        } else if (upperLimit < 350) {
+            return Range.LOW;
+        } else if (upperLimit < 500) {
+            return Range.MEDIAN;
+        } else if (upperLimit < 750) {
+            return Range.HIGH;
+        } else {
+            return Range.VERY_HIGH;
+        }
+    }
+
     /**
      * Sending statistics to the server about like and share
      */
-    public void sendLikeStatus(final Context context,final Boolean isFav) {
+    public void sendLikeStatus(final Context context, final Boolean isFav) {
         //Code to synchronise with server
         User user = Constants.getUser(context);
         String email = user.getEmail();
@@ -117,14 +145,14 @@ public class Deal implements Parcelable {
             protected String doInBackground(String... params) {
                 HashMap<String, String> data = new HashMap<String, String>();
 
-                String email=params[0];
-                String token=params[1];
-                String id=params[2];
-                String liked=params[3];
+                String email = params[0];
+                String token = params[1];
+                String id = params[2];
+                String liked = params[3];
 
-                data.put("token",token);
-                data.put("email",email);
-                data.put("id",id);
+                data.put("token", token);
+                data.put("email", email);
+                data.put("id", id);
 
                 URL url;
                 try {
@@ -135,38 +163,37 @@ public class Deal implements Parcelable {
                     connection.setConnectTimeout(15000);
                     connection.setReadTimeout(15000);
                     connection.setDoInput(true);
-                    if(isFav) {
+                    if (isFav) {
                         connection.setRequestMethod("POST");
                         Log.e("Deal", "POST method");
                         connection.setDoOutput(true);
 
-                        Log.e("Deal","writing data");
+                        Log.e("Deal", "writing data");
                         OutputStream os = connection.getOutputStream();
                         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
                         writer.write(Constants.getPostDataString(data));
-                        Log.e("Deal","Post Data: "+Constants.getPostDataString(data));
+                        Log.e("Deal", "Post Data: " + Constants.getPostDataString(data));
                         writer.flush();
                         writer.close();
                         os.close();
-                    }
-                    else {
+                    } else {
                         connection.setRequestMethod("DELETE");
-                        Log.e("Deal","DELETE method");
+                        Log.e("Deal", "DELETE method");
                     }
 
 
-                    BufferedReader reader=new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                    String s=reader.readLine();
-                    JSONObject jsonObject=new JSONObject(s);
-                    boolean success=Boolean.parseBoolean(jsonObject.optString("success"));
-                    if(success){
-                        UserHandler handler1=new UserHandler(context);
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                    String s = reader.readLine();
+                    JSONObject jsonObject = new JSONObject(s);
+                    boolean success = Boolean.parseBoolean(jsonObject.optString("success"));
+                    if (success) {
+                        UserHandler handler1 = new UserHandler(context);
                         handler1.addDeal(id);
                         handler1.close();
                     }
 
                 } catch (Exception e) {
-                    Log.e("Deal","Like Deal Exception");
+                    Log.e("Deal", "Like Deal Exception");
                     e.printStackTrace();
                 }
 
@@ -176,14 +203,14 @@ public class Deal implements Parcelable {
             @Override
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
-                Log.e("Deal","Liked Deal");
+                Log.e("Deal", "Liked Deal");
             }
         }.execute(email, token, id, liked);
         //Mixpanel code
-        MixpanelAPI mixpanelAPI=Constants.getMixPanelInstance(context);
-        JSONObject props=new JSONObject();
+        MixpanelAPI mixpanelAPI = Constants.getMixPanelInstance(context);
+        JSONObject props = new JSONObject();
         try {
-            props.put("Like",id);
+            props.put("Like", id);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -235,10 +262,10 @@ public class Deal implements Parcelable {
         }.execute(email, token, id);
 
         //Mixpanel code
-        MixpanelAPI mixpanelAPI=Constants.getMixPanelInstance(context);
-        JSONObject props=new JSONObject();
+        MixpanelAPI mixpanelAPI = Constants.getMixPanelInstance(context);
+        JSONObject props = new JSONObject();
         try {
-            props.put("Share",id);
+            props.put("Share", id);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -333,49 +360,49 @@ public class Deal implements Parcelable {
         return isFeatured;
     }
 
-    public String claimDeal(final Context context){
-        final Deal deal=this;
-        Log.e("Deal","Claiming deal:"+id);
-        new AsyncTask<String, Void, Void>(){
+    public String claimDeal(final Context context) {
+        final Deal deal = this;
+        Log.e("Deal", "Claiming deal:" + id);
+        new AsyncTask<String, Void, Void>() {
             @Override
             protected Void doInBackground(String... params) {
-                String id=params[0];
+                String id = params[0];
                 User user = Constants.getUser(context);
                 try {
-                    Log.e("Deal","Claimed Deal:"+id);
+                    Log.e("Deal", "Claimed Deal:" + id);
                     URL url = new URL(Constants.ServerUrls.claimDeal);
-                    HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                     connection.setRequestMethod("POST");
                     connection.setDoInput(true);
                     connection.setDoOutput(true);
                     connection.setConnectTimeout(15000);
                     connection.setReadTimeout(15000);
                     connection.setRequestProperty("Authorization", "Bearer " + user.getToken());
-                    HashMap<String, String > data=new HashMap<String, String>();
+                    HashMap<String, String> data = new HashMap<String, String>();
                     data.put("dealId", id);
-                    OutputStream os=connection.getOutputStream();
-                    BufferedWriter writer=new BufferedWriter(new OutputStreamWriter(os,"UTF-8"));
+                    OutputStream os = connection.getOutputStream();
+                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
                     writer.write(Constants.getPostDataString(data));
                     writer.flush();
                     writer.close();
                     os.close();
 
-                    InputStream is=connection.getInputStream();
-                    BufferedReader reader=new BufferedReader(new InputStreamReader(is));
-                    String s=reader.readLine();
-                    JSONObject jsonObject=new JSONObject(s);
-                    boolean success=Boolean.parseBoolean(jsonObject.optString("success"));
-                    if(success){
-                        DatabaseHandler handler=new DatabaseHandler(context);
+                    InputStream is = connection.getInputStream();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+                    String s = reader.readLine();
+                    JSONObject jsonObject = new JSONObject(s);
+                    boolean success = Boolean.parseBoolean(jsonObject.optString("success"));
+                    if (success) {
+                        DatabaseHandler handler = new DatabaseHandler(context);
                         handler.addClaimedDeal(deal);
                         handler.close();
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 return null;
             }
-       }.execute(id);
+        }.execute(id);
         return this.couponCode;
     }
 

@@ -25,7 +25,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.plus.Plus;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.LeftNavigationDrawer;
-import com.scribblernotebooks.scribblernotebooks.CustomViews.NotificationDrawer;
 import com.scribblernotebooks.scribblernotebooks.Fragments.ManualScribblerCode;
 import com.scribblernotebooks.scribblernotebooks.Fragments.ProfileFragment;
 import com.scribblernotebooks.scribblernotebooks.Handlers.DatabaseHandler;
@@ -155,7 +154,7 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
                 Toast.makeText(getApplicationContext(), "Invalid Scribbler code", Toast.LENGTH_LONG).show();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+           Log.i(TAG,"Not from QR code");
         }
 
         startService(new Intent(this, LocationRetreiver.class));
@@ -233,9 +232,6 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
     /**
      * Setup Notification Drawer. Defined in another class
      */
-    void setupNotificationDrawer() {
-        new NotificationDrawer(mainView, this);
-    }
 
     /**
      * Setup Navigation Drawer. Defined in another class
