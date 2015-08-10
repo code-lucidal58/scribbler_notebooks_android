@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.andraskindler.parallaxviewpager.ParallaxViewPager;
 import com.scribblernotebooks.scribblernotebooks.Adapters.IllustrationsPageAdapter;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.R;
@@ -176,13 +177,13 @@ public class SplashScreen extends AppCompatActivity {
     public void startIllustration() {
         lowerCurve.setVisibility(View.VISIBLE);
         IllustrationsPageAdapter illustrationsPageAdapter;
-        ViewPager mViewPager;
+        ParallaxViewPager mViewPager;
 
         int[] imageId = {R.drawable.illustration1, R.drawable.illustration2, R.drawable.illustration3};
 
         illustrationsPageAdapter = new IllustrationsPageAdapter(this, imageId);
 
-        mViewPager = (ViewPager) findViewById(R.id.illustrations_pager);
+        mViewPager = (ParallaxViewPager) findViewById(R.id.illustrations_pager);
         mViewPager.setVisibility(View.VISIBLE);
         mViewPager.setAdapter(illustrationsPageAdapter);
 

@@ -28,8 +28,8 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:22.2.0'
-    compile 'com.android.support:recyclerview-v7:22.1.1'
-    compile 'com.android.support:cardview-v7:22.1.1'
+    compile 'com.android.support:recyclerview-v7:22.2.0'
+    compile 'com.android.support:cardview-v7:22.2.0'
     compile 'com.google.android.gms:play-services:7.5.0'
     compile 'com.facebook.android:facebook-android-sdk:4.0.0'
     compile 'com.balysv:material-ripple:1.0.2'
@@ -38,4 +38,5 @@ dependencies {
     compile 'com.journeyapps:zxing-android-embedded:3.0.0@aar'
     compile 'com.google.zxing:core:3.2.0'
     compile 'com.android.support:design:22.2.0'
+    compile 'com.andraskindler.parallaxviewpager:parallaxviewpager:0.3.1'
 }
