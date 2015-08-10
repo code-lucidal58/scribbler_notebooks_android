@@ -5,6 +5,17 @@
     android:animateLayoutChanges="true"
     tools:context="com.scribblernotebooks.scribblernotebooks.Activities.SplashScreen">
 
+
+
+
+    <com.andraskindler.parallaxviewpager.ParallaxViewPager
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/illustrations_pager"
+        android:layout_width="match_parent"
+        android:visibility="gone"
+        android:background="@drawable/splash_back"
+        android:layout_height="match_parent"/>
+
    <ImageView
        android:layout_width="match_parent"
        android:layout_height="480dp"
@@ -40,15 +51,5 @@
 
     </LinearLayout>
 
-
-    <com.andraskindler.parallaxviewpager.ParallaxViewPager
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/illustrations_pager"
-        android:layout_width="match_parent"
-        android:visibility="gone"
-        android:background="@drawable/splash_back"
-        android:layout_marginTop="@dimen/illustrationsMarginTop"
-        android:layout_marginBottom="@dimen/illustrationsMarginBottom"
-        android:layout_height="match_parent"/>
 
 </RelativeLayout>

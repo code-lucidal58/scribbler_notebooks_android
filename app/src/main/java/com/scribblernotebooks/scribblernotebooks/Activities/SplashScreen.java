@@ -52,7 +52,7 @@ public class SplashScreen extends AppCompatActivity {
             @Override
             public void run() {
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(750);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } finally {
@@ -120,7 +120,7 @@ public class SplashScreen extends AppCompatActivity {
         topCurves[1] = getResources().getDrawable(R.drawable.splash_top_green);
         TransitionDrawable drawable = new TransitionDrawable(topCurves);
         topCurve.setImageDrawable(drawable);
-        drawable.startTransition(1000);
+        drawable.startTransition(750);
 
         translateCurve();
 
@@ -130,38 +130,26 @@ public class SplashScreen extends AppCompatActivity {
         Log.e("Splash", "Starting translate Animation");
         TranslateAnimation animation = new TranslateAnimation(0, 0, 0, getLogoHeight() - (int) (0.6 * getScreenHeight()));
         TranslateAnimation animation2 = new TranslateAnimation(0, 0, 0, getLogoHeight() - (int) (0.58 * getScreenHeight()));
-        animation.setDuration(1000);
+        animation.setDuration(750);
         animation.setFillEnabled(true);
         animation.setFillAfter(true);
-        animation2.setDuration(1000);
+        animation2.setDuration(750);
         animation2.setFillEnabled(true);
         animation2.setFillAfter(true);
 
         animation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-                Thread t = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            Thread.sleep(500);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        } finally {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    startIllustration();
-                                }
-                            });
-                        }
-                    }
-                });
-                t.start();
             }
 
             @Override
             public void onAnimationEnd(Animation animation) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        startIllustration();
+                    }
+                });
             }
 
             @Override
@@ -186,6 +174,7 @@ public class SplashScreen extends AppCompatActivity {
         mViewPager = (ParallaxViewPager) findViewById(R.id.illustrations_pager);
         mViewPager.setVisibility(View.VISIBLE);
         mViewPager.setAdapter(illustrationsPageAdapter);
+        mViewPager.setScaleType(ParallaxViewPager.FIT_WIDTH);
 
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override

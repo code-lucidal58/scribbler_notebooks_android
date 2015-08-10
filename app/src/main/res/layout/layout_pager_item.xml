@@ -9,6 +9,8 @@
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/illustrationsMarginTop"
+        android:layout_marginBottom="@dimen/illustrationsMarginBottom"
         android:src="@drawable/illustration1"/>
 
 

@@ -85,6 +85,6 @@
     <dimen name="topCurveHeight">80dp</dimen>
     <dimen name="lowerCurveHeight">40dp</dimen>
     <dimen name="whiteLogoheight">60dp</dimen>
-    <dimen name="illustrationsMarginTop">120dp</dimen>
-    <dimen name="illustrationsMarginBottom">100dp</dimen>
+    <dimen name="illustrationsMarginTop">100dp</dimen>
+    <dimen name="illustrationsMarginBottom">70dp</dimen>
 </resources>
