@@ -23,7 +23,8 @@
     <color name="loginEditTextHintColor">#ff666666</color>
     <!--<color name="loginEditTextHintColor">#ffbababa</color>-->
 
-    <color name="toolbarColor">#ff2196f3</color>
+    <color name="toolbarColor">#ff1B758C</color>
+    <!--<color name="toolbarColor">#ff2196f3</color>-->
     <color name="newBlue">#ff2196f3</color>
     <!--<color name="toolbarColor">#1b758d</color>-->
     <color name="loginEditText2Background">@color/loginEditTextBackground</color>
@@ -75,10 +76,4 @@
     <color name="newLightGreen">#7cc623</color>
     <color name="newDarkGreen">#3d6211</color>
 
-    dark blue #1b758d
-    light blue #55c5cd
-    darker blue #13596c
-
-    light green #7cc623
-    darker green #3d6211
 </resources>

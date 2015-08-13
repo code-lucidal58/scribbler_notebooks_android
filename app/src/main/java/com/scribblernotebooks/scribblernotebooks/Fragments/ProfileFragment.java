@@ -1,6 +1,8 @@
 package com.scribblernotebooks.scribblernotebooks.Fragments;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -77,7 +79,7 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ProfileFragment extends android.support.v4.app.Fragment implements View.OnClickListener,
+public class ProfileFragment extends Fragment implements View.OnClickListener,
         GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener {
 
     private static final int REQ_SIGN_IN_REQUIRED = 55664;
@@ -228,7 +230,7 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
             public boolean onTouch(View v, MotionEvent event) {
                 if(event.getAction()==MotionEvent.ACTION_UP) {
                     ChangePassword dialog = new ChangePassword();
-                    dialog.show(getActivity().getSupportFragmentManager(), "Change Password");
+                    dialog.show(getActivity().getFragmentManager(), "Change Password");
                 }
                 return true;
             }
@@ -275,7 +277,7 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
          */
         callbackManager = CallbackManager.Factory.create();
         loginButton = (LoginButton) v.findViewById(R.id.login_button);
-        loginButton.setFragment(this);
+        loginButton.setFragment(new NativeFragmentWrapper(this));
         loginButton.setReadPermissions("user_friends", "email");
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
@@ -481,8 +483,7 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
     }
 
     public void saveDetails(){
-        User user=new User();
-        user=Constants.getUser(context);
+        User user=Constants.getUser(context);
         user.setName(userName.getText().toString());
         user.setEmail(userEmail.getText().toString());
 //        user.setCollege(userCollege.getText().toString());
@@ -862,6 +863,29 @@ public class ProfileFragment extends android.support.v4.app.Fragment implements 
         data.put(Constants.POST_ACCESS_TOKEN, accessToken);
         data.put(Constants.POST_TOKEN,getActivity().getSharedPreferences(Constants.PREF_NAME,Context.MODE_PRIVATE).getString(Constants.PREF_DATA_USER_TOKEN,""));
         new SignUpService(Constants.ServerUrls.linkSocialAccount, getActivity()).execute(data);
+    }
+
+    public static class NativeFragmentWrapper extends android.support.v4.app.Fragment{
+        private Fragment nativeFragment;
+
+        public NativeFragmentWrapper() {
+            super();
+        }
+
+        @SuppressLint("ValidFragment")
+        public NativeFragmentWrapper(Fragment nativeFragment) {
+            this.nativeFragment=nativeFragment;
+        }
+
+        @Override
+        public void startActivityForResult(Intent intent, int requestCode) {
+            nativeFragment.startActivityForResult(intent,requestCode);
+        }
+
+        @Override
+        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+            nativeFragment.onActivityResult(requestCode,resultCode,data);
+        }
     }
 
 }

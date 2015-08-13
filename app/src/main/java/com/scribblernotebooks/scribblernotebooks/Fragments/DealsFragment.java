@@ -1,6 +1,7 @@
 package com.scribblernotebooks.scribblernotebooks.Fragments;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -9,7 +10,6 @@ import android.content.res.TypedArray;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -165,10 +165,6 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
         swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipe_refresh_layout);
         reload = true;
 
-
-        //Retrieve Categories
-        new CategoriesRetriever().execute();
-
         //Progress Dialog Setup
         progressDialog = new ProgressDialog(context);
         progressDialog.setMessage("Loading Deals...");
@@ -319,7 +315,6 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
         recyclerView.computeScroll();
 
         //Get response from server
-
         runAsyncTask();
 
         //recyclerView setup
@@ -387,8 +382,6 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
         isOptionOpened = false;
         OPEN_PARAMETER = NONE;
         hideKeyboard();
-        String[] suggestions1 = new String[0];
-        selectedIconQuery.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, suggestions1));
 
         if (noneSelected) {
             searchQuery = "";
@@ -400,7 +393,6 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
             dealsList.clear();
 //            Log.e("DealFragment", "ShowToolbarOptions " + page + " " + category + " " + searchQuery + " " + sort);
             page = 1;
-            new CategoriesRetriever().execute();
             if (!searchQuery.isEmpty()) {
                 new LongOperation(ACTION_SEARCH).execute(String.valueOf(page), "", searchQuery, "");
             } else {
@@ -410,10 +402,8 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
         }
         replacedLayout.setVisibility(View.GONE);
         suggestions.setVisibility(View.GONE);
-//        toolbarContainer.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).start();
     }
 
-    int initialTopPadding = 0;
     String tag;
 
     /**
@@ -585,13 +575,10 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
 
     @Override
     public boolean onBackKeyPressed() {
-//        Log.e("Deal NavigationDrawer", "Back key passed");
         if (isOptionOpened) {
-//            Log.e("DealavigationDrawer", "Back key passed" + true);
             showToolbarOptions();
             return true;
         }
-//        Log.e("Deal NavigationDrawer", "Back key passed " + false);
         return false;
     }
 
@@ -667,6 +654,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
                 connection.setRequestMethod("GET");
                 connection.setReadTimeout(15000);
                 connection.setConnectTimeout(15000);
+                connection.setRequestProperty("Authorization", "Bearer " + user.getToken());
                 connection.setDoInput(true);
 
                 BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -682,8 +670,6 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
         @Override
         protected void onPostExecute(String s) {
             isloading = false;
-//            Log.e("DealFragment", "Response " + s);
-//            progressDialog.dismiss();
             swipeRefreshLayout.setRefreshing(false);
             try {
                 snackbar.dismiss();

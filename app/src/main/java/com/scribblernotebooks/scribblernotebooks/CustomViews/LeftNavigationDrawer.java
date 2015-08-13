@@ -1,11 +1,11 @@
 package com.scribblernotebooks.scribblernotebooks.CustomViews;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -120,7 +120,7 @@ public class LeftNavigationDrawer extends NavigationDrawer {
             public void onClick(View v) {
                 mDrawerLayout.closeDrawers();
                 Fragment fragment = ProfileFragment.newInstance("Profile");
-                FragmentManager fragmentManager = navigationDrawerActivity.getSupportFragmentManager();
+                FragmentManager fragmentManager = navigationDrawerActivity.getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.content_frame, fragment);
                 fragmentTransaction.addToBackStack(null);
@@ -169,12 +169,9 @@ public class LeftNavigationDrawer extends NavigationDrawer {
         }
 
         if (fragment != null) {
-            FragmentManager fragmentManager = navigationDrawerActivity.getSupportFragmentManager();
+            FragmentManager fragmentManager = navigationDrawerActivity.getFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.content_frame, fragment);
-            if(fragment instanceof ManualScribblerCode){
-                fragmentTransaction.addToBackStack(null);
-            }
             fragmentTransaction.commit();
             try {
                 //noinspection ConstantConditions
@@ -206,7 +203,7 @@ public class LeftNavigationDrawer extends NavigationDrawer {
             public void onClick(View v) {
                 mDrawerLayout.closeDrawers();
                 Fragment fragment = AboutUsFragment.newInstance();
-                FragmentManager fragmentManager = navigationDrawerActivity.getSupportFragmentManager();
+                FragmentManager fragmentManager = navigationDrawerActivity.getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.content_frame, fragment);
                 fragmentTransaction.addToBackStack(null);

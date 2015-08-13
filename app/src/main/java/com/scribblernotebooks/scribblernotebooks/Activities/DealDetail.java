@@ -40,7 +40,7 @@ public class DealDetail extends AppCompatActivity{
         // primary sections of the activity.
 
         boolean isClaimed=getIntent().getBooleanExtra("IS_CLAIMED",false);
-        fragmentAdapter = new DealDetailFragmentAdapter(getSupportFragmentManager(),dealArrayList, isClaimed);
+        fragmentAdapter = new DealDetailFragmentAdapter(getFragmentManager(),dealArrayList, isClaimed);
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);

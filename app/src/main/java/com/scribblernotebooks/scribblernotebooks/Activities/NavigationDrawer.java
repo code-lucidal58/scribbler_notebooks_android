@@ -1,5 +1,8 @@
 package com.scribblernotebooks.scribblernotebooks.Activities;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,7 +11,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
@@ -170,8 +172,11 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
 
         /** Load Manual Code Input Fragment **/
         fragment = ManualScribblerCode.newInstance(NavigationDrawer.this, url);
-        final android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction transaction=fragmentManager.beginTransaction();
+        transaction.replace(R.id.content_frame, fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 
     @Override
@@ -187,8 +192,8 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
             Log.e("NavigationDrawer", "BackKey Event Not Registered");
             if (mDrawerLayout.isDrawerOpen(findViewById(R.id.left_drawer_relative))) {
                 mDrawerLayout.closeDrawers();
-            } else if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
-                getSupportFragmentManager().popBackStack();
+            } else if (getFragmentManager().getBackStackEntryCount() > 0) {
+                getFragmentManager().popBackStack();
             } else {
                 this.finish();
             }
@@ -286,7 +291,7 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         try {
-            ProfileFragment profileFragment = (ProfileFragment) getSupportFragmentManager().findFragmentById(R.id.content_frame);
+            ProfileFragment profileFragment = (ProfileFragment) getFragmentManager().findFragmentById(R.id.content_frame);
             profileFragment.onActivityResult(requestCode, resultCode, data);
         } catch (ClassCastException e) {
             e.printStackTrace();

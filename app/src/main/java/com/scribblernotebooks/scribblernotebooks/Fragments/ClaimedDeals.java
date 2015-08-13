@@ -30,7 +30,7 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ClaimedDeals extends android.support.v4.app.Fragment {
+public class ClaimedDeals extends Fragment{
 
     private static final String TITLE = "title";
 

@@ -1,5 +1,8 @@
 package com.scribblernotebooks.scribblernotebooks.Fragments;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -9,9 +12,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.DisplayMetrics;
@@ -187,7 +187,7 @@ public class ManualScribblerCode extends Fragment {
                 public void onShake() {
                     try {
                         Fragment fragment = DealsFragment.newInstance(Constants.serverURL, "Deals");
-                        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                        FragmentManager fragmentManager = getActivity().getFragmentManager();
                         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                         fragmentTransaction.replace(R.id.content_frame, fragment);
                         fragmentTransaction.addToBackStack(null);
