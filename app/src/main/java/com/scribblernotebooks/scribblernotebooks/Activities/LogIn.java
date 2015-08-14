@@ -455,14 +455,27 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                 progressDialog.dismiss();
             }
         }
+        Log.e("LogIn","Google Connection Suspended");
         mGoogleApiClient.connect();
     }
 
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(mGoogleApiClient.isConnecting() || mGoogleApiClient.isConnected()){
+            mGoogleApiClient.disconnect();
+            Log.e("LogIn","Google Connection disconnected");
+        }
+    }
 
     public class GetGooglePlusToken extends AsyncTask<Void, Void, String> {
         Context context;
         private GoogleApiClient mGoogleApiClient;
         private String TAG = this.getClass().getSimpleName();
+
+
 
         public GetGooglePlusToken(Context context, GoogleApiClient mGoogleApiClient) {
             this.context = context;
@@ -563,12 +576,12 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
             e.printStackTrace();
         }
 
+        Toast.makeText(this, "Could not connect to google servers. Please try again.", Toast.LENGTH_SHORT).show();
         if (!result.hasResolution()) {
             try {
                 GooglePlayServicesUtil.getErrorDialog(result.getErrorCode(), this,
                         0).show();
                 progressDialog.dismiss();
-                Toast.makeText(this, "Could not connect", Toast.LENGTH_SHORT).show();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -622,42 +635,11 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         data.put(Constants.POST_ACCESS_TOKEN, accessToken);
         data.put(Constants.POST_TOKEN, getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE).getString(Constants.PREF_DATA_USER_TOKEN, ""));
 
-        Log.e("LoginSocialData","Data: METHOD: "+method+" ACCESS_TOKEN: "+accessToken);
+//        Log.e("LoginSocialData","Data: METHOD: "+method+" ACCESS_TOKEN: "+accessToken);
         new SignUpService(Constants.ServerUrls.login, this).execute(data);
     }
 
 
-//    /**
-//     * Login Through Social Network
-//     *
-//     * @param name
-//     * @param email
-//     * @param id
-//     * @param url
-//     * @param coverPic
-//     * @param profilePic
-//     */
-//    void loginSocial(String name, String email, String id, String url, String coverPic, String profilePic) {
-//
-//        HashMap<String, String> data = new HashMap<>();
-//        if (url.equalsIgnoreCase(Constants.ServerUrls.loginGoogle)) {
-//            data.put(Constants.POST_NAME, name);
-//            data.put(Constants.POST_EMAIL, email);
-//            data.put(Constants.POST_GOOGLE, id);
-//            data.put(Constants.POST_COVERPIC, coverPic);
-//            data.put(Constants.POST_PROFILEPIC, profilePic);
-//        } else if (url.equalsIgnoreCase(Constants.ServerUrls.loginFacebook)) {
-//            data.put(Constants.POST_EMAIL, email);
-//            data.put(Constants.POST_FACEBOOK, id);
-//            data.put(Constants.POST_COVERPIC, coverPic);
-//            data.put(Constants.POST_PROFILEPIC, profilePic);
-//        }
-//        new SignUpService(url, this).execute(data);
-//    }
-
-//    public void startApp() {
-//        startActivity(new Intent(this, NavigationDrawer.class));
-//    }
 
 }
 
