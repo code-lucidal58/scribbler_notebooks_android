@@ -2,7 +2,6 @@ package com.scribblernotebooks.scribblernotebooks.Services;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.util.Log;
 
 import com.scribblernotebooks.scribblernotebooks.Handlers.DatabaseHandler;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
@@ -35,12 +34,12 @@ public class ClaimedDealsRetriever extends IntentService {
 
             BufferedReader reader=new BufferedReader(new InputStreamReader(connection.getInputStream()));
             String s=reader.readLine();
-            Log.e("Claimed Deal Response","Response: "+s);
+//            Log.e("Claimed Deal Response","Response: "+s);
 
             DealListResponse dealListResponse= ParseJson.parseClaimedDeals(s);
 
             if(dealListResponse==null){
-                Log.e("ClaimedDeals","No Deals Claimed Yet");
+//                Log.e("ClaimedDeals","No Deals Claimed Yet");
                 return;
             }
             ArrayList<Deal> deals=dealListResponse.getDealList();

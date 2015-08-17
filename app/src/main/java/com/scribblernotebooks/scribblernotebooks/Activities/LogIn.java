@@ -576,7 +576,8 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
             e.printStackTrace();
         }
 
-        Toast.makeText(this, "Could not connect to google servers. Please try again.", Toast.LENGTH_SHORT).show();
+        if(mSignInClicked)
+            Toast.makeText(this, "Could not connect to google servers. Please try again.", Toast.LENGTH_SHORT).show();
         if (!result.hasResolution()) {
             try {
                 GooglePlayServicesUtil.getErrorDialog(result.getErrorCode(), this,

@@ -46,7 +46,8 @@ public class Constants {
 
 
     public static class ServerUrls {
-        public static String host = "http://scribbler.co.in:8080/";
+//        public static String host = "http://api.scribbler.co.in/";
+        public static String host = "http://52.74.159.230:8080/";
         public static String websiteUrl = host + "api/";
         //User Module
         public static String signUp = websiteUrl + "signup";
@@ -96,9 +97,7 @@ public class Constants {
     }
 
     public static final String MIXPANEL_TOKEN = "873f1995dd119bdb63b8a51bc2f4951d";
-    public static final String parentURLForGetRequest = "http://192.168.1.117:3000/deal/";
-    public static final String parentURLForCouponCode = "http://192.168.1.117:3000/deal/";
-    public static final String serverURL = "http://jazzyarchitects.orgfree.com/deal.php";
+    public static final String serverURL = "";
     public static final String TAG_DEAL_NAME = "title";
     public static final String TAG_IMAGE_URL = "imgUrl";
     public static final String TAG_IMAGE_UUID = "imgUUID";

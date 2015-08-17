@@ -79,6 +79,7 @@ public class LocationRetreiver extends IntentService implements LocationListener
                 e.printStackTrace();
             }
         }
+        locationManager.removeUpdates(this);
 
     }
 
