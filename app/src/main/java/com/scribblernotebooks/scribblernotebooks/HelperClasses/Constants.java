@@ -196,28 +196,32 @@ public class Constants {
      * @param drawableImage
      */
     public static void drawableScaleColorChange(final Context context, final EditText editText, final int drawableImage) {
-        scaleEditTextImage(context, editText, drawableImage);
-        editText.getCompoundDrawables()[2].clearColorFilter();
-        editText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                scaleEditTextImage(context, editText, drawableImage);
-                if (s.toString().isEmpty() || s.toString().equals("")) {
-                    editText.getCompoundDrawables()[2].clearColorFilter();
-                } else {
-                    editText.getCompoundDrawables()[2].setColorFilter(context.getResources()
-                            .getColor(R.color.darkerBlue), PorterDuff.Mode.MULTIPLY);
+        try {
+            scaleEditTextImage(context, editText, drawableImage);
+            editText.getCompoundDrawables()[2].clearColorFilter();
+            editText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 }
-            }
 
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    scaleEditTextImage(context, editText, drawableImage);
+                    if (s.toString().isEmpty() || s.toString().equals("")) {
+                        editText.getCompoundDrawables()[2].clearColorFilter();
+                    } else {
+                        editText.getCompoundDrawables()[2].setColorFilter(context.getResources()
+                                .getColor(R.color.darkerBlue), PorterDuff.Mode.MULTIPLY);
+                    }
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                }
+            });
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     /**
