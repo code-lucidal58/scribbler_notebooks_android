@@ -25,6 +25,9 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -330,6 +333,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,
                 .addScope(Plus.SCOPE_PLUS_LOGIN).build();
 
 
+        setHasOptionsMenu(true);
         return v;
     }
 
@@ -884,8 +888,24 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,
 
         @Override
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
-            nativeFragment.onActivityResult(requestCode,resultCode,data);
+            nativeFragment.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_no_item,menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id=item.getItemId();
+        if(id==android.R.id.home){
+            this.onDetach();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
 }

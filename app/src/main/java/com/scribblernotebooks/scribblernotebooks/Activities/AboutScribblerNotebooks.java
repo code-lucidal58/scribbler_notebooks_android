@@ -25,7 +25,7 @@ public class AboutScribblerNotebooks extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_log_in,menu);
+        getMenuInflater().inflate(R.menu.menu_no_item,menu);
         return super.onCreateOptionsMenu(menu);
     }
 

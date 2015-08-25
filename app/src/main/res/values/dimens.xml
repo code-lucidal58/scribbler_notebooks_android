@@ -60,9 +60,9 @@
     <dimen name="navigation_drawer_cover_pic_height">175dp</dimen>
     <dimen name="userNameTextSize">16sp</dimen>
     <dimen name="userEmailTextSize">14sp</dimen>
-    <dimen name="userPicSize">60dp</dimen>
+    <dimen name="userPicSize">100dp</dimen>
     <dimen name="notificationIconSize">40dp</dimen>
-    <dimen name="profile_profilepic_size">100dp</dimen>
+    <dimen name="profile_profilepic_size">150dp</dimen>
 
 
     <dimen name="profile_basic_info_item_height">40dp</dimen>

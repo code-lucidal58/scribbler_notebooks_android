@@ -31,7 +31,7 @@ import com.scribblernotebooks.scribblernotebooks.Adapters.NavigationRecyclerAdap
 import com.scribblernotebooks.scribblernotebooks.Fragments.AboutUsFragment;
 import com.scribblernotebooks.scribblernotebooks.Fragments.ClaimedDeals;
 import com.scribblernotebooks.scribblernotebooks.Fragments.DealsFragment;
-import com.scribblernotebooks.scribblernotebooks.Fragments.ManualScribblerCode;
+import com.scribblernotebooks.scribblernotebooks.Fragments.PremiumDealsFragment;
 import com.scribblernotebooks.scribblernotebooks.Fragments.ProfileFragment;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.R;
@@ -155,11 +155,14 @@ public class LeftNavigationDrawer extends NavigationDrawer {
                 mContext.startActivity(new Intent(mContext, ScannerActivity.class));
                 mDrawerLayout.closeDrawers();
                 break;
+//            case 1:
+//                fragment = ManualScribblerCode.newInstance(mContext, "");
+//                break;
             case 1:
-                fragment = ManualScribblerCode.newInstance(mContext, "");
+                fragment = DealsFragment.newInstance(Constants.serverURL, title);
                 break;
             case 2:
-                fragment = DealsFragment.newInstance(Constants.serverURL, title);
+                fragment = new PremiumDealsFragment();
                 break;
             case 3:
                 fragment = ClaimedDeals.newInstance(title);

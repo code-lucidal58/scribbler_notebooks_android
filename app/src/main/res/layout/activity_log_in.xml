@@ -151,7 +151,7 @@
 
             <LinearLayout
                 android:id="@+id/ll2"
-                android:layout_width="@dimen/login_editText_width"
+                android:layout_width="wrap_content"
                 android:layout_height="@dimen/loginEditTextHeight"
                 android:layout_below="@+id/ll"
                 android:layout_centerHorizontal="true"
@@ -166,6 +166,8 @@
                     android:layout_height="@dimen/loginButtonHeight"
                     android:background="@drawable/scanner_button"
                     android:text="Log In"
+                    android:layout_gravity="center_horizontal"
+                    android:gravity="center"
                     android:textColor="#FFF"
                     android:textSize="@dimen/loginEditTextFontSize" />
 
@@ -175,6 +177,8 @@
                     android:layout_width="@dimen/half_login_editText_width"
                     android:layout_height="@dimen/loginButtonHeight"
                     android:layout_marginLeft="5dp"
+                    android:layout_gravity="center_horizontal"
+                    android:gravity="center"
                     android:background="@drawable/scanner_button"
                     android:text="Sign Up"
                     android:textColor="#FFF"

@@ -4,14 +4,14 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
-import android.support.v4.graphics.drawable.DrawableCompat;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -57,6 +57,13 @@ public class FeedbackActivity extends AppCompatActivity {
 
         userPrefs=getSharedPreferences(Constants.PREF_NAME,MODE_PRIVATE);
         userEmail.setText(Html.fromHtml("<b>"+userPrefs.getString(Constants.PREF_DATA_NAME,"")+"</b> &lt;"+userPrefs.getString(Constants.PREF_DATA_EMAIL,"")+"&gt;"));
+        userEmail.setClickable(false);
+        userEmail.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
 
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -104,7 +111,7 @@ public class FeedbackActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_log_in,menu);
+        getMenuInflater().inflate(R.menu.menu_no_item,menu);
         return super.onCreateOptionsMenu(menu);
     }
 

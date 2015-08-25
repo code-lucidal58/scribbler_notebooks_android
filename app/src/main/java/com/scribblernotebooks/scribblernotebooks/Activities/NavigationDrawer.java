@@ -15,8 +15,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -27,6 +25,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.plus.Plus;
 import com.scribblernotebooks.scribblernotebooks.CustomViews.LeftNavigationDrawer;
+import com.scribblernotebooks.scribblernotebooks.Fragments.DealsFragment;
 import com.scribblernotebooks.scribblernotebooks.Fragments.ManualScribblerCode;
 import com.scribblernotebooks.scribblernotebooks.Fragments.ProfileFragment;
 import com.scribblernotebooks.scribblernotebooks.Handlers.DatabaseHandler;
@@ -171,7 +170,7 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
 
 
         /** Load Manual Code Input Fragment **/
-        fragment = ManualScribblerCode.newInstance(NavigationDrawer.this, url);
+        fragment = DealsFragment.newInstance("Deals");
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction transaction=fragmentManager.beginTransaction();
         transaction.replace(R.id.content_frame, fragment);
@@ -454,27 +453,27 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
     }
 
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_navigation_drawer, menu);
-        return super.onCreateOptionsMenu(menu);
-
-    }
-
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        super.onOptionsItemSelected(item);
-        if (item.getItemId() == android.R.id.home) {
-            if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
-                getSupportFragmentManager().popBackStack();
-            }
-        }
-        else if(item.getItemId() ==R.id.notification){
-            startActivity(new Intent(getBaseContext(),NotificationsActivity.class));
-        }
-        return true;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        getMenuInflater().inflate(R.menu.menu_navigation_drawer, menu);
+//        return super.onCreateOptionsMenu(menu);
+//
+//    }
+//
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        super.onOptionsItemSelected(item);
+//        if (item.getItemId() == android.R.id.home) {
+//            if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+//                getSupportFragmentManager().popBackStack();
+//            }
+//        }
+//        else if(item.getItemId() ==R.id.notification){
+//            startActivity(new Intent(getBaseContext(),NotificationsActivity.class));
+//        }
+//        return true;
+//    }
 
 
     public interface OnNavKeyPressed {

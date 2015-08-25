@@ -331,6 +331,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         }
         name.setVisibility(View.GONE);
         mobile.setVisibility(View.GONE);
+        signIn.setVisibility(View.VISIBLE);
         forgotPassword.setVisibility(View.VISIBLE);
         termsAndConditions.setVisibility(View.GONE);
         view_open = LOGIN;
@@ -374,6 +375,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         name.setVisibility(View.VISIBLE);
         mobile.setVisibility(View.VISIBLE);
         forgotPassword.setVisibility(View.GONE);
+        signIn.setVisibility(View.GONE);
 //        termsAndConditions.setVisibility(View.VISIBLE);
         view_open = SIGNUP;
     }
@@ -640,8 +642,14 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         new SignUpService(Constants.ServerUrls.login, this).execute(data);
     }
 
-
-
+    @Override
+    public void onBackPressed() {
+        if(view_open==SIGNUP){
+            loginUser();
+        }else {
+            super.onBackPressed();
+        }
+    }
 }
 
 

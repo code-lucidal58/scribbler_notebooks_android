@@ -2,7 +2,6 @@ package com.scribblernotebooks.scribblernotebooks.Fragments;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -21,6 +20,9 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
@@ -38,6 +40,7 @@ import android.widget.TextView;
 
 import com.scribblernotebooks.scribblernotebooks.Activities.DealDetail;
 import com.scribblernotebooks.scribblernotebooks.Activities.NavigationDrawer;
+import com.scribblernotebooks.scribblernotebooks.Activities.NotificationsActivity;
 import com.scribblernotebooks.scribblernotebooks.Adapters.CategoryListAdapter;
 import com.scribblernotebooks.scribblernotebooks.Adapters.RecyclerDealsAdapter;
 import com.scribblernotebooks.scribblernotebooks.Adapters.SearchListAdapter;
@@ -74,9 +77,8 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
     public static final int SORT = 3;
     public static final int NONE = 0;
     public static int OPEN_PARAMETER = NONE;
-    boolean firstTime = false;
     int PAGE_LIMIT = 5;
-
+    boolean openingFirstTime=false;
     public int ACTION_SEARCH = 1;
     public int ACTION_DEFAULT = 0;
     int action = 0;
@@ -91,11 +93,10 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
     RelativeLayout previousLayout,mDrawer;
     RecyclerView recyclerView,suggestions;
     LinearLayout toolbarContainer,originalLayout, replacedLayout,loadingProgressLayout;
-    ProgressDialog progressDialog;
     DrawerLayout mDrawerLayout;
     SwipeRefreshLayout swipeRefreshLayout;
     View searchbar, categoryView, searchView, sortView;
-
+    boolean firstTime=false;
     Context context;
     Toolbar appbar;
     int mToolbarHeight;
@@ -136,6 +137,19 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
         fragment.setArguments(args);
         return fragment;
     }
+    /**
+     * Setting statically the new fragment
+     *
+     * @return the Deal list fragment
+     */
+    public static DealsFragment newInstance(String title) {
+        DealsFragment fragment = new DealsFragment();
+        Bundle args = new Bundle();
+        args.putString(URL_STRING, "");
+        args.putString(TITLE, title);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
 
     /**
@@ -153,6 +167,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
             title = getArguments().getString(TITLE);
         }
         firstTime = true;
+        openingFirstTime=true;
     }
 
     @Override
@@ -164,11 +179,6 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
 //        noConnectionText = (TextView) v.findViewById(R.id.noConnectionText);
         swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipe_refresh_layout);
         reload = true;
-
-        //Progress Dialog Setup
-        progressDialog = new ProgressDialog(context);
-        progressDialog.setMessage("Loading Deals...");
-        progressDialog.setCancelable(false);
 
         //Setting toolbars
         toolbarContainer = (LinearLayout) v.findViewById(R.id.toolbar_container);
@@ -314,8 +324,11 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
 
         recyclerView.computeScroll();
 
-        //Get response from server
-        runAsyncTask();
+        if(openingFirstTime) {
+            //Get response from server
+            runAsyncTask();
+            openingFirstTime=false;
+        }
 
         //recyclerView setup
         recyclerView.setLayoutManager(new GridLayoutManager(context, getResources().getInteger(R.integer.dealListColoumnCount)));
@@ -352,6 +365,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
         } catch (Exception e) {
             e.printStackTrace();
         }
+        setHasOptionsMenu(true);
         return v;
     }
 
@@ -882,5 +896,29 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
     private void hideKeyboard() {
         InputMethodManager inputManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
         inputManager.hideSoftInputFromWindow(selectedIconQuery.getWindowToken(), 0);
+    }
+
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_navigation_drawer, menu);
+    }
+
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        super.onOptionsItemSelected(item);
+        if (item.getItemId() == android.R.id.home) {
+            if (getFragmentManager().getBackStackEntryCount() > 0) {
+                getFragmentManager().popBackStack();
+            }
+        }
+        else if(item.getItemId() ==R.id.notification){
+            startActivity(new Intent(getActivity(),NotificationsActivity.class));
+        }
+        return true;
     }
 }

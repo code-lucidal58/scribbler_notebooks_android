@@ -42,6 +42,7 @@
             android:layout_height="40dp"
             android:layout_marginLeft="10dp"
             android:layout_marginStart="10dp"
+            android:visibility="gone"
             android:background="@drawable/scanner_button"
             android:minWidth="@dimen/scannerToManual_button_width"
             android:text="Enter Scribbler Code" />

@@ -9,6 +9,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -92,14 +95,14 @@ public class AboutUsFragment extends Fragment {
                         break;
                     case 1:
                         //TODO: terms and conditions
-                        TermsPopup popup=new TermsPopup(getActivity());
+                        TermsPopup popup = new TermsPopup(getActivity());
                         popup.setUrl(Constants.ServerUrls.termsAndConditions);
                         popup.setTitle("Terms & Conditions");
                         popup.show();
                         break;
                     case 2:
                         //TODO: privacy policy
-                        TermsPopup popup1=new TermsPopup(getActivity());
+                        TermsPopup popup1 = new TermsPopup(getActivity());
                         popup1.setUrl(Constants.ServerUrls.privacyPolicy);
                         popup1.setTitle("Privacy Policy");
                         popup1.show();
@@ -114,8 +117,27 @@ public class AboutUsFragment extends Fragment {
         }
         ));
 
+        setHasOptionsMenu(true);
 
         return v;
     }
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_no_item,menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id=item.getItemId();
+        if(id==android.R.id.home){
+            this.onDetach();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
 
 }

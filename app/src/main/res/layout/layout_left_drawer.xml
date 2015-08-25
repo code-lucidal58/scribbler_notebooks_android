@@ -10,6 +10,7 @@
     <FrameLayout
         android:id="@+id/userHolder"
         android:layout_width="match_parent"
+        android:background="@color/toolbarColor"
         android:layout_height="@dimen/navigation_drawer_cover_pic_height">
 
         <ImageView
@@ -17,20 +18,21 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
+            android:visibility="gone"
             android:src="@drawable/navigation_drawer_cover_pic" />
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_gravity="bottom|start"
-            android:layout_marginBottom="5dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginStart="15dp">
+            android:layout_marginBottom="5dp">
 
             <com.scribblernotebooks.scribblernotebooks.CustomViews.RoundedImageView
                 android:id="@+id/userPhoto"
                 android:layout_width="@dimen/userPicSize"
                 android:layout_height="@dimen/userPicSize"
+                android:layout_centerInParent="true"
+                android:layout_above="@+id/userName"
                 android:layout_marginBottom="5dp"
                 android:src="@drawable/nodp" />
 
@@ -38,9 +40,9 @@
                 android:id="@+id/userName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/userPhoto"
-                android:gravity="center_vertical"
+                android:gravity="center"
                 android:text="User Name"
+                android:layout_above="@+id/userEmail"
                 android:textColor="@android:color/white"
                 android:textSize="@dimen/userNameTextSize"
                 android:textStyle="bold" />
@@ -49,8 +51,8 @@
                 android:id="@+id/userEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/userName"
-                android:gravity="center_vertical"
+                android:layout_alignParentBottom="true"
+                android:gravity="center"
                 android:text="user@domain.com"
                 android:textColor="@android:color/white"
                 android:textSize="@dimen/userEmailTextSize" />

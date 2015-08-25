@@ -12,12 +12,16 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.scribblernotebooks.scribblernotebooks.Activities.DealDetail;
+import com.scribblernotebooks.scribblernotebooks.Activities.NotificationsActivity;
 import com.scribblernotebooks.scribblernotebooks.Adapters.RecyclerDealsAdapter;
 import com.scribblernotebooks.scribblernotebooks.Handlers.DatabaseHandler;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
@@ -92,6 +96,7 @@ public class ClaimedDeals extends Fragment{
         ((AppCompatActivity) getActivity()).setSupportActionBar(appbar);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeButtonEnabled(true);
         getActivity().setTitle(title);
+        setHasOptionsMenu(true);
 
         mDrawerLayout = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
         mDrawer = (RelativeLayout) getActivity().findViewById(R.id.left_drawer_relative);
@@ -130,7 +135,7 @@ public class ClaimedDeals extends Fragment{
         Intent i = new Intent(context, DealDetail.class);
         i.putParcelableArrayListExtra(Constants.PARCELABLE_DEAL_LIST_KEY, deals);
         i.putExtra(Constants.CURRENT_DEAL_INDEX, position);
-        i.putExtra("IS_CLAIMED",true);
+        i.putExtra("IS_CLAIMED", true);
         startActivityForResult(i, DEAL_DETAIL_REQUEST_CODE);
     }
 
@@ -156,5 +161,28 @@ public class ClaimedDeals extends Fragment{
     public void onDetach() {
         super.onDetach();
         databaseHandler.close();
+    }
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_navigation_drawer, menu);
+    }
+
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        super.onOptionsItemSelected(item);
+        if (item.getItemId() == android.R.id.home) {
+            if (getFragmentManager().getBackStackEntryCount() > 0) {
+                getFragmentManager().popBackStack();
+            }
+        }
+        else if(item.getItemId() ==R.id.notification){
+            startActivity(new Intent(getActivity(),NotificationsActivity.class));
+        }
+        return true;
     }
 }

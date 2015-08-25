@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <FrameLayout
+            <RelativeLayout
                 android:id="@+id/fl"
                 android:layout_width="match_parent"
                 android:layout_height="250dp">
@@ -34,24 +34,22 @@
                     android:layout_width="@dimen/profile_profilepic_size"
                     android:layout_height="@dimen/profile_profilepic_size"
                     android:layout_gravity="bottom"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginStart="10dp"
+                    android:layout_centerInParent="true"
                     android:src="@drawable/nodp" />
 
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="top|end"
-                    android:layout_marginTop="5dp"
-                    android:background="#55ffffff"
-                    android:padding="5dp"
-                    android:text="Change"
-                    android:textColor="#FFF"
-                    android:textSize="14sp" />
+                <!--<TextView-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_gravity="top|end"-->
+                    <!--android:layout_marginTop="5dp"-->
+                    <!--android:background="#55ffffff"-->
+                    <!--android:padding="5dp"-->
+                    <!--android:text="Change"-->
+                    <!--android:textColor="#FFF"-->
+                    <!--android:textSize="14sp" />-->
 
-            </FrameLayout>
+            </RelativeLayout>
 
 
                 <TextView
