@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <integer name="dealListColoumnCount">1</integer>
+    <integer name="dealListColoumnCount">2</integer>
+    <!--<integer name="dealListColoumnCount">1</integer>-->
     <integer name="tranisitionAnimationDuration">250</integer>
 
 </resources>

@@ -125,7 +125,7 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
                             }
                         });
                     }
-                }, 3000);
+                }, 5000);
             }
         });
 
@@ -170,11 +170,16 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
 
 
         /** Load Manual Code Input Fragment **/
-        fragment = DealsFragment.newInstance("Deals");
+        fragment = DealsFragment.newInstance("",Constants.getNavigationDrawerItems().get(1).second);
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction transaction=fragmentManager.beginTransaction();
         transaction.replace(R.id.content_frame, fragment);
         transaction.addToBackStack(null);
+//        try {
+//            setTitle(Constants.getNavigationDrawerItems().get(1).second);
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
         transaction.commit();
     }
 

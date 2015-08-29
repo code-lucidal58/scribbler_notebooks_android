@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:card_view="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="100dp"
+    android:layout_height="110dp"
     android:gravity="center_vertical"
     android:orientation="vertical"
     android:padding="5dp">
@@ -47,14 +47,14 @@
                     android:layout_margin="0dp"
                     android:layout_weight="2.5"
                     android:padding="2dp"
-                    android:scaleType="centerCrop"
+                    android:scaleType="fitCenter"
                     android:src="@mipmap/ic_launcher" />
 
                 <RelativeLayout
                     android:id="@+id/detailsContainer"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="6"
+                    android:layout_weight="7.5"
                     android:paddingLeft="3dp"
                     android:paddingStart="3dp">
 
@@ -74,65 +74,57 @@
                         android:layout_toEndOf="@id/tearMark"
                         android:layout_toRightOf="@id/tearMark"
                         android:maxLines="1"
+                        android:padding="3dp"
                         android:text="Deal Title"
                         android:textColor="#000"
-                        android:textSize="20sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/text_category"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/dealTitle"
-                        android:layout_marginTop="2dp"
-                        android:layout_toRightOf="@+id/tearMark"
-                        android:text="Deal Category"
-                        android:textColor="#000"
-                        android:textSize="10sp"
-                        android:textStyle="bold|italic" />
+                        android:textSize="18sp" />
 
                     <TextView
                         android:id="@+id/dealDetails"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/text_category"
+                        android:layout_below="@id/dealTitle"
                         android:layout_marginTop="5sp"
                         android:layout_toEndOf="@id/tearMark"
                         android:layout_toRightOf="@id/tearMark"
                         android:ellipsize="end"
                         android:textColor="#333"
                         android:maxLines="2"
-                        android:text="@string/lorem_ipsum"
+                        android:text="Deal Coupon Code"
                         android:textSize="12sp" />
-                </RelativeLayout>
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1.5"
-                    android:orientation="vertical"
-                    android:weightSum="2">
 
-                    <CheckBox
-                        android:id="@+id/favoriteIcon"
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_weight="1"
-                        android:button="@drawable/favorite_checkbox"
-                        android:gravity="center" />
-
-                    <ImageButton
-                        android:id="@+id/shareDeal"
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:background="#00000000"
-                        android:visibility="gone"
-                        android:src="@drawable/deallist_share" />
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/dealDetails"
+                        android:weightSum="10"
+                        android:paddingRight="5dp"
+                        android:layout_toEndOf="@id/tearMark"
+                        android:layout_toRightOf="@id/tearMark"
+                        android:orientation="horizontal">
+
+                        <EditText
+                            android:layout_width="0dp"
+                            android:layout_weight="7"
+                            android:id="@+id/inputConfirmCode"
+                            android:layout_height="wrap_content"
+                            android:textSize="14sp"
+                            android:textColor="#000"
+                            android:hint="Confirm Code"/>
+
+                        <Button
+                            android:layout_width="0dp"
+                            android:layout_weight="3"
+                            android:text="Use"
+                            android:id="@+id/useButton"
+                            android:textColor="#FFF"
+                            android:background="@drawable/scan_button"
+                            android:layout_height="30dp" />
 
 
-                </LinearLayout>
+                    </LinearLayout>
+                </RelativeLayout>
 
             </LinearLayout>
         </com.balysv.materialripple.MaterialRippleLayout>

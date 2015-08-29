@@ -102,4 +102,26 @@
 
     <string name="mobileVerifyNote">Note: Mobile Verification is required to give you better experience of using this app.</string>
     <string name="title_activity_splash_screen">Scribbler Deals</string>
+
+    <declare-styleable name="JazzySwitchView">
+        <attr name="textOn" format="string|reference" />
+        <attr name="textOff" format="string|reference" />
+        <attr name="currentState" format="string|reference" />
+        <attr name="textOnDefaultColor" format="color|reference" />
+        <attr name="textOnSelectedColor" format="color|reference" />
+        <attr name="textOffDefaultColor" format="color|reference" />
+        <attr name="textOffSelectedColor" format="color|reference" />
+        <attr name="onColorDefault" format="color|reference" />
+        <attr name="onColorSelected" format="color|reference" />
+        <attr name="offColorDefault" format="color|reference" />
+        <attr name="offColorSelected" format="color|reference" />
+        <attr name="onDefaultDrawable" format="reference" />
+        <attr name="onSelectedDrawable" format="reference" />
+        <attr name="offDefaultDrawable" format="reference" />
+        <attr name="offSelectedDrawable" format="reference" />
+        <attr name="defaultTextSize" format="dimension|reference" />
+        <attr name="selectedTextSize" format="dimension|reference" />
+        <attr name="distanceBetween" format="dimension|reference" />
+    </declare-styleable>
+
 </resources>

@@ -18,13 +18,15 @@
     <!--<color name="loginEditTextBackground">#000</color>-->
     <color name="loginEditTextBackground">#FFFFFF</color>
     <!--<color name="loginEditTextBackground">#C9CED1</color>-->
-    <color name="loginEditTextTextColor">#ff181818</color>
+    <color name="loginEditTextTextColor">#2d2d2d</color>
     <!--<color name="loginEditTextTextColor">#fff</color>-->
     <color name="loginEditTextHintColor">#ff666666</color>
     <!--<color name="loginEditTextHintColor">#ffbababa</color>-->
 
-    <color name="toolbarColor">#ff1B758C</color>
-    <!--<color name="toolbarColor">#ff2196f3</color>-->
+    <!--<color name="toolbarColor">#ff1B758C</color>-->
+    <color name="profileBackground">#ff1B758C</color>
+    <color name="toolbarColor">#0f4471</color>
+    <color name="searchBarColor">@color/newBlue</color>
     <color name="newBlue">#ff2196f3</color>
     <!--<color name="toolbarColor">#1b758d</color>-->
     <color name="loginEditText2Background">@color/loginEditTextBackground</color>
@@ -75,5 +77,10 @@
     <color name="newDarkerBlue">#13596c</color>
     <color name="newLightGreen">#7cc623</color>
     <color name="newDarkGreen">#3d6211</color>
+
+
+    <color name="color1">#cdffd7</color>
+    <color name="color2">#f0f0ff</color>
+    <color name="defaultBackground">#EEE</color>
 
 </resources>

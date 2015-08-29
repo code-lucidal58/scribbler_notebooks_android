@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,6 +24,8 @@ import android.widget.RelativeLayout;
 import com.scribblernotebooks.scribblernotebooks.Activities.DealDetail;
 import com.scribblernotebooks.scribblernotebooks.Activities.NotificationsActivity;
 import com.scribblernotebooks.scribblernotebooks.Adapters.RecyclerDealsAdapter;
+import com.scribblernotebooks.scribblernotebooks.Adapters.UnUsedDealsAdapter;
+import com.scribblernotebooks.scribblernotebooks.CustomViews.JazzySwitchView;
 import com.scribblernotebooks.scribblernotebooks.Handlers.DatabaseHandler;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Deal;
@@ -43,7 +46,7 @@ public class ClaimedDeals extends Fragment{
     Toolbar appbar;
     DrawerLayout mDrawerLayout;
     RelativeLayout mDrawer;
-
+    JazzySwitchView jazzySwitchView;
     DatabaseHandler databaseHandler;
 
     private String title;
@@ -88,16 +91,17 @@ public class ClaimedDeals extends Fragment{
         databaseHandler.setListUpdateListener(new DatabaseHandler.ListUpdateListener() {
             @Override
             public void OnClaimedDealListUpdated() {
-                updateList(v);
+                updateList(v, true);
             }
         });
-        context.startService(new Intent(context,ClaimedDealsRetriever.class));
+        context.startService(new Intent(context, ClaimedDealsRetriever.class));
         appbar = (Toolbar) v.findViewById(R.id.app_bar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(appbar);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeButtonEnabled(true);
         getActivity().setTitle(title);
         setHasOptionsMenu(true);
 
+        jazzySwitchView=(JazzySwitchView)v.findViewById(R.id.jazzySwitch);
         mDrawerLayout = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
         mDrawer = (RelativeLayout) getActivity().findViewById(R.id.left_drawer_relative);
         final ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(getActivity(), mDrawerLayout, appbar, R.string.open, R.string.close) {
@@ -125,7 +129,18 @@ public class ClaimedDeals extends Fragment{
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
 
-        updateList(v);
+        jazzySwitchView.setSwitchToggleListener(new JazzySwitchView.SwitchToggledListener() {
+            @Override
+            public void onSwitchToggle(boolean checked) {
+                Log.e("ClaimedDeals","Switch toggle: "+checked);
+                if(checked){
+                    updateList(v,true);
+                }else{
+                    updateList(v,false);
+                }
+            }
+        });
+        updateList(v, true);
 
         return v;
     }
@@ -139,22 +154,40 @@ public class ClaimedDeals extends Fragment{
         startActivityForResult(i, DEAL_DETAIL_REQUEST_CODE);
     }
 
-    void updateList(View v){
-        ArrayList<Deal> deals=databaseHandler.getClaimedDealList();
+    ArrayList<Deal> deals;
+    void updateList(View v, Boolean claimedDeals){
+        if(claimedDeals) {
+            deals = databaseHandler.getClaimedDealList();
+            RecyclerDealsAdapter adapter=new RecyclerDealsAdapter(deals,context,true,getActivity());
+            adapter.setItemClickListener(new RecyclerDealsAdapter.onItemClickListener() {
+                @Override
+                public void onItemClick(int position, ArrayList<Deal> deals) {
+                    showDealDetail(position, deals);
+                }
+            });
+            recyclerView.setAdapter(adapter);
+        }
+        else {
+            deals = databaseHandler.getUnusedDealList();
+            final UnUsedDealsAdapter adapter=new UnUsedDealsAdapter(deals,getActivity());
+            adapter.setDealUsedListener(new UnUsedDealsAdapter.DealUsedListener() {
+                @Override
+                public void onDealUsed(int position, Deal deal) {
+                    deals.remove(position);
+                    adapter.notifyDataSetChanged();
+                }
+            });
+            recyclerView.setAdapter(adapter);
+
+        }
+
         if (deals!=null){
             if(deals.size()>0){
                 ((LinearLayout)v.findViewById(R.id.loadingProgress)).setVisibility(View.GONE);
             }
         }
-        RecyclerDealsAdapter adapter=new RecyclerDealsAdapter(deals,context,true,getActivity());
+//        Log.e("ClaimedDeals","Updating list "+claimedDeals);
 
-        adapter.setItemClickListener(new RecyclerDealsAdapter.onItemClickListener() {
-            @Override
-            public void onItemClick(int position, ArrayList<Deal> deals) {
-                showDealDetail(position, deals);
-            }
-        });
-        recyclerView.setAdapter(adapter);
     }
 
     @Override

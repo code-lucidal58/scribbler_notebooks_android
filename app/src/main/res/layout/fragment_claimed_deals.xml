@@ -1,15 +1,31 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/defaultBackground"
     tools:context="com.scribblernotebooks.scribblernotebooks.Fragments.ClaimedDeals">
 
     <include
         layout="@layout/app_bar"
         android:id="@+id/app_bar"/>
 
+
+    <com.scribblernotebooks.scribblernotebooks.CustomViews.JazzySwitchView
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:id="@+id/jazzySwitch"
+        android:paddingLeft="25dp"
+        android:paddingRight="25dp"
+        android:layout_margin="5dp"
+        android:layout_below="@+id/app_bar"
+        app:textOn="Claimed Deals"
+        app:textOff="Unused Deals" />
+
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"
-        android:layout_below="@+id/app_bar"
+        android:layout_below="@+id/jazzySwitch"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

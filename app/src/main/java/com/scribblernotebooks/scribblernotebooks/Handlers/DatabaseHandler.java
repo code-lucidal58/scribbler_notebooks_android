@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Deal;
@@ -17,10 +18,12 @@ import java.util.ArrayList;
  */
 public class DatabaseHandler extends SQLiteOpenHelper {
 
+    private static final String TAG="DatabaseHandler";
     private static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "dealsManager";
     private static final String TABLE_DEALS = "deals";
     private static final String TABLE_CLAIMED_DEALS="claimedDeals";
+    private static final String TABLE_UNUSED_DEALS="unUsedDeals";
     ListUpdateListener listUpdateListener;
     SQLiteDatabase db;
     Context context;
@@ -39,10 +42,22 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             Constants.TAG_COUPON_CODE+" VARCHAR(50)"+
             ")";
 
+    final String CREATE_UNUSED_DEALS_TABLE="CREATE TABLE IF NOT EXISTS "+TABLE_UNUSED_DEALS+"("+
+            Constants.TAG_ID+" VARCHAR(255) PRIMARY KEY,"+
+            Constants.TAG_DEAL_NAME+" VARCHAR(50),"+
+            Constants.TAG_CATEGORY+" VARCHAR(50),"+
+            Constants.TAG_LONG_DESCRIPTION+" VARCHAR(500),"+
+            Constants.TAG_IMAGE_URL+" VARCHAR(500),"+
+            Constants.TAG_COUPON_CODE+" VARCHAR(50)"+
+            ")";
+
 
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         db = this.getWritableDatabase();
+        db.execSQL(CREATE_CLAIMED_DEALS_TABLE);
+        db.execSQL(CREATE_DEALS_TABLE);
+        db.execSQL(CREATE_UNUSED_DEALS_TABLE);
         this.context=context;
     }
 
@@ -51,6 +66,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_CLAIMED_DEALS_TABLE);
         db.execSQL(CREATE_DEALS_TABLE);
+        db.execSQL(CREATE_UNUSED_DEALS_TABLE);
     }
 
     //upgrading database
@@ -148,11 +164,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         context.deleteDatabase(DATABASE_NAME);
     }
 
-
-
+    /**Add Deals**/
     public long addClaimedDeal(Deal deal){
-
-        Cursor c=db.query(TABLE_CLAIMED_DEALS,null,Constants.TAG_ID+"=?", new String[]{deal.getId()}, null, null, null);
+       return addDeal(deal,TABLE_CLAIMED_DEALS);
+    }
+    public long addUnusedDeal(Deal deal){
+        return addDeal(deal,TABLE_UNUSED_DEALS);
+    }
+    private long addDeal(Deal deal, String table){
+        Log.e(TAG,"Adding deal in table "+table);
+        Cursor c=db.query(table,null,Constants.TAG_ID+"=?", new String[]{deal.getId()}, null, null, null);
         if(c.moveToFirst()){
             return 0;
         }
@@ -166,7 +187,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         contentValues.put(Constants.TAG_COUPON_CODE, deal.getCouponCode());
 
 //        Log.e("Claimed Deal", "Inserted: "+deal.getId());
-        long l= db.insertOrThrow(TABLE_CLAIMED_DEALS,null,contentValues);
+        long l=-1;
+        try{
+            l = db.insertOrThrow(table,null,contentValues);
+        }catch (Exception e){
+            Log.e(TAG,"Claiming same deal again. error:"+e );
+        }
         if(listUpdateListener!=null){
             try{
                 listUpdateListener.OnClaimedDealListUpdated();
@@ -174,19 +200,31 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 e.printStackTrace();
             }
         }
+        Log.e(TAG,"Finished adding deal in table: "+table+" result: "+l);
         return l;
     }
 
+
+    /**Delete Deals**/
+    public void deleteDeal(Deal deal, String table){
+        db.delete(table, Constants.TAG_ID + "=?", new String[]{deal.getId()});
+    }
     public void deleteClaimedDeal(Deal deal){
-        db.delete(TABLE_CLAIMED_DEALS,Constants.TAG_ID+"=?",new String[]{deal.getId()});
+        deleteDeal(deal, TABLE_CLAIMED_DEALS);
+    }
+    public void deleteUnusedDeal(Deal deal){
+        deleteDeal(deal, TABLE_UNUSED_DEALS);
     }
 
-    public ArrayList<Deal> getClaimedDealList(){
+
+    /**Get Deals**/
+    private ArrayList<Deal> getDealList(String table){
+        Log.e(TAG,"Getting deal list from table: "+table);
         ArrayList<Deal> dealArrayList=new ArrayList<>();
-        String selectQuery = "SELECT  * FROM " + TABLE_CLAIMED_DEALS;
-        Cursor cursor = db.rawQuery(selectQuery,null);
+        Cursor cursor = db.query(table,null,null,null,null,null,null);
 
         if (cursor.moveToFirst()) {
+            Log.e(TAG,"getDealList: "+table+" first move");
             do {
                 Deal deal = new Deal();
                 deal.setId(cursor.getString(0));
@@ -200,6 +238,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
         cursor.close();
         return dealArrayList;
+    }
+
+    public ArrayList<Deal> getClaimedDealList(){
+        return getDealList(TABLE_CLAIMED_DEALS);
+    }
+
+    public ArrayList<Deal> getUnusedDealList(){
+        return getDealList(TABLE_UNUSED_DEALS);
     }
 
     public interface ListUpdateListener{

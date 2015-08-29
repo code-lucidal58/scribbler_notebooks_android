@@ -5,11 +5,20 @@
 
     </style>
 
-    <style name="AppTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="Widget.MyApp.ActionBar" parent="Widget.AppCompat.ActionBar">
+        <item name="android:background">@color/toolbarColor</item>
+        <item name="theme">@style/ThemeOverlay.MyApp.ActionBar</item>
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+    </style>
+
+    <style name="ThemeOverlay.MyApp.ActionBar" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="android:textColorPrimary">#FFF</item>
+    </style>
+
+    <style name="AppTheme.Base" parent="Theme.AppCompat.NoActionBar">
         <item name="colorPrimary">@color/themeColor</item>
         <item name="colorPrimaryDark">@color/darkerBlue</item>
-        <item name="colorAccent">#222</item>
-        <item name="android:textColorPrimary">#222</item>
+        <item name="colorAccent">@color/profileBackground</item>
         <item name="android:textCursorDrawable">@drawable/bootstrap_edit_text_cursor</item>
     </style>
 

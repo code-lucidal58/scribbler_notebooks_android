@@ -31,6 +31,7 @@
             android:id="@+id/back"
             android:layout_width="@dimen/scanner_back_button"
             android:layout_height="40dp"
+            android:textColor="#000"
             android:layout_gravity="center_horizontal|bottom"
             android:background="@drawable/edit_text2"
             android:text="Back" />

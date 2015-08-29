@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="fill_parent"
+    android:weightSum="2"
+    android:minHeight="25sp">
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@drawable/jazzy_switch_left_selected"
+        android:gravity="center"
+        android:text="ON"
+        android:id="@+id/customSwitchPositiveButton"
+        android:layout_marginEnd="0.5sp"
+        android:layout_marginRight="0.5sp"
+        />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:layout_marginLeft="0.5sp"
+        android:layout_marginStart="0.5sp"
+        android:background="@drawable/jazzy_switch_right_default"
+        android:gravity="center"
+        android:text="OFF"
+        android:id="@+id/customSwitchNegativeButton"
+        />
+
+</LinearLayout>

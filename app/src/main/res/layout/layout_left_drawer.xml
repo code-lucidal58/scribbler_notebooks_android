@@ -10,7 +10,7 @@
     <FrameLayout
         android:id="@+id/userHolder"
         android:layout_width="match_parent"
-        android:background="@color/toolbarColor"
+        android:background="@color/profileBackground"
         android:layout_height="@dimen/navigation_drawer_cover_pic_height">
 
         <ImageView

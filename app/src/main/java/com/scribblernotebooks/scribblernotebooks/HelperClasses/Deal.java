@@ -28,10 +28,10 @@ import java.util.HashMap;
  */
 public class Deal implements Parcelable {
 
+    private static final String TAG="Deal";
     public enum Range {
         VERY_LOW, LOW, MEDIAN, HIGH, VERY_HIGH
     }
-
 
 
     private String id = "", title = "", category = "", shortDescription = "", imageUrl = "", longDescription = "";
@@ -360,7 +360,7 @@ public class Deal implements Parcelable {
         return isFeatured;
     }
 
-    public String claimDeal(final Context context) {
+    public void claimDeal(final Context context) {
         final Deal deal = this;
         Log.e("Deal", "Claiming deal:" + id);
         new AsyncTask<String, Void, Void>() {
@@ -391,19 +391,92 @@ public class Deal implements Parcelable {
                     BufferedReader reader = new BufferedReader(new InputStreamReader(is));
                     String s = reader.readLine();
                     JSONObject jsonObject = new JSONObject(s);
-                    boolean success = Boolean.parseBoolean(jsonObject.optString("success"));
-                    if (success) {
+                    String success=jsonObject.getString("success");
+                    Log.e(TAG,"Response: "+success+" "+s);
+                    if (success.equalsIgnoreCase("true")) {
+                        dealListener.onDealClaimed(deal.getCouponCode());
                         DatabaseHandler handler = new DatabaseHandler(context);
+                        handler.addUnusedDeal(deal);
                         handler.addClaimedDeal(deal);
+                        Log.e(TAG,"CouponCode: "+deal.getCouponCode());
                         handler.close();
+                        return null;
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                dealListener.onDealClaimed("");
                 return null;
             }
+
         }.execute(id);
-        return this.couponCode;
+    }
+
+    public void useDeal(final Context context, String confirmCode){
+        final Deal deal = this;
+        Log.e("Deal", "Claiming deal:" + id);
+        new AsyncTask<String, Void, Void>() {
+            @Override
+            protected Void doInBackground(String... params) {
+                String id = params[0];
+                User user = Constants.getUser(context);
+                try {
+                    Log.e("Deal", "Used Deal:" + id);
+                    URL url = new URL(Constants.ServerUrls.useDeal);
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    connection.setRequestMethod("POST");
+                    connection.setDoInput(true);
+                    connection.setDoOutput(true);
+                    connection.setConnectTimeout(15000);
+                    connection.setReadTimeout(15000);
+                    connection.setRequestProperty("Authorization", "Bearer " + user.getToken());
+                    //TODO: Update this function
+                    HashMap<String, String> data = new HashMap<String, String>();
+                    data.put("dealId", id);
+                    OutputStream os = connection.getOutputStream();
+                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                    writer.write(Constants.getPostDataString(data));
+                    writer.flush();
+                    writer.close();
+                    os.close();
+
+                    InputStream is = connection.getInputStream();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+                    String s = reader.readLine();
+                    JSONObject jsonObject = new JSONObject(s);
+                    String success=jsonObject.getString("success");
+                    Log.e(TAG,"Response: "+success+" "+s);
+                    if (success.equalsIgnoreCase("true")) {
+                        dealUseListener.onDealUsed(true);
+                        return null;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                dealUseListener.onDealUsed(false);
+                return null;
+            }
+
+        }.execute(id);
+    }
+
+
+
+
+    DealListener dealListener;
+    public interface DealListener {
+        void onDealClaimed(String couponCode);
+    }
+    public void setDealListener(DealListener dealListener) {
+        this.dealListener = dealListener;
+    }
+
+    DealUseListener dealUseListener;
+    public interface DealUseListener{
+        void onDealUsed(Boolean success);
+    }
+    public void setDealUseListener(DealUseListener dealUseListener){
+        this.dealUseListener=dealUseListener;
     }
 
 }

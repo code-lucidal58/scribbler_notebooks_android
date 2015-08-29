@@ -80,6 +80,7 @@ public class Constants {
         public static final String claimDealList=websiteUrl+"user/claimed-deals";
 
         public static final String getCollege=websiteUrl+"college/";
+        public static final String useDeal=websiteUrl+"useDeal";
 
     }
 

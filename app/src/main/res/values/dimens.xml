@@ -13,9 +13,9 @@
     <dimen name="buttonCornerRadius">3dp</dimen>
 
     <dimen name="scanner_button_width">275dp</dimen>
+    <dimen name="scanner_button_half">135dp</dimen>
     <dimen name="scannerToManual_button_width">165dp</dimen>
     <dimen name="scanner_back_button">100dp</dimen>
-    <dimen name="scanner_button_half">135dp</dimen>
     <dimen name="back_to_scan_button">150dp</dimen>
     <dimen name="login_editText_width">225dp</dimen>
     <dimen name="half_login_editText_width">110dp</dimen>
@@ -87,4 +87,5 @@
     <dimen name="whiteLogoheight">60dp</dimen>
     <dimen name="illustrationsMarginTop">100dp</dimen>
     <dimen name="illustrationsMarginBottom">70dp</dimen>
+    <dimen name="floatingActionButtonSize">50dp</dimen>
 </resources>

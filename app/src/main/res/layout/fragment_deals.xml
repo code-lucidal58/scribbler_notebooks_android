@@ -1,8 +1,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/deals_frame"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/defaultBackground"
     tools:context="com.scribblernotebooks.scribblernotebooks.DealsFragment">
 
     <android.support.v4.widget.SwipeRefreshLayout
@@ -91,5 +93,36 @@
 
 
     </LinearLayout>
+
+
+
+    <android.support.design.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/coordinatorLayout"
+        android:layout_alignParentBottom="true">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp">
+
+            <android.support.design.widget.FloatingActionButton
+                android:layout_width="@dimen/floatingActionButtonSize"
+                android:layout_height="@dimen/floatingActionButtonSize"
+                android:layout_alignParentBottom="true"
+                android:src="@drawable/ic_action_list"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="15dp"
+                android:tint="#FFF"
+                android:id="@+id/fab"
+                android:contentDescription="Filter News"
+                android:scaleType="fitXY"
+                android:layout_marginEnd="15dp"
+                android:layout_alignParentEnd="true" />
+        </RelativeLayout>
+
+
+    </android.support.design.widget.CoordinatorLayout>
 
 </RelativeLayout>

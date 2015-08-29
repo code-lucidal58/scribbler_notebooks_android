@@ -1,6 +1,7 @@
 package com.scribblernotebooks.scribblernotebooks.CustomViews;
 
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
@@ -125,18 +126,29 @@ public class DealPopup extends Dialog implements View.OnClickListener {
         this.url=url;
     }
 
+    ProgressDialog dialog;
     @Override
     public void onClick(View v) {
         int id=v.getId();
         switch (id){
             case R.id.codeButton:
-                String s=currentDeal.claimDeal(context);
-                if(s.isEmpty()){
-                    codeButton.setText("Error claiming... Try Again");
-                    break;
-                }
-                codeButton.setText(s);
-                codeButton.setOnClickListener(null);
+                dialog=new ProgressDialog(context);
+                dialog.setIndeterminate(true);
+                dialog.setMessage("Claiming your deal...");
+                dialog.show();
+                currentDeal.claimDeal(context);
+                currentDeal.setDealListener(new Deal.DealListener() {
+                    @Override
+                    public void onDealClaimed(String s) {
+                        dialog.dismiss();
+                        if (s.isEmpty()) {
+                            codeButton.setText("Error claiming... Try Again");
+                        }else {
+                            codeButton.setText(s);
+                            codeButton.setOnClickListener(null);
+                        }
+                    }
+                });
                 break;
             default:
                 break;

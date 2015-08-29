@@ -329,6 +329,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
             }
             return;
         }
+        signUp.getLayoutParams().width=(int)getResources().getDimension(R.dimen.half_login_editText_width);
         name.setVisibility(View.GONE);
         mobile.setVisibility(View.GONE);
         signIn.setVisibility(View.VISIBLE);
@@ -372,6 +373,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
             }
             return;
         }
+        signUp.getLayoutParams().width=(int)getResources().getDimension(R.dimen.login_editText_width);
         name.setVisibility(View.VISIBLE);
         mobile.setVisibility(View.VISIBLE);
         forgotPassword.setVisibility(View.GONE);

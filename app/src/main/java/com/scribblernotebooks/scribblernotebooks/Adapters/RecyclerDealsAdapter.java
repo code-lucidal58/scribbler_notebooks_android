@@ -33,6 +33,8 @@ import com.scribblernotebooks.scribblernotebooks.R;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -42,6 +44,9 @@ import java.util.Date;
  */
 public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdapter.ViewHolder> {
 
+    public static int TYPE_GRID=0;
+    public static int TYPE_LIST=1;
+
     ArrayList<Deal> dealsList;
     Context context;
     UserHandler handler;
@@ -50,6 +55,7 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
     public ImageLoaderConfiguration imageLoaderConfiguration;
     Boolean isClaimed=false;
     onViewHolderListener mListener;
+    int type=1;
     onItemClickListener itemClickListener;
     Activity activity;
 
@@ -67,6 +73,12 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
     public RecyclerDealsAdapter(ArrayList<Deal> dealsList, Context context) {
         this.dealsList = dealsList;
         this.context = context;
+        init();
+    }
+    public RecyclerDealsAdapter(ArrayList<Deal> dealsList, Context context, int type) {
+        this.dealsList = dealsList;
+        this.context = context;
+        this.type=type;
         init();
     }
 
@@ -125,8 +137,13 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         //create new view
-            View itemLayoutView = LayoutInflater.from(viewGroup.getContext())
-                    .inflate(R.layout.listview_item_deals, viewGroup, false);
+        int id;
+        if(type==TYPE_GRID)
+            id=R.layout.listview_item_deals_grid;
+        else
+            id=R.layout.listview_item_deals;
+            View itemLayoutView = LayoutInflater.from(viewGroup.getContext()) .inflate(id, viewGroup, false);
+//            View itemLayoutView = LayoutInflater.from(viewGroup.getContext()) .inflate(R.layout.listview_item_deals, viewGroup, false);
 
             // create ViewHolder
 
@@ -163,7 +180,19 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
         /** Setting list View item details */
         viewHolder.txtViewTitle.setText(title);
         viewHolder.txtViewCategory.setText(category);
-        ImageLoader.getInstance().displayImage(deal.getImageUrl(),viewHolder.imgViewIcon,displayImageOptions,imageLoadingListener);
+        try{
+            URL url=new URL(deal.getImageUrl());
+            ImageLoader.getInstance().displayImage(deal.getImageUrl(), viewHolder.imgViewIcon, displayImageOptions, imageLoadingListener);
+
+        }catch (MalformedURLException e){
+            setImage(viewHolder.imgViewIcon,deal.getCategory());
+
+        }
+
+//        if(deal.getImageUrl().isEmpty()){
+//        }else {
+//            ImageLoader.getInstance().displayImage(deal.getImageUrl(), viewHolder.imgViewIcon, displayImageOptions, imageLoadingListener);
+//        }
 
         /** Saving favorite option to the deal **/
         viewHolder.favoriteIcon.setOnClickListener(new View.OnClickListener() {
@@ -256,9 +285,38 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
 
     }
 
+    void setImage(ImageView imageView, String category){
+//        Log.e("RecyclerDealAdapter","Category: "+category);
+        int id;
+        switch (category.toLowerCase()){
+            case "food":
+                id=R.drawable.food;
+                break;
+            case "education":
+                id=R.drawable.education;
+                break;
+            case "travel":
+                id=R.drawable.travel;
+                break;
+            case "automobiles":
+                id=R.drawable.automobile;
+                break;
+            case "entertainment":
+                id=R.drawable.entertainment;
+                break;
+            case "beauty & fitness":
+                id=R.drawable.fitness;
+                break;
+            default:
+                id=R.mipmap.ic_launcher;
+                break;
+        }
+        imageView.setImageResource(id);
+    }
+
     @Override
     public int getItemCount() {
-        return dealsList.size();
+        return dealsList==null?0:dealsList.size();
     }
 
     public interface onItemClickListener{

@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/defaultBackground"
     tools:context="com.scribblernotebooks.scribblernotebooks.Activities.DealDetail$PlaceholderFragment">
 
     <ScrollView
@@ -64,6 +65,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="15dp"
+                        android:textColor="#000"
                         android:background="@drawable/background_like"
                         android:button="@drawable/favorite_checkbox"
                         android:paddingRight="4sp"
