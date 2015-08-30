@@ -49,6 +49,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class LogIn extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
@@ -279,6 +281,29 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                 signUpUser();
             }
         });
+
+        /** Dimming Status Bar so that app is in focus */
+        final View decorView = getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_LOW_PROFILE;
+        decorView.setSystemUiVisibility(uiOptions);
+        decorView.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
+            @Override
+            public void onSystemUiVisibilityChange(int visibility) {
+                Timer timer = new Timer();
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        LogIn.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
+                            }
+                        });
+                    }
+                }, 5000);
+            }
+        });
+
     }
 
 

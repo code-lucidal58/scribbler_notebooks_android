@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -12,6 +13,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -80,7 +82,24 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mainView = View.inflate(getApplicationContext(), R.layout.activity_navigation_drawer, null);
+        setContentView(mainView);
         sContext = getApplicationContext();
+
+        User user=Constants.getUser(sContext);
+        if(user.getToken().isEmpty()){
+            AlertDialog.Builder builder=new AlertDialog.Builder(this);
+            builder.setMessage("An error has occurred while logging you in. Please Sign In again")
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            signOut();
+                            dialog.dismiss();
+                        }
+                    })
+                    .setTitle("Ooops...");
+            builder.show();
+        }
 
         telephonyManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
         deviceId = telephonyManager.getDeviceId();
@@ -89,9 +108,6 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
             Toast.makeText(this, "Google play services not installed on your device. Notification won't be shown", Toast.LENGTH_LONG).show();
         }
         /** Save the whole view in a variable to pass into different modules of the app */
-        mainView = View.inflate(getApplicationContext(), R.layout.activity_navigation_drawer, null);
-        setContentView(mainView);
-
 
         /**Registering user with GCM service**/
         if (!checkPlayServices()) {

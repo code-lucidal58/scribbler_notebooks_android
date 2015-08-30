@@ -3,10 +3,13 @@ package com.scribblernotebooks.scribblernotebooks.Fragments;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -181,6 +184,30 @@ public class DealDetailFragment extends Fragment {
                                                e.printStackTrace();
                                            }
                                            mixpanelAPI.track("Claim", props);
+
+                                           if(!getActivity().getSharedPreferences(Constants.DIALOG_PREFERENCE,Context.MODE_PRIVATE).getBoolean(Constants.SHOW_DIALOG_PREF,true)){
+                                               return;
+                                           }
+                                           AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
+                                           builder.setTitle("Claim Deal")
+                                                   .setMessage("To earn free Premium Deals, you need to enter the code provided by the cashier in the Un-used deals section in Claimed Deals.")
+                                                   .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                                       @Override
+                                                       public void onClick(DialogInterface dialog, int which) {
+                                                           dialog.dismiss();
+                                                       }
+                                                   })
+                                                   .setNegativeButton("Ok.\nDon't show again", new DialogInterface.OnClickListener() {
+                                                       @Override
+                                                       public void onClick(DialogInterface dialog, int which) {
+                                                           SharedPreferences sharedPreferences=getActivity().getSharedPreferences(Constants.DIALOG_PREFERENCE,Context.MODE_PRIVATE);
+                                                           sharedPreferences.edit().putBoolean(Constants.SHOW_DIALOG_PREF,false).apply();
+                                                           dialog.dismiss();
+                                                       }
+                                                   });
+                                           builder.show();
+
+
                                        }
                                    }
                                }

@@ -6,6 +6,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ListView;
 
 import com.scribblernotebooks.scribblernotebooks.Adapters.NotificationDrawerListAdapter;
@@ -14,6 +15,8 @@ import com.scribblernotebooks.scribblernotebooks.HelperClasses.Notifications;
 import com.scribblernotebooks.scribblernotebooks.R;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by Aanisha on 08-Jul-15.
@@ -38,6 +41,29 @@ public class NotificationsActivity extends AppCompatActivity {
         notificationList=retrieveNotifications();
         drawerListAdapter = new NotificationDrawerListAdapter(NotificationsActivity.this, notificationList);
         notificationsListView.setAdapter(drawerListAdapter);
+
+
+        /** Dimming Status Bar so that app is in focus */
+        final View decorView = getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_LOW_PROFILE;
+        decorView.setSystemUiVisibility(uiOptions);
+        decorView.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
+            @Override
+            public void onSystemUiVisibilityChange(int visibility) {
+                Timer timer = new Timer();
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        NotificationsActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
+                            }
+                        });
+                    }
+                }, 5000);
+            }
+        });
     }
 
     void clearNotifications(){

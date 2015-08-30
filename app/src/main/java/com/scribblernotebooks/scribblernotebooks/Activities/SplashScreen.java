@@ -21,6 +21,9 @@ import com.scribblernotebooks.scribblernotebooks.Adapters.IllustrationsPageAdapt
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
 import com.scribblernotebooks.scribblernotebooks.R;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class SplashScreen extends AppCompatActivity {
 
     ImageView topCurve, whiteLogo;
@@ -46,7 +49,27 @@ public class SplashScreen extends AppCompatActivity {
         setScreenHeight(metrics.heightPixels);
 
         topCurve.getLayoutParams().height = (int) (getScreenHeight() * 0.6);
-
+        /** Dimming Status Bar so that app is in focus */
+        final View decorView = getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_LOW_PROFILE;
+        decorView.setSystemUiVisibility(uiOptions);
+        decorView.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
+            @Override
+            public void onSystemUiVisibilityChange(int visibility) {
+                Timer timer = new Timer();
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        SplashScreen.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
+                            }
+                        });
+                    }
+                }, 5000);
+            }
+        });
 
         Thread timer = new Thread(new Runnable() {
             @Override

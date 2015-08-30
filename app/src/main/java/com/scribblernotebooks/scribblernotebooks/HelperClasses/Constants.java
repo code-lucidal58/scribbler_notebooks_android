@@ -179,6 +179,9 @@ public class Constants {
     public static final String POST_METHOD_FACEBOOK = "facebook";
     public static final String POST_METHOD_GOOGLE = "google";
 
+    public static final String DIALOG_PREFERENCE="dialogPreference";
+    public static final String SHOW_DIALOG_PREF="showDialog";
+
     public static final String PREF_NOTIFICATION_NAME = "Notification";
     public static final String PREF_NOTIFICATION_ON_OFF = "NotifyOnOff";
     public static final String PREF_NOTIFICATION_DEAL_OF_DAY = "DealOfDay";
