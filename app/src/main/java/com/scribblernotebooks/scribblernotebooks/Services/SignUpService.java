@@ -103,11 +103,14 @@ public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User
                 return signupHandle(response, params[0]);
             }
         } catch (FileNotFoundException f) {
+            Log.e("check","FileNotFoundException");
             if (isLogin && !isLoginSocial) {
+                Log.e("check","FileNotFoundException inside if");
                 fileNowFoundException = true;
                 return null;
-            } else if (isLoginSocial) {
-                activity.startActivity(new Intent(activity, ProfileManagement.class));
+            }
+            else if (isLoginSocial) {
+                activity.startActivity(new Intent(activity, NavigationDrawer.class));
                 activity.finish();
             }
         } catch (SocketTimeoutException s) {
@@ -145,11 +148,14 @@ public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User
         activity.startService(new Intent(activity, ClaimedDealsRetriever.class));
         Constants.saveUserDetails(activity, user);
         User user1 = Constants.getUser(activity);
-        if (user1.getMobile().isEmpty()) {
+        if (user1.getMobile().isEmpty()&& !isLoginSocial ) {
+            Log.e("check", "starting profile management");
             activity.startActivity(new Intent(activity, ProfileManagement.class));
         } else {
-            if (success)
+            if (success) {
+                Log.e("check", "starting navigation drawer");
                 activity.startActivity(new Intent(activity, NavigationDrawer.class));
+            }
             else
                 Toast.makeText(activity, "Unable to connect to server. Please try again", Toast.LENGTH_LONG).show();
         }
