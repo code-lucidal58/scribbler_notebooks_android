@@ -1,7 +1,9 @@
 package com.scribblernotebooks.scribblernotebooks;
 
 import android.app.Application;
+import android.content.Context;
 import android.os.Environment;
+import android.support.multidex.MultiDex;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -56,4 +58,10 @@ public class ExceptionHandler extends Application {
             exceptionHandler.uncaughtException(thread, ex);
         }
     };
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        MultiDex.install(this);
+        super.attachBaseContext(base);
+    }
 }

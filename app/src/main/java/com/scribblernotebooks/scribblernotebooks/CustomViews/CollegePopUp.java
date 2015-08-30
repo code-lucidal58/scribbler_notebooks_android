@@ -3,15 +3,21 @@ package com.scribblernotebooks.scribblernotebooks.CustomViews;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.DataSetObserver;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.SpinnerAdapter;
+import android.widget.TextView;
 
+import com.rey.material.widget.Spinner;
 import com.scribblernotebooks.scribblernotebooks.BuildConfig;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.College;
 import com.scribblernotebooks.scribblernotebooks.HelperClasses.Constants;
@@ -40,9 +46,10 @@ import java.util.HashMap;
 public class CollegePopUp extends Dialog {
 
     Dialog dialog;
-    ArrayAdapter<String> arrayAdapter;
-    AutoCompleteTextView collegeName;
+    SpinnerAdapter collegeSpinnerAdapter;
+    Spinner collegeName;
     Button skip, okay;
+    String userCollege;
     ArrayList<String> college;
     ArrayList<College> colleges;
     SharedPreferences sharedPreferences;
@@ -61,7 +68,7 @@ public class CollegePopUp extends Dialog {
         context=getContext();
         setContentView(R.layout.popup_college);
         sharedPreferences = getContext().getSharedPreferences(Constants.PREF_ONE_TIME_NAME, Context.MODE_PRIVATE);
-        collegeName = (AutoCompleteTextView) findViewById(R.id.college);
+        collegeName = (Spinner) findViewById(R.id.college);
         skip = (Button) findViewById(R.id.skip);
         okay = (Button) findViewById(R.id.okay);
         colleges=new ArrayList<>();
@@ -76,12 +83,11 @@ public class CollegePopUp extends Dialog {
         okay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String text = collegeName.getText().toString();
-                if (!text.isEmpty()) {
+                if (!userCollege.isEmpty()) {
 
                     College c1=null;
                     for(College c:colleges){
-                        if(c.getName().equalsIgnoreCase(text)){
+                        if(c.getName().equalsIgnoreCase(userCollege)){
                             c1=c;
                         }
                     }
@@ -90,9 +96,10 @@ public class CollegePopUp extends Dialog {
                     saveCollege(c1);
                     Constants.saveUserDetails(getContext(), user);
                     dialog.dismiss();
-                }else{
-                    collegeName.setError("Please enter your college name");
                 }
+//                else{
+//                    collegeName.setError("Please enter your college name");
+//                }
             }
         });
         onBackPressed();
@@ -204,10 +211,75 @@ public class CollegePopUp extends Dialog {
                         return;
                     }
                 }
+                collegeSpinnerAdapter=new SpinnerAdapter() {
+                    @Override
+                    public View getDropDownView(int position, View convertView, ViewGroup parent) {
+                        LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                        View row = inflater.inflate(android.R.layout.simple_spinner_dropdown_item, parent, false);
+                        TextView label = (TextView) row.findViewById(android.R.id.text1);
+                        label.setText(college.get(position));
+                        return row;
+                    }
 
-                arrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.select_dialog_item, college);
-                collegeName.setAdapter(arrayAdapter);
+                    @Override
+                    public void registerDataSetObserver(DataSetObserver observer) {
 
+                    }
+
+                    @Override
+                    public void unregisterDataSetObserver(DataSetObserver observer) {
+
+                    }
+
+                    @Override
+                    public int getCount() {
+                        return college.size();
+                    }
+
+                    @Override
+                    public Object getItem(int position) {
+                        return college.get(position);
+                    }
+
+                    @Override
+                    public long getItemId(int position) {
+                        return 0;
+                    }
+
+                    @Override
+                    public boolean hasStableIds() {
+                        return false;
+                    }
+
+                    @Override
+                    public View getView(int position, View convertView, ViewGroup parent) {
+                        return getDropDownView(position,convertView,parent);
+                    }
+
+                    @Override
+                    public int getItemViewType(int position) {
+                        return 0;
+                    }
+
+                    @Override
+                    public int getViewTypeCount() {
+                        return 0;
+                    }
+
+                    @Override
+                    public boolean isEmpty() {
+                        return false;
+                    }
+                };
+                collegeName.setAdapter(collegeSpinnerAdapter);
+                collegeName.setSelection(1);
+                collegeName.setOnItemClickListener(new Spinner.OnItemClickListener() {
+                    @Override
+                    public boolean onItemClick(Spinner spinner, View view, int i, long l) {
+                        userCollege = college.get(i);
+                        return false;
+                    }
+                });
             }
         }.execute();
     }

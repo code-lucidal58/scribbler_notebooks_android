@@ -25,11 +25,10 @@
         android:text="To give you deals specially for your college, enter your college below. You can skip this and enter afterwards in the profile settings."
         android:textColor="#000"/>
 
-    <AutoCompleteTextView
+    <com.rey.material.widget.Spinner
         android:id="@+id/college"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Your College"
         android:paddingLeft="3dp"
         android:paddingRight="3dp"
         android:textSize="15sp"

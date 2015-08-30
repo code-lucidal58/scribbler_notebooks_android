@@ -92,13 +92,13 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         try {
             String userName = userPrefs.getString(Constants.PREF_DATA_NAME, "");
             if (!userName.isEmpty()) {
-                if (userPrefs.getString(Constants.PREF_DATA_PASS, "").isEmpty()) {
-                    startActivity(new Intent(this, ProfileManagement.class));
-                    finish();
-                } else {
+//                if (userPrefs.getString(Constants.PREF_DATA_PASS, "").isEmpty()) {
+//                    startActivity(new Intent(this, ProfileManagement.class));
+//                    finish();
+//                } else {
                     startActivity(new Intent(this, NavigationDrawer.class));
                     finish();
-                }
+//                }
             }
         } catch (Exception e) {
             e.printStackTrace();
