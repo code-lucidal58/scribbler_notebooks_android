@@ -349,7 +349,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
 
         //recyclerView setup
 //        recyclerView.setLayoutManager(new GridLayoutManager(context, getResources().getInteger(R.integer.dealListColoumnCount)));
-        changeLayout();
+        changeLayout(false);
         /**
          * Swipe to refresh call
          */
@@ -390,8 +390,8 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
     void changeLayout(){
         changeLayout(true);
     }
-    void changeLayout(Boolean changeStruture) {
-        if(changeStruture) {
+    void changeLayout(Boolean changeStructure) {
+        if(changeStructure) {
             grid = !grid;
         }
         if (grid) {

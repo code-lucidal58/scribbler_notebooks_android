@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Html;
@@ -85,6 +86,10 @@ public class DealDetailFragment extends Fragment {
 
         title.setText(deal.getTitle());
         category.setText(deal.getCategory());
+        if(deal.getCategory().equalsIgnoreCase("education")||deal.getCategory().equalsIgnoreCase("entertainment")){
+            category.setTextColor(Color.WHITE);
+            title.setTextColor(Color.WHITE);
+        }
         description.setText(Html.fromHtml(deal.getLongDescription()));
         likeBox.setChecked(deal.isFavorited());
 
@@ -92,6 +97,7 @@ public class DealDetailFragment extends Fragment {
             likeBox.setText("Liked");
         }
 
+        Constants.setImage(image,deal.getCategory(),R.drawable.cover);
         likeBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

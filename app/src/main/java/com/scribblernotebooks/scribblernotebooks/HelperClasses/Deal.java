@@ -369,7 +369,7 @@ public class Deal implements Parcelable {
                 String id = params[0];
                 User user = Constants.getUser(context);
                 try {
-                    Log.e("Deal", "Claimed Deal:" + id);
+                    Log.e("Deal", "Claiming deal:" + id+" by user:"+user.getName()+" token:"+user.getToken());
                     URL url = new URL(Constants.ServerUrls.claimDeal);
                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                     connection.setRequestMethod("POST");
@@ -421,7 +421,7 @@ public class Deal implements Parcelable {
                 String id = params[0];
                 User user = Constants.getUser(context);
                 try {
-                    Log.e("Deal", "Used Deal:" + id);
+                    Log.e("Deal", "Used Deal:" + id+" by user:"+user.getName()+" token:"+user.getToken());
                     URL url = new URL(Constants.ServerUrls.useDeal);
                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                     connection.setRequestMethod("POST");

@@ -10,6 +10,7 @@ import android.graphics.drawable.ScaleDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.support.annotation.DrawableRes;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -188,6 +189,38 @@ public class Constants {
     public static final String PREF_GCM_NAME = "gcmSharedPreferences";
     public static final String GCM_REG_ID = "registrationId";
     public static final String GCM_APP_VERSION = "appVersion";
+
+
+
+
+    public static void setImage(ImageView imageView, String category,@DrawableRes int defaultId){
+//        Log.e("RecyclerDealAdapter","Category: "+category);
+        int id;
+        switch (category.toLowerCase()){
+            case "food":
+                id=R.drawable.food;
+                break;
+            case "education":
+                id=R.drawable.education;
+                break;
+            case "travel":
+                id=R.drawable.travel;
+                break;
+            case "automobiles":
+                id=R.drawable.automobile;
+                break;
+            case "entertainment":
+                id=R.drawable.entertainment;
+                break;
+            case "beauty & fitness":
+                id=R.drawable.fitness;
+                break;
+            default:
+                id=defaultId;
+                break;
+        }
+        imageView.setImageResource(id);
+    }
 
     /**
      * Change color of editTexts

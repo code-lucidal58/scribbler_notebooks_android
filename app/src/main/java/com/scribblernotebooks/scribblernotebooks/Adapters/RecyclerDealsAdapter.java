@@ -185,7 +185,7 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
             ImageLoader.getInstance().displayImage(deal.getImageUrl(), viewHolder.imgViewIcon, displayImageOptions, imageLoadingListener);
 
         }catch (MalformedURLException e){
-            setImage(viewHolder.imgViewIcon,deal.getCategory());
+            Constants.setImage(viewHolder.imgViewIcon,deal.getCategory(),R.mipmap.ic_launcher);
 
         }
 
@@ -285,34 +285,6 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
 
     }
 
-    void setImage(ImageView imageView, String category){
-//        Log.e("RecyclerDealAdapter","Category: "+category);
-        int id;
-        switch (category.toLowerCase()){
-            case "food":
-                id=R.drawable.food;
-                break;
-            case "education":
-                id=R.drawable.education;
-                break;
-            case "travel":
-                id=R.drawable.travel;
-                break;
-            case "automobiles":
-                id=R.drawable.automobile;
-                break;
-            case "entertainment":
-                id=R.drawable.entertainment;
-                break;
-            case "beauty & fitness":
-                id=R.drawable.fitness;
-                break;
-            default:
-                id=R.mipmap.ic_launcher;
-                break;
-        }
-        imageView.setImageResource(id);
-    }
 
     @Override
     public int getItemCount() {
