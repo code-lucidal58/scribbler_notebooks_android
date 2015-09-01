@@ -102,6 +102,10 @@ public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User
                 isSignup = true;
                 return signupHandle(response, params[0]);
             }
+            if(isLoginSocial)
+            {
+                return signupHandle(response, params[0]);
+            }
         } catch (FileNotFoundException f) {
             Log.e("check","FileNotFoundException");
             if (isLogin && !isLoginSocial) {
@@ -109,10 +113,10 @@ public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User
                 fileNowFoundException = true;
                 return null;
             }
-            else if (isLoginSocial) {
-                activity.startActivity(new Intent(activity, NavigationDrawer.class));
-                activity.finish();
-            }
+//            else if (isLoginSocial) {
+//                activity.startActivity(new Intent(activity, NavigationDrawer.class));
+//                activity.finish();
+//            }
         } catch (SocketTimeoutException s) {
             return null;
         } catch (Exception e) {
