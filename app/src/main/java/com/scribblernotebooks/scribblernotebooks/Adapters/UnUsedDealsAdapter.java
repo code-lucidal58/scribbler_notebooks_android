@@ -178,32 +178,6 @@ public class UnUsedDealsAdapter extends RecyclerView.Adapter<UnUsedDealsAdapter.
                 }
             });
 
-        viewHolder.rippleLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                itemClickListener.onItemClick(position, dealsList);
-                //Mixpanel code
-//                MixpanelAPI mixpanelAPI=Constants.getMixPanelInstance(context);
-//                Calendar calendar=Calendar.getInstance();
-//                JSONObject props=new JSONObject();
-//                try {
-//                    props.put("id",id);
-//                    props.put("category",category);
-//                    props.put("dealName",title);
-//                    props.put("date", calendar.get(Calendar.DATE));
-//                    props.put("month",calendar.get(Calendar.MONTH));
-//                    props.put("year",calendar.get(Calendar.YEAR));
-//                    props.put("time",new Date()) ;
-//                    props.put("day", calendar.get(Calendar.DAY_OF_WEEK));
-//                    Log.e("check",props.toString());
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//                mixpanelAPI.track("Views", props);
-            }
-        });
-
-
     }
 
     @Override

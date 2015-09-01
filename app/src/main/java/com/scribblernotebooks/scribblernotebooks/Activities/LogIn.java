@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -61,6 +63,8 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     EditText name, email, mobile, password;
     TextView forgotPassword, termsAndConditions;
     Button signIn, signUp;
+    TextView signUpText;
+    LinearLayout loginText;
     String userName = "", userEmail = "", userPassword, userMobile;
     SignInButton signInButton;
     LoginButton loginButton;
@@ -97,7 +101,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
 //                if (userPrefs.getString(Constants.PREF_DATA_PASS, "").isEmpty()) {
 //                    startActivity(new Intent(this, ProfileManagement.class));
 //                    finish();
-//                } else {
+//                } else
                     startActivity(new Intent(this, NavigationDrawer.class));
                     finish();
 //                }
@@ -193,6 +197,8 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         signInButton.setOnClickListener(this);
         signInButton.setSize(SignInButton.SIZE_WIDE);
         progressDialog = new ProgressDialog(LogIn.this);
+        loginText=(LinearLayout)findViewById(R.id.text);
+        signUpText=(TextView)findViewById(R.id.signUpText);
 
         sun = (ImageView) findViewById(R.id.sun);
         cloud1 = (ImageView) findViewById(R.id.cloud1);
@@ -281,6 +287,12 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                 signUpUser();
             }
         });
+        signUpText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                signUpUser();
+            }
+        });
 
         /** Dimming Status Bar so that app is in focus */
         final View decorView = getWindow().getDecorView();
@@ -354,13 +366,22 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
             }
             return;
         }
-        signUp.getLayoutParams().width=(int)getResources().getDimension(R.dimen.half_login_editText_width);
+        signUp.setVisibility(View.GONE);
         name.setVisibility(View.GONE);
         mobile.setVisibility(View.GONE);
         signIn.setVisibility(View.VISIBLE);
         forgotPassword.setVisibility(View.VISIBLE);
         termsAndConditions.setVisibility(View.GONE);
+        signUpText.setVisibility(View.VISIBLE);
+        loginText.setVisibility(View.VISIBLE);
         view_open = LOGIN;
+        signUpText.setText(Html.fromHtml("Don't have an account? <b>Sign Up</b>"));
+        signUpText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                signUpUser();
+            }
+        });
     }
 
     public void login(String email, String password) {
@@ -398,11 +419,21 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
             }
             return;
         }
+        signUp.setVisibility(View.VISIBLE);
         signUp.getLayoutParams().width=(int)getResources().getDimension(R.dimen.login_editText_width);
         name.setVisibility(View.VISIBLE);
+        loginText.setVisibility(View.GONE);
         mobile.setVisibility(View.VISIBLE);
         forgotPassword.setVisibility(View.GONE);
         signIn.setVisibility(View.GONE);
+
+        signUpText.setText(Html.fromHtml("Already have an account? <b>Login</b>"));
+        signUpText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loginUser();
+            }
+        });
 //        termsAndConditions.setVisibility(View.VISIBLE);
         view_open = SIGNUP;
     }

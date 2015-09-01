@@ -227,6 +227,7 @@ public class ParseJson {
                 pageCount = Integer.parseInt(data.optString("pages"));
                 dealCount = Integer.parseInt(data.optString("count"));
                 currentPage = Integer.parseInt(data.optString("currentPage"));
+                Log.e("ParseJson","Claimed Deals: "+pageCount+" "+dealCount+" "+currentPage);
             } catch (Exception e) {
                 e.printStackTrace();
             }

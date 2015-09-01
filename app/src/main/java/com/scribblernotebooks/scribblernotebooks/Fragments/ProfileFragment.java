@@ -902,7 +902,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener,
     public boolean onOptionsItemSelected(MenuItem item) {
         int id=item.getItemId();
         if(id==android.R.id.home){
-            this.onDetach();
+            getActivity().onBackPressed();
         }
 
         return super.onOptionsItemSelected(item);

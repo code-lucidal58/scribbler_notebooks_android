@@ -2,8 +2,6 @@ package com.scribblernotebooks.scribblernotebooks.Activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -137,13 +135,13 @@ public class SplashScreen extends AppCompatActivity {
     }
 
     public void changeColor() {
-        Log.e("Splash", "Starting animation");
-        Drawable[] topCurves = new Drawable[2];
-        topCurves[0] = getResources().getDrawable(R.drawable.splash_top_blue);
-        topCurves[1] = getResources().getDrawable(R.drawable.splash_top_green);
-        TransitionDrawable drawable = new TransitionDrawable(topCurves);
-        topCurve.setImageDrawable(drawable);
-        drawable.startTransition(750);
+//        Log.e("Splash", "Starting animation");
+//        Drawable[] topCurves = new Drawable[2];
+//        topCurves[0] = getResources().getDrawable(R.drawable.splash_top_blue);
+//        topCurves[1] = getResources().getDrawable(R.drawable.splash_top_green);
+//        TransitionDrawable drawable = new TransitionDrawable(topCurves);
+//        topCurve.setImageDrawable(drawable);
+//        drawable.startTransition(750);
 
         translateCurve();
 

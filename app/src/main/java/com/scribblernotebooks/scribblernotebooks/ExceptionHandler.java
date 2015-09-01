@@ -40,10 +40,29 @@ public class ExceptionHandler extends Application {
                 String data=ex.toString();
                 String data2="";
                 for(int i=0;i<ex.getStackTrace().length;i++){
-                    data2+="\n\n****\n\n"+ex.getStackTrace()[i];
+                    data2+="\n"+ex.getStackTrace()[i];
+                }
+
+                data2+="\n_________________________________________\n";
+
+                try{
+                    for(int i=0;i<ex.getSuppressed().length;i++){
+                        for(int j=0;j<ex.getSuppressed()[i].getStackTrace().length;j++){
+                            data2+="\n"+ex.getSuppressed()[i].getStackTrace()[j];
+                        }
+                        data2+="\n\n";
+                    }
+                }catch (Exception e){
+                    e.getStackTrace();
                 }
                 try{
-                    f.write(Calendar.getInstance().toString().getBytes());
+                   data2+="\n\nMessage:\n"+ex.getMessage();
+                }catch (Exception e){
+                    e.getStackTrace();
+                }
+                try{
+                    Calendar calendar=Calendar.getInstance();
+                    f.write((calendar.get(Calendar.DATE)+" - "+calendar.get(Calendar.MONTH)+" - "+calendar.get(Calendar.YEAR)).getBytes());
                 }catch (Exception e){
                     e.printStackTrace();
                 }
