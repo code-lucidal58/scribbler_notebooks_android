@@ -137,11 +137,11 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         //create new view
-        int id;
-        if(type==TYPE_GRID)
-            id=R.layout.listview_item_deals_grid;
-        else
-            id=R.layout.listview_item_deals;
+        int id=R.layout.listview_item_deals;;
+//        if(type==TYPE_GRID)
+//            id=R.layout.listview_item_deals_grid;
+//        else
+//            id=R.layout.listview_item_deals;
             View itemLayoutView = LayoutInflater.from(viewGroup.getContext()) .inflate(id, viewGroup, false);
 //            View itemLayoutView = LayoutInflater.from(viewGroup.getContext()) .inflate(R.layout.listview_item_deals, viewGroup, false);
 
@@ -185,7 +185,7 @@ public class RecyclerDealsAdapter extends RecyclerView.Adapter<RecyclerDealsAdap
             ImageLoader.getInstance().displayImage(deal.getImageUrl(), viewHolder.imgViewIcon, displayImageOptions, imageLoadingListener);
 
         }catch (MalformedURLException e){
-            Constants.setImage(viewHolder.imgViewIcon,deal.getCategory(),R.mipmap.ic_launcher);
+            Constants.setImage(viewHolder.imgViewIcon,deal.getCategory(),R.drawable.cover);
 
         }
 

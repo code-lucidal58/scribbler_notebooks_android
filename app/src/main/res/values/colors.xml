@@ -24,9 +24,11 @@
     <!--<color name="loginEditTextHintColor">#ffbababa</color>-->
 
     <!--<color name="toolbarColor">#ff1B758C</color>-->
+    <color name="toolbarColor">#1b758d</color>
     <color name="profileBackground">#ff1B758C</color>
-    <color name="toolbarColor">#0f4471</color>
-    <color name="searchBarColor">@color/newBlue</color>
+    <!--<color name="toolbarColor">#0f4471</color>-->
+    <!--<color name="searchBarColor">@color/newBlue</color>-->
+    <color name="searchBarColor">@color/toolbarColor</color>
     <color name="newBlue">#ff2196f3</color>
     <!--<color name="toolbarColor">#1b758d</color>-->
     <color name="loginEditText2Background">@color/loginEditTextBackground</color>
@@ -82,5 +84,7 @@
     <color name="color1">#cdffd7</color>
     <color name="color2">#f0f0ff</color>
     <color name="defaultBackground">#EEE</color>
+    <color name="textTintColor">#000</color>
+    <color name="iconTintColor">#000</color>
 
 </resources>

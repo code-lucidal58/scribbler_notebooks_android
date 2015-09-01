@@ -15,10 +15,12 @@
         <item name="android:textColorPrimary">#FFF</item>
     </style>
 
-    <style name="AppTheme.Base" parent="Theme.AppCompat.NoActionBar">
+    <style name="AppTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/themeColor</item>
         <item name="colorPrimaryDark">@color/darkerBlue</item>
         <item name="colorAccent">@color/profileBackground</item>
+        <!--<item name="statusBarColor">@android:color/transparent</item>-->
+        <item name="android:textColor">#111</item>
         <item name="android:textCursorDrawable">@drawable/bootstrap_edit_text_cursor</item>
     </style>
 

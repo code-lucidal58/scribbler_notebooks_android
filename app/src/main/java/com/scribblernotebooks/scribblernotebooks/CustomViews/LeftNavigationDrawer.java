@@ -6,24 +6,21 @@ import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.Pair;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
-import com.scribblernotebooks.scribblernotebooks.Activities.LogIn;
 import com.scribblernotebooks.scribblernotebooks.Activities.NavigationDrawer;
 import com.scribblernotebooks.scribblernotebooks.Activities.ScannerActivity;
 import com.scribblernotebooks.scribblernotebooks.Activities.SettingsActivity;
@@ -41,20 +38,21 @@ import java.util.ArrayList;
 /**
  * Created by Jibin_ism on 18-May-15.
  */
-public class LeftNavigationDrawer extends NavigationDrawer {
+public class LeftNavigationDrawer extends NavigationDrawer implements NavigationView.OnNavigationItemSelectedListener {
     View mainView = null;
     Context mContext;
 
 
-    RecyclerView mDrawerList;
+//    RecyclerView mDrawerList;
     TextView uName, userEmail;
     ImageView uPhoto, uCoverPic;
-    RelativeLayout mDrawer;
+//    RelativeLayout mDrawer;
     NavigationRecyclerAdapter navigationRecyclerAdapter;
     Fragment fragment;
     FrameLayout userDetailsHolder;
     DrawerLayout mDrawerLayout;
-    RelativeLayout settings, aboutUs, signOut;
+    NavigationView navigationView;
+//    RelativeLayout settings, aboutUs, signOut;
 
     ArrayList<Pair<Integer, String>> mNavigationDrawerItems;
     NavigationDrawer navigationDrawerActivity;
@@ -100,17 +98,19 @@ public class LeftNavigationDrawer extends NavigationDrawer {
      * Initiating the views and data
      */
     protected void instantiate() {
-        mDrawerList = (RecyclerView) mainView.findViewById(R.id.left_drawer);
-        mDrawer = (RelativeLayout) mainView.findViewById(R.id.left_drawer_relative);
-        uName = (TextView) mainView.findViewById(R.id.userName);
-        uPhoto = (ImageView) mainView.findViewById(R.id.userPhoto);
-        uCoverPic = (ImageView) mainView.findViewById(R.id.userCover);
-        userEmail = (TextView) mainView.findViewById(R.id.userEmail);
-        userDetailsHolder = (FrameLayout) mainView.findViewById(R.id.userHolder);
+//        mDrawerList = (RecyclerView) mainView.findViewById(R.id.left_drawer);
+//        mDrawer = (RelativeLayout) mainView.findViewById(R.id.left_drawer_relative);
+        navigationView=(NavigationView)mainView.findViewById(R.id.navigationView);
+        navigationView.setNavigationItemSelectedListener(this);
+        uName = (TextView) navigationView.findViewById(R.id.userName);
+        uPhoto = (ImageView) navigationView.findViewById(R.id.userPhoto);
+        uCoverPic = (ImageView) navigationView.findViewById(R.id.userCover);
+        userEmail = (TextView) navigationView.findViewById(R.id.userEmail);
+        userDetailsHolder = (FrameLayout) navigationView.findViewById(R.id.userHolder);
         mDrawerLayout = (DrawerLayout) mainView.findViewById(R.id.drawer_layout);
-        settings = (RelativeLayout) mainView.findViewById(R.id.settings);
-        aboutUs = (RelativeLayout) mainView.findViewById(R.id.aboutUs);
-        signOut = (RelativeLayout) mainView.findViewById(R.id.signout);
+//        settings = (RelativeLayout) mainView.findViewById(R.id.settings);
+//        aboutUs = (RelativeLayout) mainView.findViewById(R.id.aboutUs);
+//        signOut = (RelativeLayout) mainView.findViewById(R.id.signout);
 
         /**
          * Open Profile management when user clicks section of navigation drawer
@@ -138,11 +138,11 @@ public class LeftNavigationDrawer extends NavigationDrawer {
         /**Setting navigation Drawer**/
         mNavigationDrawerItems = Constants.getNavigationDrawerItems();
         navigationRecyclerAdapter = new NavigationRecyclerAdapter(mContext, mNavigationDrawerItems, this);
-        mDrawerList.setLayoutManager(new LinearLayoutManager(mContext));
-        mDrawerList.setAdapter(navigationRecyclerAdapter);
-
-        /**Settings, Feedback and SignOut**/
-        secondNavFunctions();
+//        mDrawerList.setLayoutManager(new LinearLayoutManager(mContext));
+//        mDrawerList.setAdapter(navigationRecyclerAdapter);
+//
+//        /**Settings, Feedback and SignOut**/
+//        secondNavFunctions();
     }
 
     /**
@@ -182,7 +182,7 @@ public class LeftNavigationDrawer extends NavigationDrawer {
             } catch (Exception e) {
                 Log.e("Navigation Drawer", "No Action Bar");
             }
-            navigationDrawerActivity.mDrawerLayout.closeDrawer(mDrawer);
+            navigationDrawerActivity.mDrawerLayout.closeDrawers();
 
         } else {
             Log.e("MainActivity", "Error in creating fragment");
@@ -192,43 +192,43 @@ public class LeftNavigationDrawer extends NavigationDrawer {
     /**
      * handling second part of navigation Drawer i.e. settings, feedback and signOut
      */
-    public void secondNavFunctions() {
-        settings.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDrawerLayout.closeDrawers();
-                mContext.startActivity(new Intent(mContext, SettingsActivity.class));
-            }
-        });
-
-        aboutUs.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDrawerLayout.closeDrawers();
-                Fragment fragment = AboutUsFragment.newInstance();
-                FragmentManager fragmentManager = navigationDrawerActivity.getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.content_frame, fragment);
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
-            }
-        });
-
-        signOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDrawerLayout.closeDrawers();
-                SharedPreferences sharedPreferences = mContext.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.clear();
-                editor.apply();
-                navigationDrawerActivity.signOut();
-                Toast.makeText(mContext, "Successfully Logged out", Toast.LENGTH_LONG).show();
-                mContext.startActivity(new Intent(mContext, LogIn.class));
-                navigationDrawerActivity.finish();
-            }
-        });
-    }
+//    public void secondNavFunctions() {
+//        settings.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                mDrawerLayout.closeDrawers();
+//                mContext.startActivity(new Intent(mContext, SettingsActivity.class));
+//            }
+//        });
+//
+//        aboutUs.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                mDrawerLayout.closeDrawers();
+//                Fragment fragment = AboutUsFragment.newInstance();
+//                FragmentManager fragmentManager = navigationDrawerActivity.getFragmentManager();
+//                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//                fragmentTransaction.replace(R.id.content_frame, fragment);
+//                fragmentTransaction.addToBackStack(null);
+//                fragmentTransaction.commit();
+//            }
+//        });
+//
+//        signOut.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                mDrawerLayout.closeDrawers();
+//                SharedPreferences sharedPreferences = mContext.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
+//                SharedPreferences.Editor editor = sharedPreferences.edit();
+//                editor.clear();
+//                editor.apply();
+//                navigationDrawerActivity.signOut();
+//                Toast.makeText(mContext, "Successfully Logged out", Toast.LENGTH_LONG).show();
+//                mContext.startActivity(new Intent(mContext, LogIn.class));
+//                navigationDrawerActivity.finish();
+//            }
+//        });
+//    }
 
     public static void setUserName(Context context, View parentView) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE);
@@ -269,4 +269,61 @@ public class LeftNavigationDrawer extends NavigationDrawer {
     }
 
 
+    @Override
+    public boolean onNavigationItemSelected(MenuItem menuItem) {
+        int id=menuItem.getItemId();
+        switch (id){
+            case R.id.scan:
+                changeFragment(0,null);
+                break;
+            case R.id.all:
+                changeFragment(1,new DealsFragment());
+                break;
+            case R.id.premium:
+                changeFragment(2, new PremiumDealsFragment());
+                break;
+            case R.id.claimed:
+                changeFragment(3,new ClaimedDeals());
+                break;
+            case R.id.settings:
+                mContext.startActivity(new Intent(mContext, SettingsActivity.class));
+                break;
+            case R.id.aboutus:
+                changeFragment(100,new AboutUsFragment());
+                break;
+            case R.id.signout:
+                navigationDrawerActivity.signOut();
+                break;
+            default:
+                break;
+
+        }
+        mDrawerLayout.closeDrawers();
+        return false;
+    }
+
+    private void changeFragment(int position, Fragment fragment){
+        if(position==0){
+            mContext.startActivity(new Intent(mContext, ScannerActivity.class));
+            mDrawerLayout.closeDrawers();
+            return;
+        }
+        if (fragment != null) {
+            FragmentManager fragmentManager = navigationDrawerActivity.getFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.content_frame, fragment);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+            try {
+                //noinspection ConstantConditions
+                navigationDrawerActivity.getSupportActionBar().setTitle(Constants.getNavigationDrawerItems().get(position).second);
+            } catch (Exception e) {
+                Log.e("Navigation Drawer", "No Action Bar");
+            }
+            navigationDrawerActivity.mDrawerLayout.closeDrawers();
+
+        } else {
+            Log.e("MainActivity", "Error in creating fragment");
+        }
+    }
 }

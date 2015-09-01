@@ -1,18 +1,39 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/defaultBackground"
+    android:background="#FFF"
     tools:context="com.scribblernotebooks.scribblernotebooks.Fragments.PremiumDealsFragment">
     <include
         android:id="@+id/app_bar"
         layout="@layout/app_bar" />
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView android:layout_width="wrap_content"
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="150dp"
+        android:layout_below="@+id/app_bar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:id="@+id/image"
+        android:src="@drawable/pencil"/>
+
+    <TextView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:gravity="center"
         android:textColor="#000"
+        android:layout_below="@+id/image"
         android:textSize="22sp"
-        android:text="Coming Soon" />
+        android:id="@+id/text"
+        android:text="Sorry !!!"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="#000"
+        android:layout_below="@+id/text"
+        android:textSize="16sp"
+        android:text="No deals right now\n We are constantly working to bring you premium deals"/>
 
 </RelativeLayout>

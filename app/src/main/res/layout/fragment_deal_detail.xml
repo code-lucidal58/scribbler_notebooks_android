@@ -24,15 +24,20 @@
                 android:scaleType="fitXY"
                 android:src="@drawable/cover" />
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/detailsImageWidth"
+                android:background="#55000000"/>
+
             <TextView
                 android:id="@+id/dealName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="130dp"
+                android:layout_marginTop="100dp"
                 android:paddingLeft="10sp"
                 android:text="Deal Name"
-                android:textColor="#000"
-                android:textSize="22sp"
+                android:textColor="#FFF"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -43,14 +48,13 @@
                 android:paddingLeft="10sp"
                 android:paddingTop="3sp"
                 android:text="Category"
-                android:textColor="#000"
-                android:textSize="14sp"
-                android:textStyle="italic|bold" />
+                android:textColor="#FFF"
+                android:textSize="14sp" />
 
             <TableRow
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/dealCategory"
+                android:layout_marginTop="180dp"
                 android:id="@+id/tr"
                 android:padding="10dp"
                 android:weightSum="2">
@@ -98,7 +102,6 @@
                 android:layout_marginRight="6sp"
                 android:layout_marginTop="5dp"
                 android:minHeight="150sp"
-                app:cardCornerRadius="@dimen/details_cardCorner"
                 app:cardElevation="@dimen/details_cardViewElevation">
 
                 <TextView

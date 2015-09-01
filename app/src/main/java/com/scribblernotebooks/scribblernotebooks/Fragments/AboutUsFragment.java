@@ -133,7 +133,7 @@ public class AboutUsFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id=item.getItemId();
         if(id==android.R.id.home){
-            this.onDetach();
+            getActivity().onBackPressed();
         }
 
         return super.onOptionsItemSelected(item);

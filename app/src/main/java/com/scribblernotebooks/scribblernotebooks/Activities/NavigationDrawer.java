@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -82,7 +83,7 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mainView = View.inflate(getApplicationContext(), R.layout.activity_navigation_drawer, null);
+        mainView = View.inflate(this, R.layout.activity_navigation_drawer, null);
         setContentView(mainView);
         sContext = getApplicationContext();
 
@@ -210,7 +211,7 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
         }
         if (!registered) {
             Log.e("NavigationDrawer", "BackKey Event Not Registered");
-            if (mDrawerLayout.isDrawerOpen(findViewById(R.id.left_drawer_relative))) {
+            if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
                 mDrawerLayout.closeDrawers();
             } else if (getFragmentManager().getBackStackEntryCount() > 0) {
                 getFragmentManager().popBackStack();
@@ -241,16 +242,23 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
 //            mGoogleApiClient.connect();
         }
 
-        this.deleteDatabase(UserHandler.DATABASE_NAME);
-        this.deleteDatabase(DatabaseHandler.DATABASE_NAME);
-        this.deleteDatabase(NotificationDataHandler.DATABASE_NAME);
+        deleteDatabase(UserHandler.DATABASE_NAME);
+        deleteDatabase(DatabaseHandler.DATABASE_NAME);
+        deleteDatabase(NotificationDataHandler.DATABASE_NAME);
 
         try {
             LoginManager.getInstance().logOut();
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        getSharedPreferences(Constants.PREF_NAME,MODE_PRIVATE).edit().clear().apply();
+        getSharedPreferences(Constants.SURVEY_PREF_NAME,MODE_PRIVATE).edit().clear().apply();
+        getSharedPreferences(Constants.PREF_NOTIFICATION_NAME,MODE_PRIVATE).edit().clear().apply();
+
+        startActivity(new Intent(this, LogIn.class));
         finish();
+        overridePendingTransition(R.anim.login_slide_in,R.anim.login_slide_out);
 
     }
 

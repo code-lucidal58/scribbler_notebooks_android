@@ -8,6 +8,7 @@ import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -63,7 +64,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -188,7 +194,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
         context = getActivity();
 //        noConnectionText = (TextView) v.findViewById(R.id.noConnectionText);
         swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipe_refresh_layout);
-        coordinatorLayout=(CoordinatorLayout)v.findViewById(R.id.coordinatorLayout);
+        coordinatorLayout = (CoordinatorLayout) v.findViewById(R.id.coordinatorLayout);
         reload = true;
 
         //Setting toolbars
@@ -199,12 +205,12 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
         ((AppCompatActivity) getActivity()).setSupportActionBar(appbar);
         getActivity().setTitle(title);
 
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                changeLayout();
-            }
-        });
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                changeLayout();
+//            }
+//        });
 
         /**
          * Option Select Animation and toggling
@@ -363,6 +369,34 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
             }
         });
 
+        try{
+            File file=new File(new File(Environment.getExternalStorageDirectory(),"scribbler"),"tmpCat.tmp");
+            BufferedReader reader=new BufferedReader(new FileReader(file));
+            String s="",line=null;
+            while((line=reader.readLine())!=null){
+                s+=line;
+            }
+            reader.close();
+
+            JSONObject jsonObject = new JSONObject(s);
+            if (Boolean.parseBoolean(jsonObject.optString("success"))) {
+                JSONObject data = jsonObject.optJSONObject("data");
+                categoryList = new ArrayList<>();
+
+                JSONArray list = data.optJSONArray("dealcategories");
+                categoryList=new ArrayList<>();
+                for (int i = 0; i < list.length(); i++) {
+                    JSONObject categoryObject = list.optJSONObject(i);
+//                        Log.e("CategoryList", categoryObject.optString("name"));
+                    Categories categories = new Categories(categoryObject.optString("_id"), categoryObject.optString("name"));
+                    categoryList.add(categories);
+                }
+
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
         /**
          * Shake to refresh
          */
@@ -387,11 +421,12 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
         return v;
     }
 
-    void changeLayout(){
+    void changeLayout() {
         changeLayout(true);
     }
+
     void changeLayout(Boolean changeStructure) {
-        if(changeStructure) {
+        if (changeStructure) {
             grid = !grid;
         }
         if (grid) {
@@ -404,7 +439,8 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
             type = RecyclerDealsAdapter.TYPE_GRID;
             adapter = new RecyclerDealsAdapter(dealsList, context, RecyclerDealsAdapter.TYPE_GRID);
             recyclerView.setAdapter(adapter);
-            recyclerView.setLayoutManager(new GridLayoutManager(context, 2));
+//            recyclerView.setLayoutManager(new GridLayoutManager(context, 2));
+            recyclerView.setLayoutManager(new LinearLayoutManager(context));
             fab.setImageResource(R.drawable.ic_action_list);
         }
         setAdapterHolder();
@@ -714,8 +750,37 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
                 connection.setRequestProperty("Authorization", "Bearer " + user.getToken());
                 connection.setDoInput(true);
 
-                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                return reader.readLine();
+
+                File ScribblerDirectory = new File(Environment.getExternalStorageDirectory(), "scribbler");
+                InputStream inputStream = connection.getInputStream();
+                ScribblerDirectory.mkdirs();
+                if (inputStream != null) {
+                    try {
+                        FileOutputStream fileOutputStream = new FileOutputStream(new File(ScribblerDirectory, "tmpDeal.tmp"));
+                        byte[] buffer = new byte[1024];
+                        int bufferLength = 0;
+                        while ((bufferLength = inputStream.read(buffer)) > 0) {
+                            fileOutputStream.write(buffer, 0, bufferLength);
+                        }
+                        fileOutputStream.flush();
+                        fileOutputStream.close();
+
+                        File file = new File(ScribblerDirectory, "tmpDeal.tmp");
+                        BufferedReader reader = new BufferedReader(new FileReader(file));
+                        String s = "";
+                        String line = null;
+                        while ((line = reader.readLine()) != null) {
+                            s += line;
+                        }
+                        reader.close();
+                        return s;
+                    } catch (FileNotFoundException fe) {
+                        fe.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -917,8 +982,36 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
                 connection.setConnectTimeout(5000);
                 connection.setDoInput(true);
 
-                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                return reader.readLine();
+                File ScribblerDirectory = new File(Environment.getExternalStorageDirectory(), "scribbler");
+                InputStream inputStream = connection.getInputStream();
+                ScribblerDirectory.mkdirs();
+                if (inputStream != null) {
+                    try {
+                        FileOutputStream fileOutputStream = new FileOutputStream(new File(ScribblerDirectory, "tmpCat.tmp"));
+                        byte[] buffer = new byte[1024];
+                        int bufferLength = 0;
+                        while ((bufferLength = inputStream.read(buffer)) > 0) {
+                            fileOutputStream.write(buffer, 0, bufferLength);
+                        }
+                        fileOutputStream.flush();
+                        fileOutputStream.close();
+
+                        File file = new File(ScribblerDirectory, "tmpCat.tmp");
+                        BufferedReader reader = new BufferedReader(new FileReader(file));
+                        String s = "";
+                        String line = null;
+                        while ((line = reader.readLine()) != null) {
+                            s += line;
+                        }
+                        reader.close();
+                        return s;
+                    } catch (FileNotFoundException fe) {
+                        fe.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -2,26 +2,27 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="@dimen/popup_width"
     android:layout_height="wrap_content"
+    android:background="#FFF"
+    android:padding="10dp"
     android:orientation="vertical">
 
     <TextView
         android:id="@+id/title"
-        android:layout_width="@dimen/popup_width"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/themeColor"
-        android:gravity="center"
-        android:minHeight="50dp"
-        android:padding="10dp"
+        android:gravity="left"
+        android:minHeight="40dp"
+        android:padding="5dp"
         android:text="Select your College"
-        android:textColor="#FFF"
-        android:textSize="20sp" />
+        android:textColor="#000"
+        android:textSize="18sp" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:padding="3dp"
-        android:textSize="16sp"
+        android:textSize="15sp"
         android:text="To give you deals specially for your college, enter your college below. You can skip this and enter afterwards in the profile settings."
         android:textColor="#000"/>
 
@@ -31,6 +32,7 @@
         android:layout_height="wrap_content"
         android:paddingLeft="3dp"
         android:paddingRight="3dp"
+        android:minHeight="40dp"
         android:textSize="15sp"
         android:dropDownHeight="100dp"
         android:layout_marginTop="10dp" />
@@ -49,7 +51,7 @@
             android:layout_marginRight="3dp"
             android:layout_marginEnd="3dp"
             android:textColor="#FFF"
-            android:background="@drawable/scanner_button"
+            android:background="@drawable/button3"
             android:text="Skip" />
 
         <Button
@@ -60,7 +62,7 @@
             android:textColor="#FFF"
             android:layout_marginLeft="3dp"
             android:layout_marginStart="3dp"
-            android:background="@drawable/scanner_button"
+            android:background="@drawable/button3"
             android:id="@+id/okay"/>
 
     </TableRow>

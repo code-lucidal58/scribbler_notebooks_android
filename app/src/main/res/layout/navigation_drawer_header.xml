@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout
+    android:id="@+id/userHolder"
+    android:layout_width="match_parent"
+    android:background="@color/profileBackground"
+    android:layout_height="@dimen/navigation_drawer_cover_pic_height"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ImageView
+        android:id="@+id/userCover"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:visibility="gone"
+        android:src="@drawable/navigation_drawer_cover_pic" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom|start"
+        android:layout_marginBottom="5dp">
+
+        <com.scribblernotebooks.scribblernotebooks.CustomViews.RoundedImageView
+            android:id="@+id/userPhoto"
+            android:layout_width="@dimen/userPicSize"
+            android:layout_height="@dimen/userPicSize"
+            android:layout_centerInParent="true"
+            android:layout_above="@+id/userName"
+            android:layout_marginBottom="5dp"
+            android:src="@drawable/nodp" />
+
+        <TextView
+            android:id="@+id/userName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:text="User Name"
+            android:layout_above="@+id/userEmail"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/userNameTextSize"
+            android:paddingLeft="5dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/userEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:gravity="left"
+            android:paddingLeft="5dp"
+            android:text="user@domain.com"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/userEmailTextSize" />
+
+    </RelativeLayout>
+
+</FrameLayout>

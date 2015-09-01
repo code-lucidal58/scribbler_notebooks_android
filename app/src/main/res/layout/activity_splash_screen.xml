@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:background="@color/newDarkBlue"
+    android:background="#54C4CC"
     tools:context="com.scribblernotebooks.scribblernotebooks.Activities.SplashScreen">
 
 
@@ -21,7 +21,7 @@
         android:layout_width="match_parent"
         android:layout_height="480dp"
         android:scaleType="fitXY"
-        android:src="@drawable/splash_top_blue" />
+        android:src="@drawable/splash_top_green" />
 
     <ImageView
         android:id="@+id/whiteLogo"
