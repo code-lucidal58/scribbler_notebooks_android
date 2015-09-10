@@ -49,10 +49,16 @@ import com.scribblernotebooks.scribblernotebooks.Services.SignUpService;
 
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import javax.net.ssl.HttpsURLConnection;
 
 
 public class LogIn extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
@@ -173,7 +179,9 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
                     .addApi(Plus.API, Plus.PlusOptions.builder().build())
-                    .addScope(Plus.SCOPE_PLUS_LOGIN).build();
+                    .addScope(Plus.SCOPE_PLUS_LOGIN)
+                    .addScope(Plus.SCOPE_PLUS_PROFILE)
+                    .build();
         } catch (Exception e) {
             e.printStackTrace();
             mGoogleApiClient.connect();
@@ -181,7 +189,9 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
                     .addApi(Plus.API, Plus.PlusOptions.builder().build())
-                    .addScope(Plus.SCOPE_PLUS_LOGIN).build();
+                    .addScope(Plus.SCOPE_PLUS_LOGIN)
+                    .addScope(Plus.SCOPE_PLUS_PROFILE)
+                    .build();
         }
 
         //View Setup
@@ -486,6 +496,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
             if (!mGoogleApiClient.isConnecting()) {
                 progressDialog.setMessage("Connecting...");
                 progressDialog.show();
+                progressDialog.setCancelable(true);
                 mGoogleApiClient.connect();
             }
         }
@@ -504,6 +515,11 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     @Override
     public void onConnected(Bundle arg0) {
         Log.e(TAG, "Google Connected");
+        if(progressDialog!=null){
+            if(progressDialog.isShowing()){
+                progressDialog.dismiss();
+            }
+        }
         mSignInClicked = false;
         getProfileInformation();
     }
@@ -524,6 +540,11 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if(progressDialog!=null){
+            if(progressDialog.isShowing()){
+                progressDialog.dismiss();
+            }
+        }
         if(mGoogleApiClient.isConnecting() || mGoogleApiClient.isConnected()){
             mGoogleApiClient.disconnect();
             Log.e("LogIn","Google Connection disconnected");
@@ -547,8 +568,9 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         protected String doInBackground(Void... params) {
             String token = null;
             try {
-                String scope = "oauth2:" + Scopes.PLUS_LOGIN + " " + Scopes.PLUS_ME +
+                String scope = "oauth2: " + Scopes.PLUS_LOGIN + " " + Scopes.PLUS_ME+
                         " https://www.googleapis.com/auth/userinfo.email ";
+                Log.e(TAG,"Scope: "+scope);
                 token = GoogleAuthUtil.getToken(
                         getApplicationContext(),
                         Plus.AccountApi.getAccountName(mGoogleApiClient),
@@ -566,6 +588,7 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
                 // Google Play services is installed.
                 Log.e(TAG, authEx.toString());
             }
+            Log.e(TAG,"token recieved: "+token);
             return token;
         }
 
@@ -695,10 +718,13 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
         data.put(Constants.POST_METHOD, method);
         data.put(Constants.POST_ACCESS_TOKEN, accessToken);
         data.put(Constants.POST_TOKEN, getSharedPreferences(Constants.PREF_NAME, Context.MODE_PRIVATE).getString(Constants.PREF_DATA_USER_TOKEN, ""));
-
-//        Log.e("LoginSocialData","Data: METHOD: "+method+" ACCESS_TOKEN: "+accessToken);
+        testAccessToken(accessToken);
+        Log.e("LoginSocialData","Data: METHOD: "+method+" ACCESS_TOKEN: "+accessToken);
         new SignUpService(Constants.ServerUrls.login, this).execute(data);
     }
+
+
+
 
     @Override
     public void onBackPressed() {
@@ -708,6 +734,38 @@ public class LogIn extends AppCompatActivity implements GoogleApiClient.Connecti
             super.onBackPressed();
         }
     }
+
+    public void testAccessToken(String accessToken){
+        new AsyncTask<String, Void, Void>(){
+            @Override
+            protected Void doInBackground(String... strings) {
+                try{
+                    URL url=new URL("https://www.googleapis.com/plus/v1/people/me?access_token="+strings[0]);
+                    Log.e(TAG,"Test Url check: "+url.toString());
+                    HttpsURLConnection connection=(HttpsURLConnection)url.openConnection();
+                    connection.setConnectTimeout(15000);
+                    connection.setReadTimeout(15000);
+                    connection.setDoOutput(false);
+                    connection.setDoInput(true);
+
+                    InputStream is=connection.getInputStream();
+                    BufferedReader reader=new BufferedReader(new InputStreamReader(is));
+                    String s="",line;
+                    while((line=reader.readLine())!=null){
+                        s+=line;
+                    }
+                    Log.e(TAG,"Response form google:\n "+s);
+
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+
+                return null;
+            }
+        }.execute(accessToken);
+    }
+
 }
 
 

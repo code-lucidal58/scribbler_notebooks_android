@@ -213,7 +213,7 @@ public class NavigationDrawer extends AppCompatActivity implements ProfileFragme
             Log.e("NavigationDrawer", "BackKey Event Not Registered");
             if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
                 mDrawerLayout.closeDrawers();
-            } else if (getFragmentManager().getBackStackEntryCount() > 0) {
+            } else if (getFragmentManager().getBackStackEntryCount() > 1) {
                 getFragmentManager().popBackStack();
             } else {
                 this.finish();

@@ -66,7 +66,7 @@ public class ParseJson {
             JSONObject jsonChild = new JSONObject(jsonResponse);
             String id, title, category="", sdesp, ldesp, imgurl, code, couponCode;
 
-            id = jsonChild.optString("_id");
+            id = jsonChild.optString(Constants.TAG_ID);
             title = jsonChild.optString(Constants.TAG_DEAL_NAME);
             try {
                 JSONObject categoryDetail = jsonChild.optJSONObject(Constants.TAG_CATEGORY);
@@ -137,16 +137,16 @@ public class ParseJson {
             parsedData.put(Constants.POST_SUCCESS, object.optString(Constants.POST_SUCCESS));
             JSONObject data = object.optJSONObject(Constants.POST_DATA);
 //            parsedData.put(Constants.POST_ERROR, object.optString(Constants.POST_ERROR));
-            parsedData.put(Constants.PREF_DATA_ID, data.getString("_id"));
-            parsedData.put(Constants.POST_MIXPANELID, data.getString(Constants.POST_MIXPANELID));
-            parsedData.put(Constants.POST_EMAIL, data.getString(Constants.POST_EMAIL));
-            parsedData.put(Constants.POST_MOBILE, data.getString(Constants.POST_MOBILE));
+            parsedData.put(Constants.PREF_DATA_ID, data.optString(Constants.TAG_ID));
+            parsedData.put(Constants.POST_MIXPANELID, data.optString(Constants.POST_MIXPANELID));
+            parsedData.put(Constants.POST_EMAIL, data.optString(Constants.POST_EMAIL));
+            parsedData.put(Constants.POST_MOBILE, data.optString(Constants.POST_MOBILE));
             parsedData.put(Constants.POST_TOKEN, data.optString(Constants.POST_TOKEN));
 
             try {
                 JSONObject collegeObject = data.getJSONObject(Constants.POST_COLLEGE);
                 parsedData.put(Constants.PREF_DATA_COLLEGE_NAME, collegeObject.optString("name"));
-                parsedData.put(Constants.PREF_DATA_COLLEGE_ID, collegeObject.optString("_id"));
+                parsedData.put(Constants.PREF_DATA_COLLEGE_ID, collegeObject.optString(Constants.TAG_ID));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -188,7 +188,7 @@ public class ParseJson {
             parsedData.put(Constants.POST_SUCCESS, object.optString(Constants.POST_SUCCESS));
             JSONObject data = object.optJSONObject(Constants.POST_DATA);
 
-            parsedData.put(Constants.PREF_DATA_ID, data.getString("_id"));
+            parsedData.put(Constants.PREF_DATA_ID, data.getString(Constants.TAG_ID));
             parsedData.put(Constants.POST_MIXPANELID, data.getString(Constants.POST_MIXPANELID));
             parsedData.put(Constants.POST_EMAIL, data.getString(Constants.POST_EMAIL));
             parsedData.put(Constants.POST_MOBILE, data.getString(Constants.POST_MOBILE));

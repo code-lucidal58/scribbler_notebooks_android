@@ -149,6 +149,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
         Bundle args = new Bundle();
         args.putString(URL_STRING, url);
         args.putString(TITLE, title);
+        args.putBoolean("openingFirstTime",true);
         fragment.setArguments(args);
         return fragment;
     }
@@ -181,9 +182,9 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
         if (getArguments() != null) {
             url = getArguments().getString(URL_STRING);
             title = getArguments().getString(TITLE);
+            openingFirstTime = getArguments().getBoolean("openingFirstTime");
         }
         firstTime = true;
-        openingFirstTime = true;
     }
 
     @Override
@@ -868,7 +869,7 @@ public class DealsFragment extends Fragment implements NavigationDrawer.OnNavKey
                     if (type == RecyclerDealsAdapter.TYPE_LIST)
                         ((LinearLayoutManager) recyclerView.getLayoutManager()).scrollToPositionWithOffset((dealListResponse.getCurrentPage() - 1) * PAGE_LIMIT, 20);
                     else
-                        ((GridLayoutManager) recyclerView.getLayoutManager()).scrollToPositionWithOffset((dealListResponse.getCurrentPage() - 1) * PAGE_LIMIT, 20);
+                        ((LinearLayoutManager) recyclerView.getLayoutManager()).scrollToPositionWithOffset((dealListResponse.getCurrentPage() - 1) * PAGE_LIMIT, 20);
                 }
             } catch (NullPointerException e) {
                 e.getStackTrace();

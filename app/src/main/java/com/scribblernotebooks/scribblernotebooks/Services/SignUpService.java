@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.widget.Toast;
@@ -21,8 +22,12 @@ import com.scribblernotebooks.scribblernotebooks.R;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.InputStreamReader;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
@@ -92,9 +97,43 @@ public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User
             os.close();
             int responseCode = conn.getResponseCode();
 
-            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String response = br.readLine();
-            Log.e("Signup Service", "Response: " + response);
+            File ScribblerDirectory=new File(Environment.getExternalStorageDirectory(),"scribbler");
+            InputStream inputStream=conn.getInputStream();
+            ScribblerDirectory.mkdirs();
+            if (inputStream != null) {
+                try {
+                    FileOutputStream fileOutputStream = new FileOutputStream(new File(ScribblerDirectory, "tmpLogin.tmp"));
+                    byte[] buffer = new byte[1024];
+                    int bufferLength = 0;
+                    while ((bufferLength = inputStream.read(buffer)) > 0) {
+                        fileOutputStream.write(buffer, 0, bufferLength);
+                    }
+                    fileOutputStream.flush();
+                    fileOutputStream.close();
+                } catch (FileNotFoundException fe) {
+                    fe.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+
+            String response="";
+            try {
+                File in = new File(ScribblerDirectory, "tmpLogin.tmp");
+                BufferedReader reader = new BufferedReader(new FileReader(in));
+                String line = null;
+                while ((line = reader.readLine()) != null) {
+                    response += line;
+                }
+                reader.close();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+//            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+//            String response = br.readLine();
+//            Log.e("Signup Service", "Response: " + response);
             if (urlExtension.equalsIgnoreCase(Constants.ServerUrls.login)) {
                 isSignup = false;
                 return loginHandle(response);
@@ -108,6 +147,7 @@ public class SignUpService extends AsyncTask<HashMap<String, String>, Void, User
             }
         } catch (FileNotFoundException f) {
             Log.e("check","FileNotFoundException");
+            f.printStackTrace();
             if (isLogin && !isLoginSocial) {
                 Log.e("check","FileNotFoundException inside if");
                 fileNowFoundException = true;
